@@ -321,32 +321,32 @@ function ProductsCatalogSection() {
   return (
     <>
       {/* Search Header */}
-      <section className="relative py-12 px-4 sm:px-6 lg:px-8 bg-transparent border-b border-border-cool">
+      <section className="relative py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F7F8] border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div className="space-y-1.5 text-center md:text-left">
-            <span className="text-xs font-bold tracking-widest text-accent-cyan uppercase">B2B CATALOG</span>
-            <h1 className="font-display text-3xl font-extrabold text-primary-midnight tracking-tight">
+            <span className="text-xs font-bold tracking-widest text-[#0F0F10] uppercase">B2B CATALOG</span>
+            <h1 className="font-display text-3xl font-extrabold text-[#0F0F10] tracking-tight">
               OEM Speaker Components
             </h1>
-            <p className="text-slate-555 text-xs max-w-lg font-light">
+            <p className="text-slate-500 text-xs max-w-lg font-light font-sans">
               Explore our line of export-quality speaker chassis, voice coils, spiders, surrounds, and custom tooling kits.
             </p>
           </div>
           
           {/* Search Box */}
-          <div className="w-full max-w-sm relative">
+          <div className="w-full max-w-sm relative font-sans">
             <input
               type="text"
               placeholder="Search component catalog..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-border-cool rounded-premium px-4 py-3 pl-10 text-xs text-charcoal outline-none focus:border-accent-cyan transition-colors placeholder:text-slate-400 shadow-sm"
+              className="w-full bg-white border border-[#EAEAEA] rounded-premium px-4 py-3 pl-10 text-xs text-[#0F0F10] outline-none focus:border-[#0F0F10] transition-colors placeholder:text-slate-400"
             />
-            <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-450" />
+            <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
             {search && (
               <button 
                 onClick={() => setSearch("")}
-                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-charcoal text-[10px] font-bold"
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-[#0F0F10] text-[10px] font-bold"
               >
                 CLEAR
               </button>
@@ -356,12 +356,12 @@ function ProductsCatalogSection() {
       </section>
 
       {/* Main Grid */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-4 gap-10 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-4 gap-10 relative z-10 font-sans">
         
         {/* Sidebar Filters */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="flex items-center gap-2 text-primary-midnight font-bold text-xs uppercase tracking-wider border-b border-border-cool pb-2">
-            <Filter className="w-4 h-4 text-accent-cyan" />
+          <div className="flex items-center gap-2 text-[#0F0F10] font-bold text-xs uppercase tracking-wider border-b border-[#EAEAEA] pb-2">
+            <Filter className="w-4 h-4 text-[#5C5C63]" />
             <span>Filter Categories</span>
           </div>
           
@@ -374,8 +374,8 @@ function ProductsCatalogSection() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-2 text-left rounded-lg text-xs font-semibold whitespace-nowrap tracking-wide transition-all ${
                     isSelected
-                      ? "bg-white border-l-3 border-accent-cyan text-primary-midnight font-bold"
-                      : "text-slate-500 hover:bg-bg-snow hover:text-primary-midnight border-l-3 border-transparent"
+                      ? "bg-white border-l-3 border-[#0F0F10] text-[#0F0F10] font-bold"
+                      : "text-slate-500 hover:bg-[#F7F7F8] hover:text-[#0F0F10] border-l-3 border-transparent"
                   }`}
                 >
                   {cat}
@@ -387,17 +387,17 @@ function ProductsCatalogSection() {
 
         {/* Products Cards Grid */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="flex items-center justify-between text-xs text-slate-500 border-b border-border-cool pb-2">
-            <span>Showing <strong className="text-primary-midnight font-semibold">{filteredProducts.length}</strong> components</span>
-            <span>Category: <strong className="text-accent-cyan font-semibold">{selectedCategory}</strong></span>
+          <div className="flex items-center justify-between text-xs text-slate-500 border-b border-[#EAEAEA] pb-2">
+            <span>Showing <strong className="text-[#0F0F10] font-semibold">{filteredProducts.length}</strong> components</span>
+            <span>Category: <strong className="text-[#5C5C63] font-semibold">{selectedCategory}</strong></span>
           </div>
 
           {filteredProducts.length === 0 ? (
-            <div className="border border-border-cool bg-white p-16 text-center rounded-premium">
+            <div className="border border-[#EAEAEA] bg-white p-16 text-center rounded-premium">
               <p className="text-xs text-slate-500 font-light">No components match your search filter.</p>
               <button
                 onClick={() => { setSearch(""); setSelectedCategory("All Categories"); }}
-                className="mt-4 text-xs font-bold text-accent-cyan hover:text-accent-cyan-hover"
+                className="mt-4 text-xs font-bold text-[#0F0F10] hover:text-[#2E2E33]"
               >
                 Reset Filters
               </button>
@@ -414,57 +414,57 @@ function ProductsCatalogSection() {
                   >
                     <div>
                       {/* Product Image */}
-                      <div className="w-full h-44 rounded-lg overflow-hidden border border-border-cool/40 mb-4 relative">
+                      <div className="w-full h-44 rounded-lg overflow-hidden border border-[#EAEAEA] mb-4 relative">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={imgUrl}
                           alt={prod.name}
                           className="w-full h-full object-cover transition-transform duration-500 hover:scale-103"
                         />
-                        <div className="absolute top-2 right-2 bg-white/90 text-[8px] font-mono text-slate-500 px-1.5 py-0.5 rounded border border-border-cool">
+                        <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-1.5 py-0.5 rounded border border-[#EAEAEA]">
                           CAD: READY
                         </div>
                       </div>
 
-                      <span className="text-[10px] font-bold text-highlight-royal tracking-wider uppercase block mb-1">
+                      <span className="text-[10px] font-bold text-[#5C5C63] tracking-wider uppercase block mb-1">
                         {prod.category}
                       </span>
-                      <h3 className="font-display text-sm font-bold text-primary-midnight mb-2">
+                      <h3 className="font-display text-sm font-bold text-[#0F0F10] mb-2">
                         {prod.name}
                       </h3>
-                      <p className="text-xs text-body-slate leading-relaxed line-clamp-2 font-light">
+                      <p className="text-xs text-[#4A4A4F] leading-relaxed line-clamp-2 font-light font-sans">
                         {prod.desc}
                       </p>
 
                       {/* Variants & Pricing Info */}
-                      <div className="mt-3.5 space-y-1.5 text-[11px] text-slate-500 font-light border-t border-border-cool/50 pt-3">
+                      <div className="mt-3.5 space-y-1.5 text-[11px] text-slate-500 font-light border-t border-[#EAEAEA] pt-3">
                         <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 font-sans">
                             <Tag className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>Starting Price:</span>
                           </span>
-                          <strong className="text-accent-cyan font-bold font-numbers text-xs">{prod.startingPrice}</strong>
+                          <strong className="text-[#0F0F10] font-bold font-numbers text-xs">{prod.startingPrice}</strong>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 font-sans">
                             <Box className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>MOQ:</span>
                           </span>
-                          <span className="font-semibold text-primary-midnight">{prod.moq}</span>
+                          <span className="font-semibold text-[#0F0F10]">{prod.moq}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 pt-1 font-light italic truncate">
+                        <div className="text-[10px] text-slate-400 pt-1 font-light italic truncate font-sans">
                           {prod.variants}
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-border-cool flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-[#EAEAEA] flex items-center justify-between">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono">
                         TOLERANCE: {prod.tolerances}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-accent-cyan">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F0F10]">
                         <span>SPECS / RFQ</span>
-                        <Info className="w-4 h-4 text-slate-450 shrink-0" />
+                        <Info className="w-4 h-4 text-slate-400 shrink-0" />
                       </span>
                     </div>
                   </div>
@@ -478,18 +478,18 @@ function ProductsCatalogSection() {
 
       {/* Modal Detail Overlay */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-midnight/25 backdrop-blur-xs animate-fade-in">
-          <div className="glass-panel-solid w-full max-w-5xl rounded-premium overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/40 backdrop-blur-xs animate-fade-in font-sans">
+          <div className="glass-panel-solid w-full max-w-5xl rounded-premium overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col border border-[#D6D6D8]">
             
             {/* Modal Header */}
-            <div className="p-5 bg-transparent border-b border-border-cool flex items-center justify-between">
+            <div className="p-5 bg-transparent border-b border-[#EAEAEA] flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-bold text-highlight-royal tracking-widest uppercase block">{selectedProduct.category}</span>
-                <h3 className="font-display text-base font-extrabold text-primary-midnight leading-tight">{selectedProduct.name}</h3>
+                <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">{selectedProduct.category}</span>
+                <h3 className="font-display text-base font-extrabold text-[#0F0F10] leading-tight">{selectedProduct.name}</h3>
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="p-2 rounded-lg bg-white/40 border border-white/40 hover:bg-white/60 text-slate-500 hover:text-primary-midnight transition-colors cursor-pointer"
+                className="p-2 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] hover:bg-[#E8E8EA] text-slate-500 hover:text-[#0F0F10] transition-colors cursor-pointer"
                 aria-label="Close details"
               >
                 <X className="w-5 h-5" />
@@ -503,69 +503,69 @@ function ProductsCatalogSection() {
               <div className="lg:col-span-7 space-y-6">
                 
                 {/* Large Product Image in Modal */}
-                <div className="w-full h-56 rounded-premium overflow-hidden border border-border-cool relative">
+                <div className="w-full h-56 rounded-premium overflow-hidden border border-[#EAEAEA] relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"}
                     alt={selectedProduct.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-white/90 text-[8px] font-mono text-slate-500 px-2 py-0.5 rounded border border-border-cool">
+                  <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-2 py-0.5 rounded border border-[#EAEAEA]">
                     CROSS-SECTION SCHEMATIC
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-primary-midnight uppercase tracking-wider">Acoustic & Mechanical Profile</h4>
-                  <p className="text-xs text-body-slate leading-relaxed font-light">{selectedProduct.desc}</p>
+                  <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider">Acoustic & Mechanical Profile</h4>
+                  <p className="text-xs text-[#4A4A4F] leading-relaxed font-light font-sans">{selectedProduct.desc}</p>
                 </div>
 
                 {/* Specs Table */}
-                <div className="border border-border-cool rounded-premium overflow-hidden shadow-sm">
+                <div className="border border-[#EAEAEA] rounded-premium overflow-hidden">
                   <table className="w-full text-xs text-left">
-                    <thead className="bg-bg-snow text-primary-midnight font-bold border-b border-border-cool">
+                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b border-[#EAEAEA]">
                       <tr>
                         <th className="px-4 py-3">Specification Parameter</th>
                         <th className="px-4 py-3">OEM Compliance Value</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border-cool text-charcoal">
+                    <tbody className="divide-y divide-[#EAEAEA] text-[#0F0F10]">
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Product Variants / Sizing</td>
-                        <td className="px-4 py-3 font-bold text-primary-midnight">{selectedProduct.variants}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Product Variants / Sizing</td>
+                        <td className="px-4 py-3 font-bold text-[#0F0F10]">{selectedProduct.variants}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">B2B Starting Price</td>
-                        <td className="px-4 py-3 font-bold text-accent-cyan font-numbers text-sm">{selectedProduct.startingPrice}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">B2B Starting Price</td>
+                        <td className="px-4 py-3 font-bold text-[#0F0F10] font-numbers text-sm">{selectedProduct.startingPrice}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Minimum Order Volume (MOQ)</td>
-                        <td className="px-4 py-3 font-semibold text-primary-midnight">{selectedProduct.moq}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Minimum Order Volume (MOQ)</td>
+                        <td className="px-4 py-3 font-semibold text-[#0F0F10]">{selectedProduct.moq}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Composition / Materials</td>
-                        <td className="px-4 py-3 font-light">{selectedProduct.materials}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Composition / Materials</td>
+                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.materials}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-455">Dimensional Ranges</td>
-                        <td className="px-4 py-3 font-light">{selectedProduct.dimensions}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Dimensional Ranges</td>
+                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.dimensions}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Operating Temperature Limits</td>
-                        <td className="px-4 py-3 font-light">{selectedProduct.tempLimit}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Operating Temperature Limits</td>
+                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.tempLimit}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Acoustic / Compliance Tuning</td>
-                        <td className="px-4 py-3 font-light">{selectedProduct.frequencyRange}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Acoustic / Compliance Tuning</td>
+                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.frequencyRange}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Manufacturing Tolerances</td>
-                        <td className="px-4 py-3 text-accent-cyan font-semibold">{selectedProduct.tolerances}</td>
+                        <td className="px-4 py-3 font-medium text-slate-400">Manufacturing Tolerances</td>
+                        <td className="px-4 py-3 text-[#0F0F10] font-semibold">{selectedProduct.tolerances}</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-medium text-slate-450">Compliance Directives</td>
-                        <td className="px-4 py-3 flex items-center gap-1.5 font-light">
-                          <ShieldCheck className="w-4 h-4 text-green-500 shrink-0" />
+                        <td className="px-4 py-3 font-medium text-slate-400">Compliance Directives</td>
+                        <td className="px-4 py-3 flex items-center gap-1.5 font-light font-sans">
+                          <ShieldCheck className="w-4 h-4 text-green-550 shrink-0" />
                           <span>{selectedProduct.compliance}</span>
                         </td>
                       </tr>
@@ -573,8 +573,8 @@ function ProductsCatalogSection() {
                   </table>
                 </div>
 
-                <div className="flex gap-4 p-4 rounded-premium bg-bg-snow border border-border-cool text-xs text-slate-500 leading-relaxed font-light">
-                  <Info className="w-5 h-5 text-slate-gray shrink-0 mt-0.5" />
+                <div className="flex gap-4 p-4 rounded-premium bg-[#F7F7F8] border border-[#EAEAEA] text-xs text-slate-500 leading-relaxed font-light">
+                  <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                   <span>
                     GLOBAL SPEAKER PARTS supports customization of any sizing, stiffness index, adhesive chemical compositions, and electrical impedance to integrate into your production assembly lines.
                   </span>
