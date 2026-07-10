@@ -73,7 +73,7 @@ export default function Home() {
               <Link 
                 key={cat.name}
                 href={cat.href}
-                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-[#EAEAEA] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out cursor-pointer block transform"
+                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out cursor-pointer block transform"
               >
                 {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
                 <div 
