@@ -14,16 +14,16 @@ const images = {
 };
 
 const homeCategories = [
-  {name: "Voice Coils", href: "/products?cat=coils", image: "/voice-coil.jpg" },
-  { name: "Speaker Cones", href: "/products?cat=cones", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=300&q=80" },
-  { name: "Speaker Surrounds", href: "/products?cat=surrounds", image: "https://images.unsplash.com/photo-1558089687-f282ffcbd1d5?auto=format&fit=crop&w=300&q=80" },
-  { name: "Speaker Spiders", href: "/products?cat=spiders", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=300&q=80" },
-  { name: "Dust Caps", href: "/products?cat=dustcaps", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=300&q=80" },
-  { name: "Diaphragms", href: "/products?cat=diaphragms", image: "https://images.unsplash.com/photo-1524486364534-806c6e8cb8cb?auto=format&fit=crop&w=300&q=80" },
-  { name: "Speaker Terminals", href: "/products?cat=terminals", image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=300&q=80" },
-  { name: "Subwoofers", href: "/products?cat=subwoofers", image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=300&q=80" },
-  { name: "Speaker Frames", href: "/products?cat=frames", image: "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=300&q=80" },
-  { name: "Magnets", href: "/products?cat=magnets", image: "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=300&q=80" }
+  { name: "Voice Coils", href: "/products?cat=coils", image: "/voice-coil.jpg" },
+  { name: "Speaker Cones", href: "/products?cat=cones", image: "/speaker-cone.jpg" },
+  { name: "Speaker Surrounds", href: "/products?cat=surrounds", image: "/speaker-surround.jpg" },
+  { name: "Speaker Spiders", href: "/products?cat=spiders", image: "/speaker-spider.jpg" },
+  { name: "Dust Caps", href: "/products?cat=dustcaps", image: "/dust-cap.jpg" },
+  { name: "Diaphragms", href: "/products?cat=diaphragms", image: "/diaphragm.jpg" },
+  { name: "Speaker Terminals", href: "/products?cat=terminals", image: "/speaker-terminal.jpg" },
+  { name: "Subwoofers", href: "/products?cat=subwoofers", image: "/subwoofer.jpg" },
+  { name: "Speaker Frames", href: "/products?cat=frames", image: "/speaker-frame.jpg" },
+  { name: "Magnets", href: "/products?cat=magnets", image: "/magnet.jpg" }
 ];
 
 const collections = [
