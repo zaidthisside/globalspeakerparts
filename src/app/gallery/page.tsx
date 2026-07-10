@@ -48,24 +48,24 @@ export default function GalleryPage() {
   );
 
   return (
-    <div className="flex flex-col w-full font-sans bg-transparent text-body-slate min-h-screen pb-20">
+    <div className="flex flex-col w-full font-sans bg-white text-[#4A4A4F] min-h-screen pb-20">
       
       {/* Header */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-b border-border-cool">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[#F7F7F8] border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto text-center space-y-3">
-          <span className="text-xs font-bold tracking-widest text-accent-cyan uppercase">MEDIA GRID</span>
-          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-heading-charcoal tracking-tight">
+          <span className="text-xs font-bold tracking-widest text-[#0F0F10] uppercase">MEDIA GRID</span>
+          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-[#0F0F10] tracking-tight">
             Factory Floor & Component Gallery
           </h1>
-          <p className="text-slate-500 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-slate-500 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light font-sans">
             A visual overview of our automatic winding, high-pressure pressing, CNC steel machining, and acoustic sweep labs in Jaipur.
           </p>
         </div>
       </section>
 
       {/* Tabs */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-        <div className="flex flex-wrap justify-center gap-2 border-b border-border-cool pb-5">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 font-sans">
+        <div className="flex flex-wrap justify-center gap-2 border-b border-[#EAEAEA] pb-5">
           {categories.map((cat) => {
             const isSelected = activeCategory === cat;
             return (
@@ -74,8 +74,8 @@ export default function GalleryPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 text-xs font-semibold rounded-full tracking-wide transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-primary-midnight text-white font-bold shadow-sm"
-                    : "bg-white text-slate-550 border border-border-cool hover:bg-bg-snow"
+                    ? "bg-[#0F0F10] text-white font-bold"
+                    : "bg-white text-slate-500 border border-[#EAEAEA] hover:bg-[#F7F7F8]"
                 }`}
               >
                 {cat}
@@ -86,15 +86,15 @@ export default function GalleryPage() {
       </div>
 
       {/* Gallery Grid */}
-      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 font-sans">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredGallery.map((item, idx) => (
             <div 
               key={idx}
               onClick={() => setZoomImg(item)}
-              className="glass-panel glass-panel-hover p-4 rounded-premium group cursor-pointer"
+              className="bg-white border border-[#EAEAEA] hover:border-[#D6D6D8] p-4 rounded-premium group cursor-pointer shadow-sm transition-colors"
             >
-              <div className="w-full aspect-video rounded-lg overflow-hidden border border-border-cool/40 mb-4 relative">
+              <div className="w-full aspect-video rounded-lg overflow-hidden border border-[#EAEAEA] mb-4 relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.img}
@@ -103,17 +103,17 @@ export default function GalleryPage() {
                 />
                 
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-primary-midnight/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="absolute inset-0 bg-[#0F0F10]/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md">
-                    <Eye className="w-4 h-4 text-primary-midnight" />
+                    <Eye className="w-4 h-4 text-[#0F0F10]" />
                   </div>
                 </div>
               </div>
 
-              <span className="text-[10px] font-bold text-highlight-royal uppercase tracking-wider block mb-1">
+              <span className="text-[10px] font-bold text-[#5C5C63] uppercase tracking-wider block mb-1">
                 {item.category}
               </span>
-              <h3 className="font-display text-xs font-bold text-primary-midnight">
+              <h3 className="font-display text-xs font-bold text-[#0F0F10]">
                 {item.title}
               </h3>
             </div>
@@ -125,27 +125,27 @@ export default function GalleryPage() {
       {zoomImg && (
         <div 
           onClick={() => setZoomImg(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-midnight/40 backdrop-blur-xs animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/40 backdrop-blur-xs animate-fade-in font-sans"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-white w-full max-w-4xl rounded-premium border border-border-cool overflow-hidden shadow-2xl relative"
+            className="bg-white w-full max-w-4xl rounded-premium border border-[#D6D6D8] overflow-hidden shadow-2xl relative"
           >
-            <div className="p-4 bg-bg-snow border-b border-border-cool flex justify-between items-center">
+            <div className="p-4 bg-[#F7F7F8] border-b border-[#EAEAEA] flex justify-between items-center">
               <div>
-                <span className="text-[9px] font-bold text-highlight-royal uppercase block">{zoomImg.category}</span>
-                <h4 className="font-display text-xs font-bold text-primary-midnight">{zoomImg.title}</h4>
+                <span className="text-[9px] font-bold text-[#5C5C63] uppercase block">{zoomImg.category}</span>
+                <h4 className="font-display text-xs font-bold text-[#0F0F10]">{zoomImg.title}</h4>
               </div>
               <button
                 onClick={() => setZoomImg(null)}
-                className="p-1.5 rounded-lg bg-white border border-border-cool hover:bg-bg-snow text-slate-500 hover:text-primary-midnight"
+                className="p-1.5 rounded-lg bg-white border border-[#EAEAEA] hover:bg-[#F7F7F8] text-slate-500 hover:text-[#0F0F10] cursor-pointer"
                 aria-label="Close image"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="w-full aspect-video bg-primary-midnight flex items-center justify-center">
+            <div className="w-full aspect-video bg-[#0F0F10] flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={zoomImg.img}

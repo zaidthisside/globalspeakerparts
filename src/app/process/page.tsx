@@ -42,21 +42,21 @@ const steps = [
     title: "Final QA & Vacuum Packaging",
     desc: "100% of finished parts undergo Klippel sweeps on the lines. Approved components are packed in moisture-proof vacuum bags to protect against ocean shipping humidity.",
     icon: BadgeCheck,
-  }
+  },
 ];
 
 export default function ProcessPage() {
   return (
-    <div className="flex flex-col w-full font-sans bg-transparent text-body-slate">
+    <div className="flex flex-col w-full font-sans bg-white text-[#4A4A4F]">
       
       {/* Header */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-b border-border-cool">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[#F7F7F8] border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto text-center space-y-3">
-          <span className="text-xs font-bold tracking-widest text-accent-cyan uppercase">MANUFACTURING PROCESS</span>
-          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-heading-charcoal tracking-tight">
+          <span className="text-xs font-bold tracking-widest text-[#0F0F10] uppercase">MANUFACTURING PROCESS</span>
+          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-[#0F0F10] tracking-tight">
             Engineering Precision from Tooling to Assembly
           </h1>
-          <p className="text-slate-500 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-slate-500 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light font-sans">
             How we translate raw materials into certified high-fidelity speaker parts in our Jaipur export facilities.
           </p>
         </div>
@@ -68,25 +68,25 @@ export default function ProcessPage() {
           {steps.map((step, idx) => (
             <div 
               key={idx}
-              className="glass-panel glass-panel-hover p-8 rounded-premium flex flex-col justify-between min-h-[280px]"
+              className="bg-white border border-[#EAEAEA] hover:border-[#D6D6D8] p-8 rounded-premium flex flex-col justify-between min-h-[280px] shadow-sm transition-colors font-sans"
             >
               <div className="space-y-4">
                 <div className="flex justify-between items-start">
-                  <span className="font-numbers text-2xl font-bold text-accent-cyan">{step.phase}</span>
-                  <div className="w-10 h-10 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
-                    <step.icon className="w-5 h-5 text-slate-gray" />
+                  <span className="font-numbers text-2xl font-bold text-[#0F0F10]">{step.phase}</span>
+                  <div className="w-10 h-10 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                    <step.icon className="w-5 h-5 text-slate-400" />
                   </div>
                 </div>
-                <h3 className="font-display text-base font-bold text-primary-midnight border-b border-border-cool pb-2.5">
+                <h3 className="font-display text-base font-bold text-[#0F0F10] border-b border-[#EAEAEA] pb-2.5">
                   {step.title}
                 </h3>
-                <p className="text-xs text-slate-550 leading-relaxed font-light">
+                <p className="text-xs text-slate-500 leading-relaxed font-light">
                   {step.desc}
                 </p>
               </div>
 
-              <div className="pt-4 flex items-center gap-1.5 text-[9px] font-bold text-primary-midnight uppercase tracking-widest font-mono">
-                <Settings className="w-3.5 h-3.5 text-accent-cyan" />
+              <div className="pt-4 flex items-center gap-1.5 text-[9px] font-bold text-[#5C5C63] uppercase tracking-widest font-mono">
+                <Settings className="w-3.5 h-3.5 text-slate-400" />
                 <span>INLINE PARAMETER INSPECTED</span>
               </div>
             </div>
@@ -95,16 +95,16 @@ export default function ProcessPage() {
       </section>
 
       {/* Call to action */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-t border-border-cool text-center">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-t border-[#EAEAEA] text-center">
         <div className="max-w-3xl mx-auto space-y-6">
-          <h3 className="font-display text-2xl font-extrabold text-primary-midnight">Need Custom Tooling for Your Transducer Line?</h3>
-          <p className="text-slate-500 text-xs max-w-xl mx-auto leading-relaxed font-light">
+          <h3 className="font-display text-2xl font-extrabold text-[#0F0F10]">Need Custom Tooling for Your Transducer Line?</h3>
+          <p className="text-slate-500 text-xs max-w-xl mx-auto leading-relaxed font-light font-sans">
             We provide fast prototyping options and build tooling molds according to your specific geometric schematics.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 font-sans">
             <Link
               href="/contact"
-              className="btn-primary inline-flex items-center justify-center px-6 py-3.5 text-xs font-bold tracking-widest shadow-sm"
+              className="bg-[#0F0F10] hover:bg-[#2E2E33] text-white inline-flex items-center justify-center px-6 py-3.5 rounded-lg text-xs font-bold tracking-widest shadow-sm uppercase transition-colors cursor-pointer"
             >
               <span>DISCUSS TOOLING REQUIREMENTS</span>
               <ArrowRight className="w-4 h-4 ml-2" />
