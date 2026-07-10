@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-midnight: #00315C; /* Brand Deep Blue */
+  --color-secondary-graphite: #002244; /* Darker Deep Blue */
+  --color-accent-cyan: #ED5A14;      /* Brand Orange */
+  --color-accent-cyan-hover: #D0480C; /* Darker Brand Orange */
+  --color-highlight-royal: #2563EB;
+  --color-bg-snow: #F4F4F0;          /* Brand Dusty Chalk White */
+  --color-card-white: rgba(255, 255, 255, 0.45); /* Glassmorphic Card base */
+  --color-border-cool: rgba(255, 255, 255, 0.45); /* Glassmorphic border */
+  --color-heading-charcoal: #00315C; /* Brand Deep Blue for headings */
+  --color-body-slate: #3B4A5A;       /* High-contrast Slate text */
+  
+  --font-sans: var(--font-inter), Arial, sans-serif;
+  --font-display: var(--font-oswald), Arial, sans-serif;
+  --font-numbers: var(--font-space-grotesk), Arial, sans-serif;
+
+  --animate-marquee-left: marquee-left 25s linear infinite;
+  --animate-marquee-right: marquee-right 25s linear infinite;
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-slide-up: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-kenburns: kenburns-loop 16s ease-in-out infinite;
+
+  @keyframes marquee-left {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes marquee-right {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes kenburns-loop {
+    0% { transform: scale(1.0) translate(0, 0); }
+    50% { transform: scale(1.12) translate(-1%, -0.5%); }
+    100% { transform: scale(1.0) translate(0, 0); }
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F4F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ED5A14;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #F4F4F0;
+  color: #3B4A5A;
+  overflow-x: hidden;
+}
+
+/* Global Premium Technical Grid & Ambient Lighting */
+.bg-premium-dusty {
+  background-color: #F4F4F0;
+  background-image: 
+    /* Ambient Orange Radial Glow */
+    radial-gradient(circle at 10% 15%, rgba(237, 90, 20, 0.02) 0%, transparent 40%),
+    /* Ambient Deep Blue Radial Glow */
+    radial-gradient(circle at 90% 75%, rgba(0, 49, 92, 0.035) 0%, transparent 50%),
+    /* Primary 40px CAD Grid Lines */
+    linear-gradient(to right, rgba(0, 49, 92, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 49, 92, 0.015) 1px, transparent 1px),
+    /* Secondary 10px Fine Grid Lines */
+    linear-gradient(to right, rgba(0, 49, 92, 0.005) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 49, 92, 0.005) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px, 10px 10px, 10px 10px;
+}
+
+/* Premium Glassmorphic Panels */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 49, 92, 0.03),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.glass-panel-solid {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 20px 50px 0 rgba(0, 49, 92, 0.1),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.7);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background-color: rgba(255, 255, 255, 0.65);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 16px 40px 0 rgba(0, 49, 92, 0.07),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Thin Borders & Soft Shadows */
+.border-thin {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(0, 49, 92, 0.04), 0 2px 8px -1px rgba(0, 49, 92, 0.02);
+}
+
+.shadow-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.shadow-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -4px rgba(0, 49, 92, 0.07), 0 4px 12px -2px rgba(0, 49, 92, 0.03);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Rounded 12px specifications */
+.rounded-premium {
+  border-radius: 12px;
+}
+
+/* Buttons style utilities */
+.btn-primary {
+  background-color: #00315C; /* Brand Deep Blue */
+  color: #FFFFFF;
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-weight: 600;
+  border-radius: 9999px; /* Pill button like Kagzi */
+  transition: all 0.2s ease-in-out;
+}
+.btn-primary:hover {
+  background-color: #002244;
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #00315C;
+  border: 1.5px solid #00315C;
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+}
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-color: #ED5A14; /* Brand Orange */
+  color: #ED5A14;
+  transform: translateY(-1px);
+}
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Pause marquee on hover */
+.pause-on-hover:hover .animate-marquee-left {
+  animation-play-state: paused;
+}
+.pause-on-hover:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+.pause-on-hover:hover .animate-marquee-lr {
+  animation-play-state: paused;
+}
+
+/* Grid Background */
+.grid-bg {
+  background-size: 30px 30px;
+  background-image: 
+    linear-gradient(to right, rgba(0,49,92,0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,49,92,0.015) 1px, transparent 1px);
+}

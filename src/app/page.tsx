@@ -1,0 +1,566 @@
+"use client";
+
+import Link from "next/link";
+import { 
+  ArrowRight, ShieldCheck, Factory, Cpu, Settings2, ChevronDown 
+} from "lucide-react";
+import { useState } from "react";
+import Logo from "@/components/Logo";
+
+// Sourced high-resolution Unsplash photos
+const images = {
+  heroSpeaker: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80", // Premium Speaker Cone
+  factoryLine: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80", // High-tech Factory Floor
+};
+
+const homeCategories = [
+  { name: "Voice Coils", href: "/products?cat=coils", image: "https://images.unsplash.com/photo-1618976186466-b3a5cfc7df57?auto=format&fit=crop&w=300&q=80" },
+  { name: "Speaker Cones", href: "/products?cat=cones", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=300&q=80" },
+  { name: "Speaker Surrounds", href: "/products?cat=surrounds", image: "https://images.unsplash.com/photo-1558089687-f282ffcbd1d5?auto=format&fit=crop&w=300&q=80" },
+  { name: "Speaker Spiders", href: "/products?cat=spiders", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=300&q=80" },
+  { name: "Dust Caps", href: "/products?cat=dustcaps", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=300&q=80" },
+  { name: "Diaphragms", href: "/products?cat=diaphragms", image: "https://images.unsplash.com/photo-1524486364534-806c6e8cb8cb?auto=format&fit=crop&w=300&q=80" },
+  { name: "Speaker Terminals", href: "/products?cat=terminals", image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=300&q=80" },
+  { name: "Subwoofers", href: "/products?cat=subwoofers", image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=300&q=80" },
+  { name: "Speaker Frames", href: "/products?cat=frames", image: "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=300&q=80" },
+  { name: "Magnets", href: "/products?cat=magnets", image: "https://images.unsplash.com/photo-1532187863486-abf9d39d66e8?auto=format&fit=crop&w=300&q=80" }
+];
+
+const collections = [
+  { name: "Speaker Cones", href: "/products?cat=cones", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=400&q=80" },
+  { name: "Voice Coils", href: "/products?cat=coils", image: "https://images.unsplash.com/photo-1618976186466-b3a5cfc7df57?auto=format&fit=crop&w=400&q=80" },
+  { name: "Spiders (Dampers)", href: "/products?cat=spiders", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=400&q=80" },
+  { name: "Magnets & Spares", href: "/products?cat=magnets", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80" },
+  { name: "Speaker Frames", href: "/products?cat=frames", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80" }
+];
+
+const testimonials = [
+  { text: "Excellent precision components. Their custom tooling turnaround is the fastest in the B2B industry. Speaker cones are delivered in vacuum moisture-proof bags which keeps the carbon fiber dry.", author: "Dr. Marcus Vance (Bose Corp)" },
+  { text: "A reliable supplier of high-temperature voice coils. We run continuous assembly shifts in our Tokyo bays, and GSP voice coils have maintained a defect rate under 50 PPM.", author: "Kenji Sato (Sony Acoustics)" },
+  { text: "Nomex spiders supplied by GSP are outstanding. Stiffness values match our exact simulation plots within a 5% margin, which is the tightest tolerances we've ever found.", author: "Sarah Jenkins (JBL Professional)" }
+];
+
+const faqs = [
+  {
+    q: "What is your Minimum Order Quantity (MOQ) for custom components?",
+    a: "Our standard MOQ for wholesale production runs is 1,000 units per category (e.g., voice coils or pressed cones). Prototyping sample runs are available for quantities under 1,000 units subject to tooling setup fees."
+  },
+  {
+    q: "Do you supply customized voice coils and dampers?",
+    a: "Yes, we support full custom OEM/ODM geometry specifications. You can specify former materials (Kapton, Til, aluminum), wire types (CCAW, pure copper), coil impedances, and phenolic resin damper stiffness metrics."
+  },
+  {
+    q: "What packaging standards do you use for sea cargo exports?",
+    a: "To protect components from ocean shipping moisture and salinity, we vacuum seal components in aluminum foil bags containing active desiccant packs, packed inside heavy-duty multi-wall master containers."
+  },
+  {
+    q: "Which ports do you route export shipments through?",
+    a: "Most wholesale container freight is routed through Nhava Sheva (JNPT) Port in Mumbai. Air shipments are dispatched from Jaipur International Airport."
+  }
+];
+
+export default function Home() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  return (
+    <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
+      
+      {/* Category Grid: 2 rows, 5 columns (Directly below navbar) */}
+      <section className="w-full pt-8 pb-4">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 lg:gap-4.5">
+            {homeCategories.map((cat) => (
+              <Link 
+                key={cat.name}
+                href={cat.href}
+                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-primary-midnight/12 shadow-soft hover:border-accent-cyan/45 transition-all duration-300 cursor-pointer block"
+              >
+                {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
+                <div 
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
+                  style={{ backgroundImage: `url('${cat.image}')` }}
+                />
+                
+                {/* Dark overlay for readability */}
+                <div className="absolute inset-0 bg-primary-midnight/40 group-hover:bg-primary-midnight/20 transition-all duration-300 z-10" />
+
+                {/* Subtitle / Tech Spec line (faint on hover) */}
+                <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-[7.5px] font-mono tracking-widest text-accent-cyan uppercase bg-primary-midnight/65 px-1.5 py-0.5 rounded border border-white/10">
+                    VIEW PRODUCTS
+                  </span>
+                </div>
+
+                {/* Centered category title */}
+                <div className="absolute inset-0 flex items-center justify-center z-20 p-2 text-center">
+                  <span className="font-display text-xs lg:text-sm font-extrabold text-white tracking-widest uppercase transition-all duration-300 group-hover:scale-103 drop-shadow-md">
+                    {cat.name}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 1. Hero Section (Kagzi Layout Clone) */}
+      <section className="w-full pt-10 pb-6 border-b border-border-cool">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          
+          {/* Top Row Meta */}
+          <div className="flex justify-between items-center text-[10px] sm:text-xs font-bold text-primary-midnight uppercase tracking-widest border-b border-border-cool pb-3 mb-6">
+            <span>PRECISION-ENGINEERED 100% RELIABILITY MADE IN INDIA</span>
+            <span>ARTISANS OF ACOUSTIC COMPONENT MANUFACTURING</span>
+          </div>
+
+          {/* Row 2 Metadata */}
+          <div className="flex flex-col sm:flex-row justify-between items-start text-xs text-primary-midnight uppercase tracking-wider gap-6 mb-8">
+            <span className="shrink-0 font-bold">JAIPUR, INDIA - EST. 2001</span>
+            <p className="text-xs text-slate-500 max-w-md leading-relaxed normal-case text-right sm:text-right font-light">
+              We manufacture high-grade speaker components for the world&apos;s leading audio and automotive brands, using advanced materials, custom tooling models, and strict compliance.
+            </p>
+          </div>
+
+          {/* Hero Main Heading & Buttons */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-8">
+            <div className="lg:col-span-7 flex flex-col justify-center">
+              <h1 className="text-3xl sm:text-4xl lg:text-[58px] font-extrabold text-heading-charcoal leading-[1.1] font-display">
+                Acoustics As <span className="text-accent-cyan">Pure</span> As Its <span className="text-accent-cyan">Making</span>
+              </h1>
+            </div>
+            
+            <div className="lg:col-span-5 flex flex-col justify-center lg:items-end w-full">
+              <div className="grid grid-cols-2 gap-3 w-full max-w-md lg:max-w-none lg:flex lg:justify-end">
+                <Link href="/products" className="w-full lg:w-auto block">
+                  <button className="btn-primary w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                    <span>EXPLORE PRODUCTS</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </Link>
+                <Link href="/contact" className="w-full lg:w-auto block">
+                  <button className="btn-secondary w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest cursor-pointer text-center">
+                    REQUEST A QUOTE
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Hero Slideshow Banner & Marquee (Kagzi Layout Clone) */}
+      <section className="w-full flex flex-col">
+        <div className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] border-b border-border-cool">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={images.heroSpeaker} 
+            alt="Speaker Component Macro View" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        {/* Marquee banner tape strip */}
+        <div className="w-full bg-primary-midnight py-4 overflow-hidden flex relative">
+          <div className="flex whitespace-nowrap animate-marquee-left w-max">
+            <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
+              <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">B2B OEM CONTRACTS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+            </div>
+            <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
+              <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">B2B OEM CONTRACTS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
+              <span className="text-accent-cyan mx-2">◆</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
+      <section className="w-full py-20 bg-white border-b border-border-cool">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+            
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
+                <Settings2 className="w-6 h-6 text-slate-gray" />
+              </div>
+              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Acoustics, Reimagined</h3>
+              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+                We use 100% certified raw materials and carbon fiber matrices, we craft speaker cones and voice coils without compromising on acoustic weight.
+              </p>
+              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                100% Certified
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-slate-gray" />
+              </div>
+              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Made for the Stage</h3>
+              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+                Reliability is not just a trend for us - it is reflected in every coil we wind and the physical tests we make in our labs.
+              </p>
+              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Performance Driven
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
+                <Cpu className="w-6 h-6 text-slate-gray" />
+              </div>
+              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Copper, Reclaimed</h3>
+              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+                Made from top-tier CCAW and high-purity copper wires, our voice coil winding lines transform metals into thermal acoustic coils.
+              </p>
+              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                CCAW / Pure Copper
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
+                <Factory className="w-6 h-6 text-slate-gray" />
+              </div>
+              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Pressure Tolerant</h3>
+              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+                Crafted through strict high-pressure hot pressing, our speaker surrounds and spiders support linear displacement curves.
+              </p>
+              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Zero Defect
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Corporate Legacy & Statistics (Kagzi Layout Clone) */}
+      <section className="w-full py-20 bg-bg-snow">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Copy block */}
+            <div className="flex flex-col space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-[1px] bg-accent-cyan" />
+                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">OUR CORPORATE LEGACY</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl text-heading-charcoal leading-[1.3] font-display font-extrabold">
+                A Family Legacy Written in <br />
+                <span className="text-accent-cyan">Copper & Kapton</span>
+              </h2>
+              
+              <div className="text-body-slate text-xs sm:text-sm leading-relaxed space-y-4 font-light">
+                <p>
+                  In the workshops of <span className="font-semibold text-primary-midnight">Jaipur, India</span> where acoustic precision meets high-speed CNC winding, we make speaker components the way it should be done.
+                </p>
+                <p className="font-bold text-primary-midnight uppercase tracking-wide text-xs">
+                  Slowly. With precision. Checked by laser scanners.
+                </p>
+                <p>
+                  <span className="font-semibold text-primary-midnight">GLOBAL SPEAKER PARTS</span> has been a quiet keeper of this tradition since 2001, supplying global audio manufacturers with speaker components that carry the imprint of engineering excellence. We are not just a stamping workshop; we are a family of acoustic experts.
+                </p>
+                <p>
+                  We partner with major global consumer brands and serve independent loudspeaker manufacturers, automotive suppliers, and professional audio labels across 50+ countries.
+                </p>
+              </div>
+
+              <Link href="/about" className="pt-2">
+                <button className="btn-primary px-8 py-3.5 text-xs font-bold tracking-widest flex items-center gap-2 cursor-pointer">
+                  <span>ABOUT GLOBAL SPEAKER PARTS</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+
+            {/* Right graphic image */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-full max-w-lg lg:max-w-none rounded-premium overflow-hidden border border-border-cool shadow-soft">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={images.factoryLine} 
+                  alt="Industrial Winding Machine Line" 
+                  className="w-full h-[350px] object-cover"
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Symmetrical stats border grid */}
+          <div className="mt-14 w-full border border-primary-midnight grid grid-cols-2 lg:grid-cols-5 divide-y divide-x divide-primary-midnight border-collapse bg-transparent">
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
+              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">2001</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Established</span>
+            </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
+              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">14</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Product Categories</span>
+            </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
+              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">25+</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Years Craft Expertise</span>
+            </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
+              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">50+</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Export Countries</span>
+            </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
+              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">100%</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Klippel Inspected</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. Materials Pillars Grid */}
+      <section className="w-full py-16 bg-transparent border-b border-border-cool">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+            
+            <div className="flex flex-col items-center text-center space-y-3">
+              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
+              <span className="text-sm font-bold text-heading-charcoal uppercase">Carbon Fiber</span>
+              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
+                The primary cone structural fiber — strong, low-mass, high-stiffness. Carbon fiber pulp sheets outlive traditional paper by decades.
+              </p>
+              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-3">
+              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
+              <span className="text-sm font-bold text-heading-charcoal uppercase">Kapton Formers</span>
+              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
+                High structural integrity formers give our voice coils their unique thermal limits — stable continuous power load up to 280°C.
+              </p>
+              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-3">
+              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
+              <span className="text-sm font-bold text-heading-charcoal uppercase">Strontium Magnets</span>
+              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
+                High magnetic energy Y35 Ferrite and NdFeB rings create maximum gap flux density, translating electrical power into clean movement.
+              </p>
+              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
+            </div>
+
+            <div className="flex flex-col items-center text-center space-y-3">
+              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
+              <span className="text-sm font-bold text-heading-charcoal uppercase">Pure Testing</span>
+              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
+                The silent step. Every batch is evaluated in isolated anechoic chambers to record frequency sweep plots.
+              </p>
+              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Browse by Collection (Kagzi Layout Clone) */}
+      <section className="w-full py-20 bg-transparent">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-[1px] bg-accent-cyan" />
+                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">OUR PORTFOLIO</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold">
+                Browse by <span className="text-accent-cyan">Collection</span>
+              </h2>
+            </div>
+            
+            <Link href="/products">
+              <button className="btn-primary px-6 py-2.5 text-xs font-semibold tracking-wider flex items-center gap-1.5 cursor-pointer uppercase">
+                <span>View All Collections</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8">
+            {collections.map((col, idx) => (
+              <Link 
+                key={idx}
+                href={col.href}
+                className="flex flex-col group cursor-pointer"
+              >
+                <div className="w-full aspect-square bg-bg-snow mb-4 overflow-hidden rounded-lg border border-border-cool/60 flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={col.image} 
+                    alt={col.name} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className="text-xs sm:text-sm font-bold text-heading-charcoal group-hover:text-accent-cyan transition-colors">
+                  {col.name}
+                </h3>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 group-hover:underline">
+                  Explore Collection →
+                </div>
+              </Link>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* 6. Custom B2B Quote Card (Kagzi Layout Clone) */}
+      <section className="w-full py-20 bg-transparent border-t border-border-cool">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-16">
+            
+            <div className="flex flex-col flex-1 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-[1px] bg-accent-cyan" />
+                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">FOR BUSINESSES</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold leading-tight">
+                Custom Orders for Brands Crafting Legacy <br />
+                <span className="text-accent-cyan">Since 2001</span>
+              </h2>
+            </div>
+
+            <div className="flex flex-col flex-1 lg:max-w-xl lg:pt-6 space-y-6">
+              <p className="text-xs sm:text-sm text-body-slate leading-relaxed font-light">
+                We partner with loudspeaker builders, automotive tier-1 assembly sites, and wholesale procurement operations globally. Tell us what you need — we will manufacture it under strict ISO tolerances without compromising on acoustic fidelity. Sizing modifications, winding thickness, former materials, and brand stamps available on request.
+              </p>
+              <Link href="/contact?rfq=true">
+                <button className="btn-primary px-8 py-3.5 text-xs font-bold tracking-widest flex items-center gap-2 cursor-pointer uppercase">
+                  <span>REQUEST B2B QUOTE</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Client Testimonials Marquee (Kagzi Layout Clone) */}
+      <section className="w-full py-20 bg-transparent border-t border-border-cool overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mb-12">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-[1px] bg-accent-cyan" />
+            <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">PARTNER TRUST</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold">
+            What Our B2B Clients <span className="text-accent-cyan">Are Saying</span>
+          </h2>
+        </div>
+
+        {/* Scrolling tape testimonials */}
+        <div className="flex flex-col gap-6 w-full relative pause-on-hover">
+          <div className="flex whitespace-nowrap animate-marquee-left w-max">
+            {testimonials.map((test, idx) => (
+              <div 
+                key={idx} 
+                className="w-[320px] sm:w-[380px] flex-shrink-0 whitespace-normal glass-panel p-6 rounded-premium flex flex-col justify-between mx-3"
+              >
+                <div className="space-y-4">
+                  {/* Stars */}
+                  <div className="flex gap-0.5 text-accent-cyan">
+                    {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed font-light italic">
+                    &quot;{test.text}&quot;
+                  </p>
+                </div>
+                <div className="mt-5 border-t border-border-cool/50 pt-3 text-[10px] font-bold text-primary-midnight uppercase tracking-wider">
+                  — {test.author}
+                </div>
+              </div>
+            ))}
+            {/* Duplicate for infinite loop */}
+            {testimonials.map((test, idx) => (
+              <div 
+                key={`dup-${idx}`} 
+                className="w-[320px] sm:w-[380px] flex-shrink-0 whitespace-normal glass-panel p-6 rounded-premium flex flex-col justify-between mx-3"
+              >
+                <div className="space-y-4">
+                  <div className="flex gap-0.5 text-accent-cyan">
+                    {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed font-light italic">
+                    &quot;{test.text}&quot;
+                  </p>
+                </div>
+                <div className="mt-5 border-t border-border-cool/50 pt-3 text-[10px] font-bold text-primary-midnight uppercase tracking-wider">
+                  — {test.author}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. FAQs */}
+      <section className="py-20 px-4 sm:px-6 lg:px-10 xl:px-16 bg-transparent border-t border-border-cool">
+        <div className="max-w-4xl mx-auto">
+          
+          <div className="text-center mb-16 space-y-2">
+            <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-heading-charcoal">Frequently Asked Questions</h3>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">General B2B Inquiry & Purchasing Clarifications</p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <div 
+                key={idx} 
+                className="glass-panel rounded-premium overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full px-6 py-4.5 text-left flex justify-between items-center text-primary-midnight focus:outline-none hover:bg-bg-snow/40 transition-colors"
+                >
+                  <span className="text-xs sm:text-sm font-bold pr-4">{faq.q}</span>
+                  <ChevronDown 
+                    className={`w-4 h-4 text-slate-gray shrink-0 transition-transform duration-200 ${
+                      openFaq === idx ? "transform rotate-180" : ""
+                    }`} 
+                  />
+                </button>
+                
+                {openFaq === idx && (
+                  <div className="px-6 pb-5 text-xs text-slate-500 leading-relaxed border-t border-border-cool/50 pt-3.5 font-light">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  );
+}

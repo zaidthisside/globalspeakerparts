@@ -1,0 +1,118 @@
+"use client";
+
+import { 
+  FileCode, Layers, Hammer, Settings2, BadgeCheck, 
+  ArrowRight, Microscope, Settings 
+} from "lucide-react";
+import Link from "next/link";
+
+const steps = [
+  {
+    phase: "01",
+    title: "CAD/CAM Modeling & Simulation",
+    desc: "Every component begins with Finite Element Analysis (FEA) modeling. We simulate mechanical displacement curves, magnetic flux distribution, and voice coil thermal dissipation to prevent field failures.",
+    icon: FileCode,
+  },
+  {
+    phase: "02",
+    title: "Tooling & Mold Development",
+    desc: "Using high-speed CNC milling and wire-EDM setups, we machine molds for cones, spiders, and baskets directly in our facility, maintaining geometry errors under ±0.02 mm.",
+    icon: Hammer,
+  },
+  {
+    phase: "03",
+    title: "Composite Hydraulic Pressing",
+    desc: "Carbon fiber, Kevlar, and paper pulp matrices are pressed under custom temperature cycles. Voice coil wire tension is monitored on automatic winding setups.",
+    icon: Layers,
+  },
+  {
+    phase: "04",
+    title: "Precision Adhesion & Curing",
+    desc: "Dampers and cones are assembled using heat-curing B-stage epoxy adhesives, ensuring structural integrity under high continuous mechanical loads.",
+    icon: Settings2,
+  },
+  {
+    phase: "05",
+    title: "Acoustic Chamber Calibration",
+    desc: "Pre-production samples undergo sweeps in our anechoic chambers. Frequency response curves are recorded alongside Total Harmonic Distortion (THD) metrics.",
+    icon: Microscope,
+  },
+  {
+    phase: "06",
+    title: "Final QA & Vacuum Packaging",
+    desc: "100% of finished parts undergo Klippel sweeps on the lines. Approved components are packed in moisture-proof vacuum bags to protect against ocean shipping humidity.",
+    icon: BadgeCheck,
+  }
+];
+
+export default function ProcessPage() {
+  return (
+    <div className="flex flex-col w-full font-sans bg-transparent text-body-slate">
+      
+      {/* Header */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-b border-border-cool">
+        <div className="max-w-[1400px] mx-auto text-center space-y-3">
+          <span className="text-xs font-bold tracking-widest text-accent-cyan uppercase">MANUFACTURING PROCESS</span>
+          <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-heading-charcoal tracking-tight">
+            Engineering Precision from Tooling to Assembly
+          </h1>
+          <p className="text-slate-500 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light">
+            How we translate raw materials into certified high-fidelity speaker parts in our Jaipur export facilities.
+          </p>
+        </div>
+      </section>
+
+      {/* Steps Grid */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {steps.map((step, idx) => (
+            <div 
+              key={idx}
+              className="glass-panel glass-panel-hover p-8 rounded-premium flex flex-col justify-between min-h-[280px]"
+            >
+              <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <span className="font-numbers text-2xl font-bold text-accent-cyan">{step.phase}</span>
+                  <div className="w-10 h-10 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
+                    <step.icon className="w-5 h-5 text-slate-gray" />
+                  </div>
+                </div>
+                <h3 className="font-display text-base font-bold text-primary-midnight border-b border-border-cool pb-2.5">
+                  {step.title}
+                </h3>
+                <p className="text-xs text-slate-550 leading-relaxed font-light">
+                  {step.desc}
+                </p>
+              </div>
+
+              <div className="pt-4 flex items-center gap-1.5 text-[9px] font-bold text-primary-midnight uppercase tracking-widest font-mono">
+                <Settings className="w-3.5 h-3.5 text-accent-cyan" />
+                <span>INLINE PARAMETER INSPECTED</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Call to action */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-transparent border-t border-border-cool text-center">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <h3 className="font-display text-2xl font-extrabold text-primary-midnight">Need Custom Tooling for Your Transducer Line?</h3>
+          <p className="text-slate-500 text-xs max-w-xl mx-auto leading-relaxed font-light">
+            We provide fast prototyping options and build tooling molds according to your specific geometric schematics.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/contact"
+              className="btn-primary inline-flex items-center justify-center px-6 py-3.5 text-xs font-bold tracking-widest shadow-sm"
+            >
+              <span>DISCUSS TOOLING REQUIREMENTS</span>
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
