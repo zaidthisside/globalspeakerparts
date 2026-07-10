@@ -68,12 +68,12 @@ export default function Home() {
       {/* Category Grid: 2 rows, 5 columns (Directly below navbar) */}
       <section className="w-full pt-8 pb-4">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 lg:gap-4.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 lg:gap-4.5 font-sans">
             {homeCategories.map((cat) => (
               <Link 
                 key={cat.name}
                 href={cat.href}
-                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-primary-midnight/12 shadow-soft hover:border-accent-cyan/45 transition-all duration-300 cursor-pointer block"
+                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-[#EAEAEA] hover:border-[#0F0F10] transition-all duration-300 cursor-pointer block"
               >
                 {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
                 <div 
@@ -82,11 +82,11 @@ export default function Home() {
                 />
                 
                 {/* Dark overlay for readability */}
-                <div className="absolute inset-0 bg-primary-midnight/40 group-hover:bg-primary-midnight/20 transition-all duration-300 z-10" />
+                <div className="absolute inset-0 bg-[#0F0F10]/50 group-hover:bg-[#0F0F10]/30 transition-all duration-300 z-10" />
 
                 {/* Subtitle / Tech Spec line (faint on hover) */}
                 <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-[7.5px] font-mono tracking-widest text-accent-cyan uppercase bg-primary-midnight/65 px-1.5 py-0.5 rounded border border-white/10">
+                  <span className="text-[7.5px] font-mono tracking-widest text-white uppercase bg-[#0F0F10]/85 px-1.5 py-0.5 rounded border border-white/20">
                     VIEW PRODUCTS
                   </span>
                 </div>
