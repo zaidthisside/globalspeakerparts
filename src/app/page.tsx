@@ -103,51 +103,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 1. Hero Section (Kagzi Layout Clone) */}
-      <section className="w-full pt-16 pb-16 bg-[#0F0F10] border-b border-[#2E2E33]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          
-          {/* Top Row Meta */}
-          <div className="flex justify-between items-center text-[10px] sm:text-xs font-bold text-[#A3A3A8] uppercase tracking-widest border-b border-[#2E2E33] pb-3 mb-6">
-            <span>PRECISION-ENGINEERED 100% RELIABILITY MADE IN INDIA</span>
-            <span>ARTISANS OF ACOUSTIC COMPONENT MANUFACTURING</span>
-          </div>
-
-          {/* Row 2 Metadata */}
-          <div className="flex flex-col sm:flex-row justify-between items-start text-xs text-[#A3A3A8] uppercase tracking-wider gap-6 mb-8">
-            <span className="shrink-0 font-bold text-white">JAIPUR, INDIA - EST. 2001</span>
-            <p className="text-xs text-slate-450 max-w-md leading-relaxed normal-case text-right sm:text-right font-light font-sans">
-              We manufacture high-grade speaker components for the world&apos;s leading audio and automotive brands, using advanced materials, custom tooling models, and strict compliance.
-            </p>
-          </div>
-
-          {/* Hero Main Heading & Buttons */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 flex flex-col justify-center">
-              <h1 className="text-3xl sm:text-4xl lg:text-[58px] font-extrabold text-white leading-[1.1] font-display">
-                Acoustics As <span className="text-[#A3A3A8]">Pure</span> As Its <span className="text-[#A3A3A8]">Making</span>
-              </h1>
-            </div>
-            
-            <div className="lg:col-span-5 flex flex-col justify-center lg:items-end w-full">
-              <div className="grid grid-cols-2 gap-3 w-full max-w-md lg:max-w-none lg:flex lg:justify-end">
-                <Link href="/products" className="w-full lg:w-auto block">
-                  <button className="bg-white text-[#0F0F10] hover:bg-[#E8E8EA] border border-white w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest flex items-center justify-center gap-2 rounded-lg cursor-pointer transition-all duration-150">
-                    <span>EXPLORE PRODUCTS</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
-                <Link href="/contact" className="w-full lg:w-auto block">
-                  <button className="bg-transparent text-white border border-[#D6D6D8] hover:bg-white/10 w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest rounded-lg cursor-pointer text-center transition-all duration-150">
-                    REQUEST A QUOTE
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
 
       {/* Hero Slideshow Banner & Marquee (Kagzi Layout Clone) */}
       <section className="w-full flex flex-col">
