@@ -76,7 +76,7 @@ export default function Home() {
                 className="group block cursor-pointer"
               >
                 {/* Image Container Card */}
-                <div className="relative w-full aspect-[1.75/1] rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out transform block">
+                <div className="relative w-full aspect-square rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out transform block">
                   {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
