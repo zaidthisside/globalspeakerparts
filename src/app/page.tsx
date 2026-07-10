@@ -68,32 +68,35 @@ export default function Home() {
       {/* Category Grid: 2 rows, 5 columns (Directly below navbar) */}
       <section className="w-full pt-8 pb-4">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 lg:gap-4.5 font-sans">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-7 gap-x-3.5 lg:gap-x-4.5 font-sans">
             {homeCategories.map((cat) => (
               <Link 
                 key={cat.name}
                 href={cat.href}
-                className="group relative aspect-[1.75/1] rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out cursor-pointer block transform"
+                className="group block cursor-pointer"
               >
-                {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
-                  style={{ backgroundImage: `url('${cat.image}')` }}
-                />
-                
-                {/* Dark overlay for readability */}
-                <div className="absolute inset-0 bg-[#0F0F10]/50 group-hover:bg-[#0F0F10]/30 transition-all duration-300 z-10" />
+                {/* Image Container Card */}
+                <div className="relative w-full aspect-[1.75/1] rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out transform block">
+                  {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
+                    style={{ backgroundImage: `url('${cat.image}')` }}
+                  />
+                  
+                  {/* Dark overlay for readability */}
+                  <div className="absolute inset-0 bg-[#0F0F10]/15 group-hover:bg-[#0F0F10]/5 transition-all duration-300 z-10" />
 
-                {/* Subtitle / Tech Spec line (faint on hover) */}
-                <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-[7.5px] font-mono tracking-widest text-white uppercase bg-[#0F0F10]/85 px-1.5 py-0.5 rounded border border-white/20">
-                    VIEW PRODUCTS
-                  </span>
+                  {/* Subtitle / Tech Spec line (faint on hover) */}
+                  <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="text-[7.5px] font-mono tracking-widest text-white uppercase bg-[#0F0F10]/85 px-1.5 py-0.5 rounded border border-white/20">
+                      VIEW PRODUCTS
+                    </span>
+                  </div>
                 </div>
 
-                {/* Centered category title */}
-                <div className="absolute inset-0 flex items-center justify-center z-20 p-2 text-center">
-                  <span className="font-display text-xs lg:text-sm font-extrabold text-white tracking-widest uppercase transition-all duration-300 group-hover:scale-103 drop-shadow-md">
+                {/* Category name below the card */}
+                <div className="mt-2.5 text-center">
+                  <span className="font-display text-[11px] lg:text-xs font-bold text-[#0F0F10] tracking-wider uppercase group-hover:text-[#5C5C63] transition-colors duration-200">
                     {cat.name}
                   </span>
                 </div>
