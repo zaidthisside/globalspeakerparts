@@ -104,41 +104,41 @@ export default function Home() {
       </section>
 
       {/* 1. Hero Section (Kagzi Layout Clone) */}
-      <section className="w-full pt-10 pb-6 border-b border-border-cool">
+      <section className="w-full pt-16 pb-16 bg-[#0F0F10] border-b border-[#2E2E33]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           
           {/* Top Row Meta */}
-          <div className="flex justify-between items-center text-[10px] sm:text-xs font-bold text-primary-midnight uppercase tracking-widest border-b border-border-cool pb-3 mb-6">
+          <div className="flex justify-between items-center text-[10px] sm:text-xs font-bold text-[#A3A3A8] uppercase tracking-widest border-b border-[#2E2E33] pb-3 mb-6">
             <span>PRECISION-ENGINEERED 100% RELIABILITY MADE IN INDIA</span>
             <span>ARTISANS OF ACOUSTIC COMPONENT MANUFACTURING</span>
           </div>
 
           {/* Row 2 Metadata */}
-          <div className="flex flex-col sm:flex-row justify-between items-start text-xs text-primary-midnight uppercase tracking-wider gap-6 mb-8">
-            <span className="shrink-0 font-bold">JAIPUR, INDIA - EST. 2001</span>
-            <p className="text-xs text-slate-500 max-w-md leading-relaxed normal-case text-right sm:text-right font-light">
+          <div className="flex flex-col sm:flex-row justify-between items-start text-xs text-[#A3A3A8] uppercase tracking-wider gap-6 mb-8">
+            <span className="shrink-0 font-bold text-white">JAIPUR, INDIA - EST. 2001</span>
+            <p className="text-xs text-slate-450 max-w-md leading-relaxed normal-case text-right sm:text-right font-light font-sans">
               We manufacture high-grade speaker components for the world&apos;s leading audio and automotive brands, using advanced materials, custom tooling models, and strict compliance.
             </p>
           </div>
 
           {/* Hero Main Heading & Buttons */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7 flex flex-col justify-center">
-              <h1 className="text-3xl sm:text-4xl lg:text-[58px] font-extrabold text-heading-charcoal leading-[1.1] font-display">
-                Acoustics As <span className="text-accent-cyan">Pure</span> As Its <span className="text-accent-cyan">Making</span>
+              <h1 className="text-3xl sm:text-4xl lg:text-[58px] font-extrabold text-white leading-[1.1] font-display">
+                Acoustics As <span className="text-[#A3A3A8]">Pure</span> As Its <span className="text-[#A3A3A8]">Making</span>
               </h1>
             </div>
             
             <div className="lg:col-span-5 flex flex-col justify-center lg:items-end w-full">
               <div className="grid grid-cols-2 gap-3 w-full max-w-md lg:max-w-none lg:flex lg:justify-end">
                 <Link href="/products" className="w-full lg:w-auto block">
-                  <button className="btn-primary w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                  <button className="bg-white text-[#0F0F10] hover:bg-[#E8E8EA] border border-white w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest flex items-center justify-center gap-2 rounded-lg cursor-pointer transition-all duration-150">
                     <span>EXPLORE PRODUCTS</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
                 <Link href="/contact" className="w-full lg:w-auto block">
-                  <button className="btn-secondary w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest cursor-pointer text-center">
+                  <button className="bg-transparent text-white border border-[#D6D6D8] hover:bg-white/10 w-full lg:w-auto px-5 sm:px-7 py-3.5 text-[10px] sm:text-xs font-bold tracking-widest rounded-lg cursor-pointer text-center transition-all duration-150">
                     REQUEST A QUOTE
                   </button>
                 </Link>
@@ -161,93 +161,93 @@ export default function Home() {
         </div>
         
         {/* Marquee banner tape strip */}
-        <div className="w-full bg-primary-midnight py-4 overflow-hidden flex relative">
+        <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative border-b border-[#2E2E33]">
           <div className="flex whitespace-nowrap animate-marquee-left w-max">
             <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
               <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">B2B OEM CONTRACTS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
             </div>
             <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
               <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">B2B OEM CONTRACTS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
               <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-              <span className="text-accent-cyan mx-2">◆</span>
+              <span className="text-[#5C5C63] mx-2">◆</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-b border-border-cool">
+      <section className="w-full py-20 bg-white border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
             
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
-                <Settings2 className="w-6 h-6 text-slate-gray" />
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                <Settings2 className="w-6 h-6 text-[#5C5C63]" />
               </div>
-              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Acoustics, Reimagined</h3>
-              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Acoustics, Reimagined</h3>
+              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 We use 100% certified raw materials and carbon fiber matrices, we craft speaker cones and voice coils without compromising on acoustic weight.
               </p>
-              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 100% Certified
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-slate-gray" />
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-[#5C5C63]" />
               </div>
-              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Made for the Stage</h3>
-              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Made for the Stage</h3>
+              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Reliability is not just a trend for us - it is reflected in every coil we wind and the physical tests we make in our labs.
               </p>
-              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 Performance Driven
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
-                <Cpu className="w-6 h-6 text-slate-gray" />
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                <Cpu className="w-6 h-6 text-[#5C5C63]" />
               </div>
-              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Copper, Reclaimed</h3>
-              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Copper, Reclaimed</h3>
+              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Made from top-tier CCAW and high-purity copper wires, our voice coil winding lines transform metals into thermal acoustic coils.
               </p>
-              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 CCAW / Pure Copper
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-bg-snow border border-border-cool flex items-center justify-center">
-                <Factory className="w-6 h-6 text-slate-gray" />
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                <Factory className="w-6 h-6 text-[#5C5C63]" />
               </div>
-              <h3 className="text-sm font-bold text-heading-charcoal uppercase">Pressure Tolerant</h3>
-              <p className="text-xs text-body-slate leading-relaxed font-light flex-grow max-w-xs">
+              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Pressure Tolerant</h3>
+              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Crafted through strict high-pressure hot pressing, our speaker surrounds and spiders support linear displacement curves.
               </p>
-              <div className="bg-[#E0F2FE] text-primary-midnight px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 Zero Defect
               </div>
             </div>
@@ -257,31 +257,31 @@ export default function Home() {
       </section>
 
       {/* 3. Corporate Legacy & Statistics (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-bg-snow">
+      <section className="w-full py-20 bg-[#F7F7F8]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
             {/* Left Copy block */}
             <div className="flex flex-col space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-[1px] bg-accent-cyan" />
-                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">OUR CORPORATE LEGACY</span>
+                <div className="w-12 h-[1px] bg-[#0F0F10]" />
+                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">OUR CORPORATE LEGACY</span>
               </div>
               
-              <h2 className="text-3xl sm:text-4xl text-heading-charcoal leading-[1.3] font-display font-extrabold">
+              <h2 className="text-3xl sm:text-4xl text-[#0F0F10] leading-[1.3] font-display font-extrabold">
                 A Family Legacy Written in <br />
-                <span className="text-accent-cyan">Copper & Kapton</span>
+                <span className="text-[#5C5C63]">Copper & Kapton</span>
               </h2>
               
-              <div className="text-body-slate text-xs sm:text-sm leading-relaxed space-y-4 font-light">
+              <div className="text-[#4A4A4F] text-xs sm:text-sm leading-relaxed space-y-4 font-light font-sans">
                 <p>
-                  In the workshops of <span className="font-semibold text-primary-midnight">Jaipur, India</span> where acoustic precision meets high-speed CNC winding, we make speaker components the way it should be done.
+                  In the workshops of <span className="font-semibold text-[#0F0F10]">Jaipur, India</span> where acoustic precision meets high-speed CNC winding, we make speaker components the way it should be done.
                 </p>
-                <p className="font-bold text-primary-midnight uppercase tracking-wide text-xs">
+                <p className="font-bold text-[#0F0F10] uppercase tracking-wide text-xs">
                   Slowly. With precision. Checked by laser scanners.
                 </p>
                 <p>
-                  <span className="font-semibold text-primary-midnight">GLOBAL SPEAKER PARTS</span> has been a quiet keeper of this tradition since 2001, supplying global audio manufacturers with speaker components that carry the imprint of engineering excellence. We are not just a stamping workshop; we are a family of acoustic experts.
+                  <span className="font-semibold text-[#0F0F10]">GLOBAL SPEAKER PARTS</span> has been a quiet keeper of this tradition since 2001, supplying global audio manufacturers with speaker components that carry the imprint of engineering excellence. We are not just a stamping workshop; we are a family of acoustic experts.
                 </p>
                 <p>
                   We partner with major global consumer brands and serve independent loudspeaker manufacturers, automotive suppliers, and professional audio labels across 50+ countries.
@@ -298,7 +298,7 @@ export default function Home() {
 
             {/* Right graphic image */}
             <div className="flex justify-center lg:justify-end">
-              <div className="w-full max-w-lg lg:max-w-none rounded-premium overflow-hidden border border-border-cool shadow-soft">
+              <div className="w-full max-w-lg lg:max-w-none rounded-premium overflow-hidden border border-[#EAEAEA] shadow-soft">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={images.factoryLine} 
@@ -311,26 +311,26 @@ export default function Home() {
           </div>
 
           {/* Symmetrical stats border grid */}
-          <div className="mt-14 w-full border border-primary-midnight grid grid-cols-2 lg:grid-cols-5 divide-y divide-x divide-primary-midnight border-collapse bg-transparent">
+          <div className="mt-14 w-full border border-[#D6D6D8] grid grid-cols-2 lg:grid-cols-5 divide-y divide-x divide-[#D6D6D8] border-collapse bg-transparent font-sans">
             <div className="flex flex-col items-center justify-center py-6 text-center px-3">
-              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">2001</span>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Established</span>
+              <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">2001</span>
+              <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Established</span>
+            </div>
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3 border-t border-[#D6D6D8] lg:border-t-0">
+              <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">14</span>
+              <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Product Categories</span>
             </div>
             <div className="flex flex-col items-center justify-center py-6 text-center px-3">
-              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">14</span>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Product Categories</span>
+              <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">25+</span>
+              <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Years Craft Expertise</span>
             </div>
             <div className="flex flex-col items-center justify-center py-6 text-center px-3">
-              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">25+</span>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Years Craft Expertise</span>
+              <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">50+</span>
+              <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Export Countries</span>
             </div>
             <div className="flex flex-col items-center justify-center py-6 text-center px-3">
-              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">50+</span>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Export Countries</span>
-            </div>
-            <div className="flex flex-col items-center justify-center py-6 text-center px-3">
-              <span className="text-3xl sm:text-4xl text-heading-charcoal font-semibold font-numbers mb-1.5">100%</span>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Klippel Inspected</span>
+              <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">100%</span>
+              <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Klippel Inspected</span>
             </div>
           </div>
 
@@ -338,44 +338,44 @@ export default function Home() {
       </section>
 
       {/* 4. Materials Pillars Grid */}
-      <section className="w-full py-16 bg-transparent border-b border-border-cool">
+      <section className="w-full py-16 bg-white border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
             
-            <div className="flex flex-col items-center text-center space-y-3">
-              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
-              <span className="text-sm font-bold text-heading-charcoal uppercase">Carbon Fiber</span>
+            <div className="flex flex-col items-center text-center space-y-3 font-sans">
+              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
+              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Carbon Fiber</span>
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 The primary cone structural fiber — strong, low-mass, high-stiffness. Carbon fiber pulp sheets outlive traditional paper by decades.
               </p>
-              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-3">
-              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
-              <span className="text-sm font-bold text-heading-charcoal uppercase">Kapton Formers</span>
+            <div className="flex flex-col items-center text-center space-y-3 font-sans">
+              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
+              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Kapton Formers</span>
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 High structural integrity formers give our voice coils their unique thermal limits — stable continuous power load up to 280°C.
               </p>
-              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-3">
-              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
-              <span className="text-sm font-bold text-heading-charcoal uppercase">Strontium Magnets</span>
+            <div className="flex flex-col items-center text-center space-y-3 font-sans">
+              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
+              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Strontium Magnets</span>
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 High magnetic energy Y35 Ferrite and NdFeB rings create maximum gap flux density, translating electrical power into clean movement.
               </p>
-              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-3">
-              <Logo className="w-8 h-8 text-primary-midnight" variant="icon" />
-              <span className="text-sm font-bold text-heading-charcoal uppercase">Pure Testing</span>
+            <div className="flex flex-col items-center text-center space-y-3 font-sans">
+              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
+              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Pure Testing</span>
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 The silent step. Every batch is evaluated in isolated anechoic chambers to record frequency sweep plots.
               </p>
-              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
             </div>
 
           </div>
@@ -383,17 +383,17 @@ export default function Home() {
       </section>
 
       {/* 5. Browse by Collection (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-transparent">
+      <section className="w-full py-20 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
             <div className="flex flex-col space-y-2">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-[1px] bg-accent-cyan" />
-                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">OUR PORTFOLIO</span>
+                <div className="w-12 h-[1px] bg-[#0F0F10]" />
+                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">OUR PORTFOLIO</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold">
-                Browse by <span className="text-accent-cyan">Collection</span>
+              <h2 className="text-3xl sm:text-4xl text-[#0F0F10] font-display font-extrabold">
+                Browse by <span className="text-[#5C5C63]">Collection</span>
               </h2>
             </div>
             
@@ -412,7 +412,7 @@ export default function Home() {
                 href={col.href}
                 className="flex flex-col group cursor-pointer"
               >
-                <div className="w-full aspect-square bg-bg-snow mb-4 overflow-hidden rounded-lg border border-border-cool/60 flex items-center justify-center">
+                <div className="w-full aspect-square bg-[#F7F7F8] mb-4 overflow-hidden rounded-lg border border-[#EAEAEA] flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={col.image} 
@@ -420,10 +420,10 @@ export default function Home() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-heading-charcoal group-hover:text-accent-cyan transition-colors">
+                <h3 className="text-xs sm:text-sm font-bold text-[#0F0F10] group-hover:text-[#5C5C63] transition-colors">
                   {col.name}
                 </h3>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 group-hover:underline">
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 group-hover:text-[#0F0F10] transition-colors">
                   Explore Collection →
                 </div>
               </Link>
@@ -434,23 +434,23 @@ export default function Home() {
       </section>
 
       {/* 6. Custom B2B Quote Card (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-transparent border-t border-border-cool">
+      <section className="w-full py-20 bg-white border-t border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-16">
             
             <div className="flex flex-col flex-1 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-[1px] bg-accent-cyan" />
-                <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">FOR BUSINESSES</span>
+                <div className="w-12 h-[1px] bg-[#0F0F10]" />
+                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">FOR BUSINESSES</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold leading-tight">
+              <h2 className="text-3xl sm:text-4xl text-[#0F0F10] font-display font-extrabold leading-tight">
                 Custom Orders for Brands Crafting Legacy <br />
-                <span className="text-accent-cyan">Since 2001</span>
+                <span className="text-[#5C5C63]">Since 2001</span>
               </h2>
             </div>
 
             <div className="flex flex-col flex-1 lg:max-w-xl lg:pt-6 space-y-6">
-              <p className="text-xs sm:text-sm text-body-slate leading-relaxed font-light">
+              <p className="text-xs sm:text-sm text-[#4A4A4F] leading-relaxed font-light font-sans">
                 We partner with loudspeaker builders, automotive tier-1 assembly sites, and wholesale procurement operations globally. Tell us what you need — we will manufacture it under strict ISO tolerances without compromising on acoustic fidelity. Sizing modifications, winding thickness, former materials, and brand stamps available on request.
               </p>
               <Link href="/contact?rfq=true">
@@ -466,14 +466,14 @@ export default function Home() {
       </section>
 
       {/* 7. Client Testimonials Marquee (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-transparent border-t border-border-cool overflow-hidden">
+      <section className="w-full py-20 bg-white border-t border-[#EAEAEA] overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-[1px] bg-accent-cyan" />
-            <span className="text-accent-cyan text-xs font-bold uppercase tracking-widest">PARTNER TRUST</span>
+            <div className="w-12 h-[1px] bg-[#0F0F10]" />
+            <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">PARTNER TRUST</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold">
-            What Our B2B Clients <span className="text-accent-cyan">Are Saying</span>
+          <h2 className="text-3xl sm:text-4xl text-[#0F0F10] font-display font-extrabold">
+            What Our B2B Clients <span className="text-[#5C5C63]">Are Saying</span>
           </h2>
         </div>
 
@@ -487,14 +487,14 @@ export default function Home() {
               >
                 <div className="space-y-4">
                   {/* Stars */}
-                  <div className="flex gap-0.5 text-accent-cyan">
+                  <div className="flex gap-0.5 text-[#0F0F10]">
                     {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed font-light italic">
+                  <p className="text-xs text-[#4A4A4F] leading-relaxed font-light italic font-sans">
                     &quot;{test.text}&quot;
                   </p>
                 </div>
-                <div className="mt-5 border-t border-border-cool/50 pt-3 text-[10px] font-bold text-primary-midnight uppercase tracking-wider">
+                <div className="mt-5 border-t border-[#EAEAEA] pt-3 text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider font-sans">
                   — {test.author}
                 </div>
               </div>
@@ -506,14 +506,14 @@ export default function Home() {
                 className="w-[320px] sm:w-[380px] flex-shrink-0 whitespace-normal glass-panel p-6 rounded-premium flex flex-col justify-between mx-3"
               >
                 <div className="space-y-4">
-                  <div className="flex gap-0.5 text-accent-cyan">
+                  <div className="flex gap-0.5 text-[#0F0F10]">
                     {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed font-light italic">
+                  <p className="text-xs text-[#4A4A4F] leading-relaxed font-light italic font-sans">
                     &quot;{test.text}&quot;
                   </p>
                 </div>
-                <div className="mt-5 border-t border-border-cool/50 pt-3 text-[10px] font-bold text-primary-midnight uppercase tracking-wider">
+                <div className="mt-5 border-t border-[#EAEAEA] pt-3 text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider font-sans">
                   — {test.author}
                 </div>
               </div>
@@ -523,11 +523,11 @@ export default function Home() {
       </section>
 
       {/* 8. FAQs */}
-      <section className="py-20 px-4 sm:px-6 lg:px-10 xl:px-16 bg-transparent border-t border-border-cool">
+      <section className="py-20 px-4 sm:px-6 lg:px-10 xl:px-16 bg-white border-t border-[#EAEAEA]">
         <div className="max-w-4xl mx-auto">
           
           <div className="text-center mb-16 space-y-2">
-            <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-heading-charcoal">Frequently Asked Questions</h3>
+            <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F0F10]">Frequently Asked Questions</h3>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">General B2B Inquiry & Purchasing Clarifications</p>
           </div>
 
@@ -539,18 +539,18 @@ export default function Home() {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full px-6 py-4.5 text-left flex justify-between items-center text-primary-midnight focus:outline-none hover:bg-bg-snow/40 transition-colors"
+                  className="w-full px-6 py-4.5 text-left flex justify-between items-center text-[#0F0F10] focus:outline-none hover:bg-[#F7F7F8] transition-colors"
                 >
-                  <span className="text-xs sm:text-sm font-bold pr-4">{faq.q}</span>
+                  <span className="text-xs sm:text-sm font-bold pr-4 font-sans">{faq.q}</span>
                   <ChevronDown 
-                    className={`w-4 h-4 text-slate-gray shrink-0 transition-transform duration-200 ${
+                    className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
                       openFaq === idx ? "transform rotate-180" : ""
                     }`} 
                   />
                 </button>
                 
                 {openFaq === idx && (
-                  <div className="px-6 pb-5 text-xs text-slate-500 leading-relaxed border-t border-border-cool/50 pt-3.5 font-light">
+                  <div className="px-6 pb-5 text-xs text-[#4A4A4F] leading-relaxed border-t border-[#EAEAEA] pt-3.5 font-light font-sans">
                     {faq.a}
                   </div>
                 )}

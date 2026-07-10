@@ -24,7 +24,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-primary-midnight text-slate-400 font-sans pt-16 pb-8 border-t border-secondary-graphite/50 relative">
+    <footer className="bg-[#0F0F10] text-[#A3A3A8] font-sans pt-16 pb-8 border-t border-[#2E2E33] relative">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -34,21 +34,21 @@ export default function Footer() {
             <Link href="/" className="flex items-center group">
               <Logo className="h-28 mb-1" variant="stacked" light />
             </Link>
-            <p className="text-xs leading-relaxed text-slate-400 font-light">
+            <p className="text-xs leading-relaxed text-slate-400 font-light font-sans">
               Leading OEM/ODM manufacturer, wholesale supplier, and exporter of high-precision speaker components globally. Serving automotive, pro-audio, and consumer electronics brands.
             </p>
             
             <div className="mt-2 flex flex-col gap-2">
-              <span className="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Certifications:</span>
+              <span className="text-[9px] font-bold tracking-widest text-[#A3A3A8] uppercase font-sans">Certifications:</span>
               <div className="flex flex-wrap gap-2.5">
-                <span className="inline-flex items-center gap-1 text-[10px] bg-secondary-graphite/40 border border-secondary-graphite/80 text-white px-2 py-0.5 rounded-premium">
-                  <Shield className="w-3 h-3 text-accent-cyan" /> ISO 9001:2015
+                <span className="inline-flex items-center gap-1 text-[10px] bg-[#1E1E20] border border-[#2E2E33] text-white px-2 py-0.5 rounded-premium">
+                  <Shield className="w-3 h-3 text-[#A3A3A8]" /> ISO 9001:2015
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] bg-secondary-graphite/40 border border-secondary-graphite/80 text-white px-2 py-0.5 rounded-premium">
-                  <CheckCircle className="w-3 h-3 text-accent-cyan" /> RoHS Compliant
+                <span className="inline-flex items-center gap-1 text-[10px] bg-[#1E1E20] border border-[#2E2E33] text-white px-2 py-0.5 rounded-premium">
+                  <CheckCircle className="w-3 h-3 text-[#A3A3A8]" /> RoHS Compliant
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] bg-secondary-graphite/40 border border-secondary-graphite/80 text-white px-2 py-0.5 rounded-premium">
-                  <CheckCircle className="w-3 h-3 text-accent-cyan" /> REACH
+                <span className="inline-flex items-center gap-1 text-[10px] bg-[#1E1E20] border border-[#2E2E33] text-white px-2 py-0.5 rounded-premium">
+                  <CheckCircle className="w-3 h-3 text-[#A3A3A8]" /> REACH
                 </span>
               </div>
             </div>
@@ -56,13 +56,13 @@ export default function Footer() {
 
           {/* Product list */}
           <div>
-            <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-secondary-graphite/40">
+            <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-[#2E2E33]">
               SPEAKER COMPONENTS
             </h4>
             <ul className="flex flex-col gap-3.5 text-xs">
               {productLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="hover:text-accent-cyan transition-colors flex items-center group text-slate-400">
+                  <Link href={link.href} className="hover:text-white transition-colors flex items-center group text-[#A3A3A8]">
                     <span>{link.name}</span>
                     <ArrowUpRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-150" />
                   </Link>
@@ -73,13 +73,13 @@ export default function Footer() {
 
           {/* Corporate list */}
           <div>
-            <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-secondary-graphite/40">
+            <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-[#2E2E33]">
               CORPORATE
             </h4>
             <ul className="flex flex-col gap-3.5 text-xs">
               {corporateLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="hover:text-accent-cyan transition-colors flex items-center group text-slate-400">
+                  <Link href={link.href} className="hover:text-white transition-colors flex items-center group text-[#A3A3A8]">
                     <span>{link.name}</span>
                     <ArrowUpRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-150" />
                   </Link>
@@ -89,27 +89,27 @@ export default function Footer() {
           </div>
 
           {/* Contact Details */}
-          <div className="flex flex-col gap-5 text-xs text-slate-400">
+          <div className="flex flex-col gap-5 text-xs text-[#A3A3A8]">
             <div>
-              <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-secondary-graphite/40">
+              <h4 className="font-display text-xs font-bold tracking-wider text-white mb-5 uppercase pb-1.5 border-b border-[#2E2E33]">
                 B2B INQUIRY DESK
               </h4>
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-3 font-sans">
                 <li className="flex items-start gap-2.5">
-                  <MapPin className="w-4.5 h-4.5 text-accent-cyan shrink-0 mt-0.5" />
-                  <span className="font-light">
+                  <MapPin className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0 mt-0.5" />
+                  <span className="font-light text-slate-400">
                     Plot 142-A, Industrial Estate Phase-II, Sector 4, export zone, India
                   </span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <Phone className="w-4.5 h-4.5 text-accent-cyan shrink-0" />
-                  <a href="tel:+919876543210" className="hover:text-accent-cyan transition-colors font-light">
+                  <Phone className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
+                  <a href="tel:+919876543210" className="hover:text-white transition-colors font-light text-slate-400">
                     +91 98765 43210 (Global Sales)
                   </a>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <Mail className="w-4.5 h-4.5 text-accent-cyan shrink-0" />
-                  <a href="mailto:export@globalspeakerparts.com" className="hover:text-accent-cyan transition-colors font-light">
+                  <Mail className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
+                  <a href="mailto:export@globalspeakerparts.com" className="hover:text-white transition-colors font-light text-slate-400">
                     export@globalspeakerparts.com
                   </a>
                 </li>
@@ -118,20 +118,20 @@ export default function Footer() {
             
             {/* Newsletter */}
             <div className="pt-1">
-              <span className="text-[10px] font-bold text-slate-350 block mb-2 uppercase tracking-wide">OEM CATALOG UPDATES</span>
+              <span className="text-[10px] font-bold text-slate-400 block mb-2 uppercase tracking-wide font-sans">OEM CATALOG UPDATES</span>
               <form 
                 onSubmit={(e) => e.preventDefault()}
-                className="flex rounded-full overflow-hidden border border-secondary-graphite/60 bg-secondary-graphite/20"
+                className="flex rounded-lg overflow-hidden border border-[#2E2E33] bg-[#1E1E20]"
               >
                 <input
                   type="email"
                   placeholder="Enter business email"
                   required
-                  className="bg-transparent text-xs text-white px-3.5 py-2 outline-none w-full placeholder:text-slate-500"
+                  className="bg-transparent text-xs text-white px-3.5 py-2 outline-none w-full placeholder:text-slate-500 font-sans"
                 />
                 <button
                   type="submit"
-                  className="bg-accent-cyan hover:bg-accent-cyan-hover text-primary-midnight font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider"
+                  className="bg-white hover:bg-[#E8E8EA] text-[#0F0F10] font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider font-sans cursor-pointer"
                 >
                   SUBSCRIBE
                 </button>
@@ -142,11 +142,11 @@ export default function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="mt-14 pt-7 border-t border-secondary-graphite/20 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
-          <p>
+        <div className="mt-14 pt-7 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+          <p className="font-sans">
             &copy; {new Date().getFullYear()} GLOBAL SPEAKER PARTS. All rights reserved.
           </p>
-          <div className="flex gap-5">
+          <div className="flex gap-5 font-sans">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Supply</Link>
             <Link href="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>

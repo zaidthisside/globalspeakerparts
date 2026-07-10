@@ -141,8 +141,8 @@ export default function AdminPage() {
             </div>
 
             <div className="text-center space-y-1.5 w-full">
-              <h2 className="font-display text-sm font-extrabold text-primary-midnight uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <Lock className="w-4 h-4 text-accent-cyan" />
+              <h2 className="font-display text-sm font-extrabold text-[#0F0F10] uppercase tracking-widest flex items-center justify-center gap-1.5">
+                <Lock className="w-4 h-4 text-[#5C5C63]" />
                 <span>Admin Authentication</span>
               </h2>
               <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">
@@ -158,7 +158,7 @@ export default function AdminPage() {
             )}
 
             <div className="w-full flex flex-col gap-1.5">
-              <label htmlFor="passcode-input" className="font-bold text-slate-400 uppercase tracking-widest text-[9px] block">
+              <label htmlFor="passcode-input" className="font-bold text-slate-400 uppercase tracking-widest text-[9px] block font-sans">
                 Enter Security Passcode
               </label>
               <input
@@ -167,7 +167,7 @@ export default function AdminPage() {
                 required
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                className="w-full bg-bg-snow/60 border border-border-cool/80 rounded-premium px-4 py-3 text-xs text-primary-midnight outline-none focus:border-accent-cyan focus:bg-white transition-all font-light tracking-widest"
+                className="w-full bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-4 py-3 text-xs text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light tracking-widest"
                 placeholder="••••••••••••"
               />
             </div>
@@ -179,7 +179,7 @@ export default function AdminPage() {
               <span>ACCESS CONSOLE</span>
             </button>
 
-            <div className="w-full border-t border-border-cool/40 pt-4 text-center">
+            <div className="w-full border-t border-[#EAEAEA] pt-4 text-center">
               <span className="text-[8px] font-mono text-slate-400 uppercase tracking-widest block leading-relaxed">
                 SECURED SYSTEM • EST. 2001 • JAIPUR INDIA
               </span>
@@ -191,17 +191,17 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-snow text-body-slate font-sans pt-12 pb-20">
+    <div className="min-h-screen bg-[#F7F7F8] text-body-slate font-sans pt-12 pb-20">
       
       {/* Top Header Section */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border-cool pb-6 bg-white p-6 rounded-premium shadow-soft">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-[#EAEAEA] bg-white p-6 rounded-premium">
           <div>
-            <div className="flex items-center gap-2 text-accent-cyan text-xs font-bold uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[#5C5C63] text-xs font-bold uppercase tracking-widest mb-1">
               <Box className="w-4.5 h-4.5" />
               <span>Back Office Console</span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-primary-midnight tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F0F10] tracking-tight">
               B2B Administration Hub
             </h1>
             <p className="text-slate-400 text-xs font-light">
@@ -209,7 +209,7 @@ export default function AdminPage() {
             </p>
           </div>
 
-          <div className="text-[10px] font-mono text-slate-500 bg-bg-snow border border-border-cool px-3 py-2 rounded-lg">
+          <div className="text-[10px] font-mono text-slate-500 bg-[#F7F7F8] border border-[#EAEAEA] px-3 py-2 rounded-lg">
             🔐 session: secure_ssl • admin_level: 1
           </div>
         </div>

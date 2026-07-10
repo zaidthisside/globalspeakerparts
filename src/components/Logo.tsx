@@ -11,11 +11,11 @@ export default function Logo({
   variant = "primary", 
   light = false 
 }: LogoProps) {
-  const brandBlue = "#00315C";
-  const brandOrange = "#ED5A14";
+  const brandBlue = "#0F0F10"; // Premium Jet Black
+  const brandOrange = light ? "#FFFFFF" : "#0F0F10"; // Matches theme text for monochrome consistency
   
   const mainColor = light ? "#FFFFFF" : brandBlue;
-  const textColor = light ? "#E2E8F0" : brandBlue;
+  const textColor = light ? "#A3A3A8" : "#5C5C63"; // Steel Gray for secondary tagline text
 
   // 1. ICON ONLY VARIANT
   if (variant === "icon") {
@@ -64,7 +64,7 @@ export default function Logo({
               y="60" 
               fill={mainColor} 
               style={{ 
-                fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 800, 
                 fontSize: "76px", 
                 letterSpacing: "-1px" 
@@ -78,7 +78,7 @@ export default function Logo({
               y="114" 
               fill={mainColor} 
               style={{ 
-                fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 700, 
                 fontSize: "36px", 
                 letterSpacing: "0.8px" 
@@ -124,7 +124,7 @@ export default function Logo({
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
-                fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 800, 
                 fontSize: "74px", 
                 letterSpacing: "-1px" 
@@ -141,7 +141,7 @@ export default function Logo({
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
-                fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 700, 
                 fontSize: "35px", 
                 letterSpacing: "0.8px" 
@@ -208,7 +208,7 @@ export default function Logo({
             y="105" 
             fill={mainColor} 
             style={{ 
-              fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+              fontFamily: "var(--font-manrope), Manrope, sans-serif", 
               fontWeight: 800, 
               fontSize: "94px", 
               letterSpacing: "-1.5px" 
@@ -226,7 +226,7 @@ export default function Logo({
             y="172" 
             fill={mainColor} 
             style={{ 
-              fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+              fontFamily: "var(--font-manrope), Manrope, sans-serif", 
               fontWeight: 700, 
               fontSize: "45px", 
               letterSpacing: "1.2px" 
@@ -243,7 +243,7 @@ export default function Logo({
           fill={textColor} 
           textAnchor="middle"
           style={{ 
-            fontFamily: "var(--font-oswald), Oswald, sans-serif", 
+            fontFamily: "var(--font-manrope), Manrope, sans-serif", 
             fontWeight: 700, 
             fontSize: "17.5px", 
             letterSpacing: "5.6px" 

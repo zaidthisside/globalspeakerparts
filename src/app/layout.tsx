@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Oswald, Inter, Space_Grotesk } from "next/font/google";
+import { Manrope, Inter, Space_Grotesk } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-const oswald = Oswald({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-oswald",
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -44,9 +44,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${oswald.variable} ${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${manrope.variable} ${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-premium-dusty font-sans text-body-slate">
+      <body className="min-h-full flex flex-col bg-white font-sans text-body-slate">
         <Navbar />
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col pt-20 sm:pt-24 xl:pt-28">
