@@ -9,7 +9,7 @@ import Logo from "@/components/Logo";
 
 // Sourced high-resolution Unsplash photos
 const images = {
-  heroSpeaker: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80", // Premium Speaker Cone
+  heroSpeaker: "/hero-speaker.png", // Premium Speaker Cone
   factoryLine: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80", // High-tech Factory Floor
 };
 
