@@ -66,7 +66,7 @@ export default function Home() {
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
       {/* Category Grid: 2 rows, 5 columns (Directly below navbar) */}
-      <section className="w-full pt-8 pb-4">
+      <section className="w-full pt-8 pb-6 bg-white border-b border-[#EAEAEA]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-7 gap-x-3.5 lg:gap-x-4.5 font-sans">
             {homeCategories.map((cat) => (
