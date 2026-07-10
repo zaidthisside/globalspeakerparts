@@ -61,6 +61,27 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones" }: Inqui
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      // Save submission to localStorage for Admin Hub display
+      if (typeof window !== "undefined") {
+        const existingStr = localStorage.getItem("gsp_inquiries");
+        const existing = existingStr ? JSON.parse(existingStr) : [];
+        
+        const newInquiry = {
+          id: `RFQ-${Math.floor(1000 + Math.random() * 9000)}`,
+          company: formData.company || "Individual Client",
+          contact: `${formData.name} (${formData.phone || "No Phone"})`,
+          email: formData.email,
+          category: formData.category,
+          quantity: formData.quantity,
+          specs: formData.message || "No specifications description provided.",
+          date: new Date().toISOString().split("T")[0],
+          status: "Pending Engineering Review"
+        };
+        
+        localStorage.setItem("gsp_inquiries", JSON.stringify([newInquiry, ...existing]));
+      }
+
       setSubmitted(true);
       setFormData({
         name: "",

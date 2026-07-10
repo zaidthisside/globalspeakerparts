@@ -6,86 +6,11 @@ import {
 } from "lucide-react";
 import Logo from "@/components/Logo";
 
-// Mock B2B Inquiries data matching high-end audio manufacturers
-const initialInquiries = [
-  {
-    id: "RFQ-9428",
-    company: "Bose Corporation",
-    contact: "Dr. Marcus Vance (Head of Acoustic Procurement)",
-    email: "m.vance@bose.com",
-    category: "Speaker Cones",
-    quantity: "10,000 - 50,000 units (High Volume)",
-    specs: "Pressed carbon fiber cones, 6.5 inch, rubber surrounds pre-attached. Must comply with REACH and RoHS standards for automotive models.",
-    date: "2026-07-08",
-    status: "Pending Engineering Review"
-  },
-  {
-    id: "RFQ-9427",
-    company: "JBL Professional",
-    contact: "Sarah Jenkins (Director of Hardware Supply)",
-    email: "s.jenkins@harman.com",
-    category: "Voice Coils",
-    quantity: "5,000 - 10,000 units (OEM Scale)",
-    specs: "CCAW wire on Kapton formers, 4.0 inch diameter, dual 4 Ohm impedance. Target thermal limit: 280°C continuous.",
-    date: "2026-07-08",
-    status: "Quota Transmitted"
-  },
-  {
-    id: "RFQ-9426",
-    company: "Sony Acoustics",
-    contact: "Kenji Sato (Lead Material Inspector)",
-    email: "kenji.sato@sony.co.jp",
-    category: "Spiders (Dampers)",
-    quantity: "50,000+ units (Contract Supply)",
-    specs: "Nomex woven fiber dampers with custom phenolic resin formulation. Stiffness index targeted at 1.2 N/mm.",
-    date: "2026-07-06",
-    status: "Samples Approved"
-  },
-  {
-    id: "RFQ-9425",
-    company: "Alpine Electronics",
-    contact: "Michael Huber (Global Supply Logistics)",
-    email: "m.huber@alpine-eu.com",
-    category: "Magnets",
-    quantity: "10,000 - 50,000 units (High Volume)",
-    specs: "N42H Neodymium ring magnets, ground dimensions ±0.03 mm concentricity. Electrophoretic coating required.",
-    date: "2026-07-05",
-    status: "Quoted"
-  },
-  {
-    id: "RFQ-9424",
-    company: "Pioneer India Acoustics",
-    contact: "Rohan Gupta (Plant Operations Lead)",
-    email: "r.gupta@pioneer-india.com",
-    category: "Speaker Frames",
-    quantity: "1,000 - 5,000 units (Wholesale)",
-    specs: "12-inch die-cast ADC12 aluminum frames, powder-coated slate gray. Customized mounting bolt circle dimensions.",
-    date: "2026-07-03",
-    status: "Samples in Transit"
-  }
-];
-
-// Product inventory logs
-const productInventory = [
-  { category: "Speaker Cones", moldStatus: "Active", stockTons: "14.5 Tons pulp", tolerance: "±0.15 mm" },
-  { category: "Voice Coils", moldStatus: "Active", stockTons: "80,000 wound", tolerance: "±0.05 mm" },
-  { category: "Spiders (Dampers)", moldStatus: "Active", stockTons: "65,000 pressed", tolerance: "±5%" },
-  { category: "Dust Caps", moldStatus: "Maintenance", stockTons: "120,000 cataloged", tolerance: "±0.10 mm" },
-  { category: "Speaker Surrounds", moldStatus: "Active", stockTons: "9,000 meters NBR", tolerance: "±0.08 mm" },
-  { category: "Magnets", moldStatus: "Active", stockTons: "4.2 Tons NdFeB", tolerance: "±0.05 mm" },
-  { category: "Pole Pieces", moldStatus: "Active", stockTons: "12,000 pieces machined", tolerance: "±0.02 mm" }
-];
-
-// Shipping tracking logs
-const shippingLogs = [
-  { containerId: "MSK-8842", carrier: "Maersk Line", route: "Mumbai Port to Rotterdam Terminal", status: "In Ocean Transit", eta: "2026-07-25" },
-  { containerId: "COS-1198", carrier: "COSCO Shipping", route: "Mumbai Port to Port of Los Angeles", status: "Customs Cleared", eta: "2026-07-18" },
-  { containerId: "MAE-5561", carrier: "Maersk Line", route: "Nhava Sheva to Tokyo Bay Port", status: "Port of Exit (Loaded)", eta: "2026-07-22" }
-];
-
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "products" | "logistics">("overview");
-  const [inquiries, setInquiries] = useState(initialInquiries);
+  const [inquiries, setInquiries] = useState<Record<string, string>[]>([]);
+  const [productInventory, setProductInventory] = useState<Record<string, string>[]>([]);
+  const [shippingLogs, setShippingLogs] = useState<Record<string, string>[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   
@@ -96,12 +21,61 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const activeTimers: NodeJS.Timeout[] = [];
+
+      // 1. Session authentication
       if (sessionStorage.getItem("gsp_admin_authenticated") === "true") {
-        const timer = setTimeout(() => {
+        const timer1 = setTimeout(() => {
           setIsAuthenticated(true);
         }, 0);
-        return () => clearTimeout(timer);
+        activeTimers.push(timer1);
       }
+      
+      // 2. Load inquiries from localStorage
+      const storedInq = localStorage.getItem("gsp_inquiries");
+      if (storedInq) {
+        try {
+          const parsed = JSON.parse(storedInq);
+          const timer2 = setTimeout(() => {
+            setInquiries(parsed);
+          }, 0);
+          activeTimers.push(timer2);
+        } catch (e) {
+          console.error("Error loading inquiries", e);
+        }
+      }
+
+      // 3. Load product inventories from localStorage
+      const storedInv = localStorage.getItem("gsp_inventory");
+      if (storedInv) {
+        try {
+          const parsed = JSON.parse(storedInv);
+          const timer3 = setTimeout(() => {
+            setProductInventory(parsed);
+          }, 0);
+          activeTimers.push(timer3);
+        } catch (e) {
+          console.error("Error loading inventory", e);
+        }
+      }
+
+      // 4. Load shipping logs from localStorage
+      const storedShip = localStorage.getItem("gsp_shipping_logs");
+      if (storedShip) {
+        try {
+          const parsed = JSON.parse(storedShip);
+          const timer4 = setTimeout(() => {
+            setShippingLogs(parsed);
+          }, 0);
+          activeTimers.push(timer4);
+        } catch (e) {
+          console.error("Error loading shipping logs", e);
+        }
+      }
+
+      return () => {
+        activeTimers.forEach(t => clearTimeout(t));
+      };
     }
   }, []);
 
@@ -119,7 +93,13 @@ export default function AdminPage() {
 
   // Handle status update
   const handleUpdateStatus = (id: string, newStatus: string) => {
-    setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status: newStatus } : inq));
+    setInquiries(prev => {
+      const updated = prev.map(inq => inq.id === id ? { ...inq, status: newStatus } : inq);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("gsp_inquiries", JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   // Filtered inquiries logic
@@ -139,12 +119,12 @@ export default function AdminPage() {
   // Statistics cards data
   const statsOverview = useMemo(() => {
     return [
-      { label: "Active RFQ Inquiries", value: inquiries.length.toString(), icon: FileText, change: "+2 today" },
-      { label: "Avg Turnaround", value: "14.5 Hrs", icon: BarChart3, change: "-1.2 hrs this week" },
-      { label: "Tooling Under Design", value: "4 molds", icon: Cpu, change: "Ready for sample stamp" },
-      { label: "Active Export Cargo", value: shippingLogs.length.toString(), icon: Globe, change: "In ocean transit" }
+      { label: "Active RFQ Inquiries", value: inquiries.length.toString(), icon: FileText, change: inquiries.length > 0 ? "+2 today" : "No active requests" },
+      { label: "Avg Turnaround", value: inquiries.length > 0 ? "14.5 Hrs" : "0 Hrs", icon: BarChart3, change: inquiries.length > 0 ? "-1.2 hrs this week" : "No pending queue" },
+      { label: "Tooling Under Design", value: productInventory.length > 0 ? `${productInventory.length} molds` : "0 molds", icon: Cpu, change: productInventory.length > 0 ? "Active production" : "No custom mold templates" },
+      { label: "Active Export Cargo", value: shippingLogs.length.toString(), icon: Globe, change: shippingLogs.length > 0 ? "In ocean transit" : "No ocean container shipments" }
     ];
-  }, [inquiries.length]);
+  }, [inquiries.length, productInventory.length, shippingLogs.length]);
 
   // Render Login Wall if not authenticated (evaluated after all React hooks are declared)
   if (!isAuthenticated) {
@@ -305,31 +285,37 @@ export default function AdminPage() {
                 </div>
 
                 <div className="divide-y divide-border-cool">
-                  {inquiries.slice(0, 3).map((inq) => (
-                    <div key={inq.id} className="p-5 flex justify-between items-start text-xs gap-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <strong className="text-primary-midnight font-bold text-sm">{inq.company}</strong>
-                          <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-1.5 py-0.5 rounded font-mono font-bold">
-                            {inq.id}
-                          </span>
-                        </div>
-                        <p className="text-slate-500 font-light leading-relaxed max-w-xl">{inq.specs}</p>
-                        <div className="text-[10px] text-slate-400 flex items-center gap-3">
-                          <span>Parts: <strong className="text-body-slate font-semibold">{inq.category}</strong></span>
-                          <span>•</span>
-                          <span>Volume: <strong className="text-body-slate font-semibold">{inq.quantity}</strong></span>
-                        </div>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <span className="inline-block text-[10px] font-bold text-highlight-royal bg-bg-snow border border-border-cool px-2.5 py-1 rounded-premium uppercase mb-1.5">
-                          {inq.status}
-                        </span>
-                        <span className="block text-[9px] text-slate-400 font-semibold">{inq.date}</span>
-                      </div>
+                  {inquiries.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 text-xs font-light">
+                      No inquiries logged. Submit a specification on the contact form to see it here. (Total: 0)
                     </div>
-                  ))}
+                  ) : (
+                    inquiries.slice(0, 3).map((inq) => (
+                      <div key={inq.id} className="p-5 flex justify-between items-start text-xs gap-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <strong className="text-primary-midnight font-bold text-sm">{inq.company}</strong>
+                            <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-1.5 py-0.5 rounded font-mono font-bold">
+                              {inq.id}
+                            </span>
+                          </div>
+                          <p className="text-slate-500 font-light leading-relaxed max-w-xl">{inq.specs}</p>
+                          <div className="text-[10px] text-slate-400 flex items-center gap-3">
+                            <span>Parts: <strong className="text-body-slate font-semibold">{inq.category}</strong></span>
+                            <span>•</span>
+                            <span>Volume: <strong className="text-body-slate font-semibold">{inq.quantity}</strong></span>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="inline-block text-[10px] font-bold text-highlight-royal bg-bg-snow border border-border-cool px-2.5 py-1 rounded-premium uppercase mb-1.5">
+                            {inq.status}
+                          </span>
+                          <span className="block text-[9px] text-slate-400 font-semibold">{inq.date}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -465,23 +451,31 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border-cool text-slate-700">
-                    {productInventory.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-bg-snow/30">
-                        <td className="px-4 py-3.5 font-bold text-slate-800">{item.category}</td>
-                        <td className="px-4 py-3.5">
-                          <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
-                            item.moldStatus === "Active" 
-                              ? "bg-green-50 text-green-700 border border-green-200" 
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${item.moldStatus === "Active" ? "bg-green-500" : "bg-amber-500"}`} />
-                            {item.moldStatus}
-                          </span>
+                    {productInventory.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                          No active manufacturing tooling molds logged. (Total: 0)
                         </td>
-                        <td className="px-4 py-3.5 font-light text-slate-500">{item.stockTons}</td>
-                        <td className="px-4 py-3.5 text-accent-cyan font-mono font-semibold">{item.tolerance}</td>
                       </tr>
-                    ))}
+                    ) : (
+                      productInventory.map((item, idx) => (
+                        <tr key={idx} className="hover:bg-bg-snow/30">
+                          <td className="px-4 py-3.5 font-bold text-slate-800">{item.category}</td>
+                          <td className="px-4 py-3.5">
+                            <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
+                              item.moldStatus === "Active" 
+                                ? "bg-green-50 text-green-700 border border-green-200" 
+                                : "bg-amber-50 text-amber-700 border border-amber-200"
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${item.moldStatus === "Active" ? "bg-green-500" : "bg-amber-500"}`} />
+                              {item.moldStatus}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3.5 font-light text-slate-500">{item.stockTons}</td>
+                          <td className="px-4 py-3.5 text-accent-cyan font-mono font-semibold">{item.tolerance}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -499,29 +493,35 @@ export default function AdminPage() {
                 <p className="text-[10px] text-slate-400 font-light">Monitor export container lines and customs release schedules.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {shippingLogs.map((log, idx) => (
-                  <div key={idx} className="bg-bg-snow border border-border-cool p-5 rounded-premium flex flex-col justify-between min-h-[170px] shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] bg-white border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-mono font-bold">
-                        {log.containerId}
-                      </span>
-                      <Truck className="w-5 h-5 text-slate-400 shrink-0" />
-                    </div>
-                    
-                    <div className="my-3 text-xs">
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Carrier</span>
-                      <strong className="text-primary-midnight font-bold text-sm block">{log.carrier}</strong>
-                      <span className="text-slate-500 font-light text-[10px] mt-1 block">{log.route}</span>
-                    </div>
+              {shippingLogs.length === 0 ? (
+                <div className="p-10 text-center text-slate-400 border border-dashed border-border-cool rounded-premium bg-bg-snow/30 text-xs font-light">
+                  No active export cargo shipping container lines logged. (Total: 0)
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {shippingLogs.map((log, idx) => (
+                    <div key={idx} className="bg-bg-snow border border-border-cool p-5 rounded-premium flex flex-col justify-between min-h-[170px] shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <span className="text-[10px] bg-white border border-border-cool text-primary-midnight px-2 py-0.5 rounded font-mono font-bold">
+                          {log.containerId}
+                        </span>
+                        <Truck className="w-5 h-5 text-slate-400 shrink-0" />
+                      </div>
+                      
+                      <div className="my-3 text-xs">
+                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Carrier</span>
+                        <strong className="text-primary-midnight font-bold text-sm block">{log.carrier}</strong>
+                        <span className="text-slate-500 font-light text-[10px] mt-1 block">{log.route}</span>
+                      </div>
 
-                    <div className="border-t border-border-cool pt-3 flex justify-between items-center text-[10px] font-semibold">
-                      <span className="text-slate-500">ETA: {log.eta}</span>
-                      <span className="text-highlight-royal font-bold uppercase">{log.status}</span>
+                      <div className="border-t border-border-cool pt-3 flex justify-between items-center text-[10px] font-semibold">
+                        <span className="text-slate-500">ETA: {log.eta}</span>
+                        <span className="text-highlight-royal font-bold uppercase">{log.status}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
             </div>
           )}
