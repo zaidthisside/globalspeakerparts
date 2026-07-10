@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
-  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus 
+  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert 
 } from "lucide-react";
+import Logo from "@/components/Logo";
 
 // Mock B2B Inquiries data matching high-end audio manufacturers
 const initialInquiries = [
@@ -87,6 +88,34 @@ export default function AdminPage() {
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  
+  // Authentication states
+  const [passcode, setPasscode] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (sessionStorage.getItem("gsp_admin_authenticated") === "true") {
+        const timer = setTimeout(() => {
+          setIsAuthenticated(true);
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const correctPasscode = process.env.NEXT_PUBLIC_ADMIN_PASSCODE || "zaidgsp2026";
+    if (passcode === correctPasscode) {
+      sessionStorage.setItem("gsp_admin_authenticated", "true");
+      setIsAuthenticated(true);
+      setError("");
+    } else {
+      setError("Access Denied: Invalid Security Passcode.");
+    }
+  };
 
   // Handle status update
   const handleUpdateStatus = (id: string, newStatus: string) => {
@@ -116,6 +145,70 @@ export default function AdminPage() {
       { label: "Active Export Cargo", value: shippingLogs.length.toString(), icon: Globe, change: "In ocean transit" }
     ];
   }, [inquiries.length]);
+
+  // Render Login Wall if not authenticated (evaluated after all React hooks are declared)
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-premium-dusty flex items-center justify-center px-4 py-12 relative overflow-hidden font-sans pt-24">
+        <div className="w-full max-w-md relative z-10">
+          <form 
+            onSubmit={handleLogin}
+            className="glass-panel p-8 rounded-premium shadow-2xl space-y-6 flex flex-col items-center border border-white/40"
+          >
+            {/* Logo Badge */}
+            <div className="w-full flex justify-center mb-2">
+              <Logo className="h-11" variant="primary" />
+            </div>
+
+            <div className="text-center space-y-1.5 w-full">
+              <h2 className="font-display text-sm font-extrabold text-primary-midnight uppercase tracking-widest flex items-center justify-center gap-1.5">
+                <Lock className="w-4 h-4 text-accent-cyan" />
+                <span>Admin Authentication</span>
+              </h2>
+              <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">
+                Private Access • Authorized Personnel Only
+              </p>
+            </div>
+
+            {error && (
+              <div className="w-full p-3.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-700 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+                <ShieldAlert className="w-4.5 h-4.5 shrink-0 text-red-650" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="w-full flex flex-col gap-1.5">
+              <label htmlFor="passcode-input" className="font-bold text-slate-400 uppercase tracking-widest text-[9px] block">
+                Enter Security Passcode
+              </label>
+              <input
+                type="password"
+                id="passcode-input"
+                required
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                className="w-full bg-bg-snow/60 border border-border-cool/80 rounded-premium px-4 py-3 text-xs text-primary-midnight outline-none focus:border-accent-cyan focus:bg-white transition-all font-light tracking-widest"
+                placeholder="••••••••••••"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full btn-primary py-3 text-xs font-bold tracking-widest uppercase cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>ACCESS CONSOLE</span>
+            </button>
+
+            <div className="w-full border-t border-border-cool/40 pt-4 text-center">
+              <span className="text-[8px] font-mono text-slate-400 uppercase tracking-widest block leading-relaxed">
+                SECURED SYSTEM • EST. 2001 • JAIPUR INDIA
+              </span>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg-snow text-body-slate font-sans pt-12 pb-20">
