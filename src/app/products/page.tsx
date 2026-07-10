@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { Search, Filter, Info, X, ShieldCheck, Tag, Box } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Search, Filter, Info, X, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send } from "lucide-react";
 import InquiryForm from "@/components/InquiryForm";
 
 // Real Unsplash photo URLs for B2B industrial speaker components
@@ -270,13 +270,28 @@ const allCategories = [
 ];
 
 function ProductsCatalogSection() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const catParam = searchParams.get("cat");
+  const cartParam = searchParams.get("cart");
+  const isCartView = cartParam === "true";
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedProduct, setSelectedProduct] = useState<typeof productsData[0] | null>(null);
   const [customProducts, setCustomProducts] = useState<typeof productsData>([]);
+
+  const [cartItems, setCartItems] = useState<Record<string, string>[]>([]);
+  const [bulkSubmitted, setBulkSubmitted] = useState(false);
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+  const [bulkForm, setBulkForm] = useState({
+    name: "",
+    email: "",
+    company: "",
+    phone: "",
+    country: "",
+    message: ""
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -294,6 +309,67 @@ function ProductsCatalogSection() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("gsp_enquiry_cart");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const timer = setTimeout(() => {
+            setCartItems(parsed);
+          }, 0);
+          return () => clearTimeout(timer);
+        } catch {}
+      } else {
+        const timer = setTimeout(() => {
+          setCartItems([]);
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [cartParam]);
+
+  const handleRemoveFromCart = (id: string) => {
+    const updated = cartItems.filter((item) => item.id !== id);
+    setCartItems(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("gsp_enquiry_cart", JSON.stringify(updated));
+      window.dispatchEvent(new Event("gsp_cart_updated"));
+    }
+  };
+
+  const handleBulkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBulkSubmitting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (typeof window !== "undefined") {
+        const storedInqStr = localStorage.getItem("gsp_inquiries");
+        const existingInqs = storedInqStr ? JSON.parse(storedInqStr) : [];
+        const newInquiries = cartItems.map((item, idx) => ({
+          id: `RFQ-${Math.floor(1000 + Math.random() * 9000)}-${idx}`,
+          company: bulkForm.company || "Individual Client",
+          contact: `${bulkForm.name} (${bulkForm.phone || "No Phone"})`,
+          email: bulkForm.email,
+          category: item.category,
+          quantity: item.moq || "1,000 units",
+          specs: `[BULK RFQ INQUIRY] Requested Component: ${item.name}. Custom Sizing: ${item.variants}. Instructions: ${bulkForm.message || "None."}`,
+          date: new Date().toISOString().split("T")[0],
+          status: "Pending Engineering Review"
+        }));
+        localStorage.setItem("gsp_inquiries", JSON.stringify([...newInquiries, ...existingInqs]));
+        localStorage.removeItem("gsp_enquiry_cart");
+        window.dispatchEvent(new Event("gsp_cart_updated"));
+      }
+      setBulkSubmitted(true);
+      setCartItems([]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (catParam) {
@@ -339,6 +415,206 @@ function ProductsCatalogSection() {
       return matchesSearch && matchesCategory;
     });
   }, [allProducts, search, selectedCategory]);
+
+  if (isCartView) {
+    if (bulkSubmitted) {
+      return (
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 font-sans text-center max-w-xl flex flex-col items-center justify-center relative z-10 min-h-[60vh]">
+          <CheckCircle className="w-16 h-16 text-[#0F0F10] mb-6 animate-pulse" />
+          <h2 className="font-display text-2xl font-extrabold text-[#0F0F10] mb-3 uppercase tracking-tight">Bulk Enquiry Transmitted</h2>
+          <p className="text-[#4A4A4F] text-sm leading-relaxed mb-8 font-light max-w-md">
+            Thank you. Your consolidated RFQs have been securely transmitted to the Global Speaker Parts export desk. Our acoustic engineering team will contact you within 24 business hours.
+          </p>
+          <button
+            onClick={() => {
+              setBulkSubmitted(false);
+              router.push("/products");
+            }}
+            className="bg-[#0F0F10] hover:bg-[#2E2E33] text-white px-8 py-3 rounded-lg font-bold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer animate-fade-in"
+          >
+            RETURN TO COMPONENT CATALOG
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans relative z-10">
+        
+        {/* Back Link */}
+        <button
+          onClick={() => router.push("/products")}
+          className="flex items-center gap-2 text-xs font-bold text-[#5C5C63] hover:text-[#0F0F10] mb-6 uppercase tracking-wider cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Catalog</span>
+        </button>
+
+        <h1 className="font-display text-2xl font-extrabold text-[#0F0F10] mb-1 tracking-tight">Your B2B Enquiry List</h1>
+        <p className="text-xs text-slate-500 font-light mb-8">Review and submit a consolidated quote request for multiple custom transducer components.</p>
+
+        {cartItems.length === 0 ? (
+          <div className="border border-[#EAEAEA] bg-white p-16 text-center rounded-premium max-w-2xl mx-auto space-y-4 shadow-sm animate-fade-in">
+            <ShoppingBag className="w-12 h-12 text-slate-300 mx-auto" />
+            <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">Your Enquiry List is Empty</h3>
+            <p className="text-xs text-slate-500 font-light max-w-md mx-auto leading-relaxed">
+              Explore our OEM speaker component catalog and click &quot;Add to Enquiry&quot; on components to build your custom wholesale quote request.
+            </p>
+            <button
+              onClick={() => router.push("/products")}
+              className="bg-[#0F0F10] hover:bg-[#2E2E33] text-white inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-xs font-bold tracking-wider cursor-pointer mt-4"
+            >
+              BROWSE CATALOG
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-fade-in">
+            
+            {/* Cart Items List */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex justify-between items-center text-xs text-slate-500 border-b border-[#EAEAEA] pb-2">
+                <span>Components in your list: <strong className="text-[#0F0F10] font-semibold">{cartItems.length}</strong></span>
+              </div>
+
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <div 
+                    key={item.id}
+                    className="bg-white border border-[#EAEAEA] rounded-premium p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#D6D6D8] transition-all shadow-sm"
+                  >
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">{item.category}</span>
+                      <h4 className="font-display text-sm font-bold text-[#0F0F10]">{item.name}</h4>
+                      <p className="text-[10px] text-slate-400 font-light">{item.variants}</p>
+                      <div className="text-[10px] text-slate-500 pt-1.5 flex gap-4 font-light">
+                        <span>Starting: <strong className="text-[#0F0F10] font-semibold font-numbers">{item.startingPrice}</strong></span>
+                        <span>•</span>
+                        <span>MOQ: <strong className="text-[#0F0F10] font-semibold">{item.moq}</strong></span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleRemoveFromCart(item.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 hover:underline cursor-pointer sm:self-center"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 className="w-4 h-4 shrink-0" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Consolidated RFQ Form */}
+            <div className="lg:col-span-5">
+              <div className="bg-white border border-[#EAEAEA] p-6 sm:p-8 rounded-premium font-sans shadow-sm">
+                <div className="flex items-center gap-3.5 mb-6">
+                  <div className="w-10 h-10 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+                    <Send className="w-5 h-5 text-[#0F0F10]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-base font-extrabold text-[#0F0F10] leading-tight">Submit Bulk Enquiry</h3>
+                    <p className="text-[9px] text-slate-450 uppercase font-bold tracking-wider font-sans">OEM Wholesale Request Intake</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleBulkSubmit} className="space-y-4 text-xs text-[#4A4A4F]">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={bulkForm.name}
+                      onChange={(e) => setBulkForm({...bulkForm, name: e.target.value})}
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      placeholder="e.g. Jane Smith"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Corporate Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={bulkForm.email}
+                      onChange={(e) => setBulkForm({...bulkForm, email: e.target.value})}
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      placeholder="name@company.com"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Company Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={bulkForm.company}
+                      onChange={(e) => setBulkForm({...bulkForm, company: e.target.value})}
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      placeholder="e.g. Apex Acoustic Labs"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Contact Number</label>
+                      <input
+                        type="tel"
+                        value={bulkForm.phone}
+                        onChange={(e) => setBulkForm({...bulkForm, phone: e.target.value})}
+                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                        placeholder="+1 (555) 000-0000"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Country of Import *</label>
+                      <input
+                        type="text"
+                        required
+                        value={bulkForm.country}
+                        onChange={(e) => setBulkForm({...bulkForm, country: e.target.value})}
+                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                        placeholder="e.g. United Kingdom"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">Additional Specifications / Tooling Requests</label>
+                    <textarea
+                      rows={3}
+                      value={bulkForm.message}
+                      onChange={(e) => setBulkForm({...bulkForm, message: e.target.value})}
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all resize-none font-light font-sans"
+                      placeholder="Specify custom tooling requirements, magnet grades, adhesive configurations, or delivery schedules."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={bulkSubmitting}
+                    className="w-full inline-flex items-center justify-center py-3.5 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-[#2E2E33] rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans mt-2"
+                  >
+                    {bulkSubmitting ? (
+                      <span>TRANSMITTING BULK RFQ...</span>
+                    ) : (
+                      <>
+                        <span>SUBMIT CONSOLIDATED RFQ</span>
+                        <Send className="w-4 h-4 ml-2" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+      </div>
+    );
+  }
 
   return (
     <>
@@ -605,7 +881,7 @@ function ProductsCatalogSection() {
 
               {/* B2B RFQ Form (Col 5) */}
               <div className="lg:col-span-5">
-                <InquiryForm defaultCategory={selectedProduct.category} />
+                <InquiryForm defaultCategory={selectedProduct.category} product={selectedProduct} />
               </div>
 
             </div>

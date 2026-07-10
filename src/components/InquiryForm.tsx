@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Send, FileText, CheckCircle, ShieldAlert } from "lucide-react";
+import { Send, FileText, CheckCircle, ShieldAlert, ShoppingBag, Sparkles } from "lucide-react";
 
 interface InquiryFormProps {
   defaultCategory?: string;
+  product?: {
+    id: string;
+    name: string;
+    category: string;
+    startingPrice: string;
+    moq: string;
+    variants: string;
+  } | null;
 }
 
-export default function InquiryForm({ defaultCategory = "Speaker Cones" }: InquiryFormProps) {
+export default function InquiryForm({ defaultCategory = "Speaker Cones", product = null }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,6 +30,8 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones" }: Inqui
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [justAddedCart, setJustAddedCart] = useState(false);
+  const [sampleModeActive, setSampleModeActive] = useState(false);
 
   const categories = [
     "Speaker Cones",
@@ -52,6 +62,52 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones" }: Inqui
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddToEnquiry = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      const storedStr = localStorage.getItem("gsp_enquiry_cart");
+      const cart = storedStr ? JSON.parse(storedStr) : [];
+      
+      const itemToAdd = {
+        id: product?.id || `item-${Date.now()}`,
+        name: product?.name || formData.category,
+        category: product?.category || formData.category,
+        startingPrice: product?.startingPrice || "$0.00",
+        moq: product?.moq || "1,000 units",
+        variants: product?.variants || "Standard OEM sizing",
+        date: new Date().toISOString().split("T")[0]
+      };
+      
+      // Prevent duplicates
+      const isAlreadyInCart = cart.some((item: Record<string, string>) => item.name === itemToAdd.name);
+      if (!isAlreadyInCart) {
+        const updated = [...cart, itemToAdd];
+        localStorage.setItem("gsp_enquiry_cart", JSON.stringify(updated));
+        window.dispatchEvent(new Event("gsp_cart_updated"));
+      }
+      
+      setJustAddedCart(true);
+      setTimeout(() => setJustAddedCart(false), 3000);
+    }
+  };
+
+  const handleBuySampleNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setFormData((prev) => {
+      const samplePrefix = "[SAMPLE EVALUATION REQUEST] ";
+      const hasPrefix = prev.message.startsWith(samplePrefix);
+      const targetName = product?.name || prev.category;
+      return {
+        ...prev,
+        quantity: "Under 1,000 units (Sample Run)",
+        message: hasPrefix 
+          ? prev.message 
+          : `${samplePrefix}Requesting a physical evaluation sample of ${targetName}. ${prev.message}`
+      };
+    });
+    setSampleModeActive(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -269,10 +325,22 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones" }: Inqui
           />
         </div>
 
+        {justAddedCart && (
+          <div className="p-2 bg-green-50 border border-green-200 text-green-700 text-[10px] text-center rounded font-semibold animate-fade-in font-sans">
+            ✓ Component added to B2B Enquiry list.
+          </div>
+        )}
+
+        {sampleModeActive && (
+          <div className="p-2 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] text-center rounded font-semibold animate-fade-in font-sans">
+            ★ Sample Order Mode active. Please complete details below and submit.
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full inline-flex items-center justify-center py-3 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-[#2E2E33] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+          className="w-full inline-flex items-center justify-center py-3 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-[#2E2E33] rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans"
         >
           {isSubmitting ? (
             <span>TRANSMITTING SPECIFICATIONS...</span>
@@ -283,6 +351,26 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones" }: Inqui
             </>
           )}
         </button>
+
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <button
+            type="button"
+            onClick={handleAddToEnquiry}
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#0F0F10] bg-white hover:bg-[#F7F7F8] border border-[#0F0F10] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+          >
+            <ShoppingBag className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+            <span>Add to Enquiry</span>
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleBuySampleNow}
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#4A4A4F] bg-[#F7F7F8] hover:bg-[#E8E8EA] border border-[#EAEAEA] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+          >
+            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500 shrink-0" />
+            <span>Buy Sample Now</span>
+          </button>
+        </div>
       </form>
 
     </div>

@@ -106,10 +106,31 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [openMobileSub, setOpenMobileSub] = useState<string | null>(null);
+  const [cartCount, setCartCount] = useState(0);
   
   const pathname = usePathname();
 
   useEffect(() => {
+    const updateCount = () => {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("gsp_enquiry_cart");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            setCartCount(parsed.length);
+          } catch {
+            setCartCount(0);
+          }
+        } else {
+          setCartCount(0);
+        }
+      }
+    };
+    
+    updateCount();
+    window.addEventListener("gsp_cart_updated", updateCount);
+    window.addEventListener("storage", updateCount);
+    
     const handleScroll = () => {
       if (window.scrollY > 20) {
         setScrolled(true);
@@ -118,7 +139,11 @@ export default function Navbar() {
       }
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("gsp_cart_updated", updateCount);
+      window.removeEventListener("storage", updateCount);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -210,6 +235,11 @@ export default function Navbar() {
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5 text-[#E8E8EA] hover:text-[#FFFFFF] transition-colors" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-white text-[#0F0F10] text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#0F0F10] font-mono shadow-sm">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Quote button (desktop/tablet) */}
