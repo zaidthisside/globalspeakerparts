@@ -14,7 +14,7 @@ const images = {
 };
 
 const homeCategories = [
-  { name: "Voice Coils", href: "/products?cat=coils", image: "https://images.unsplash.com/photo-1618976186466-b3a5cfc7df57?auto=format&fit=crop&w=300&q=80" },
+  {name: "Voice Coils", href: "/products?cat=coils", image: "/voice-coil.jpg" },
   { name: "Speaker Cones", href: "/products?cat=cones", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=300&q=80" },
   { name: "Speaker Surrounds", href: "/products?cat=surrounds", image: "https://images.unsplash.com/photo-1558089687-f282ffcbd1d5?auto=format&fit=crop&w=300&q=80" },
   { name: "Speaker Spiders", href: "/products?cat=spiders", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=300&q=80" },
