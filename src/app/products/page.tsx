@@ -276,6 +276,24 @@ function ProductsCatalogSection() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedProduct, setSelectedProduct] = useState<typeof productsData[0] | null>(null);
+  const [customProducts, setCustomProducts] = useState<typeof productsData>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("gsp_custom_products");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const timer = setTimeout(() => {
+            setCustomProducts(parsed);
+          }, 0);
+          return () => clearTimeout(timer);
+        } catch (e) {
+          console.error("Error loading custom products", e);
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (catParam) {
@@ -303,8 +321,12 @@ function ProductsCatalogSection() {
     }
   }, [catParam, searchParams]);
 
+  const allProducts = useMemo(() => {
+    return [...productsData, ...customProducts];
+  }, [customProducts]);
+
   const filteredProducts = useMemo(() => {
-    return productsData.filter((prod) => {
+    return allProducts.filter((prod) => {
       const matchesSearch = 
         prod.name.toLowerCase().includes(search.toLowerCase()) || 
         prod.category.toLowerCase().includes(search.toLowerCase()) ||
@@ -316,7 +338,7 @@ function ProductsCatalogSection() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [search, selectedCategory]);
+  }, [allProducts, search, selectedCategory]);
 
   return (
     <>

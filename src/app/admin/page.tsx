@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { 
-  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert 
+  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert, X 
 } from "lucide-react";
 import Logo from "@/components/Logo";
 
@@ -11,6 +11,23 @@ export default function AdminPage() {
   const [inquiries, setInquiries] = useState<Record<string, string>[]>([]);
   const [productInventory, setProductInventory] = useState<Record<string, string>[]>([]);
   const [shippingLogs, setShippingLogs] = useState<Record<string, string>[]>([]);
+  const [customProducts, setCustomProducts] = useState<Record<string, string>[]>([]);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    category: "Speaker Cones",
+    desc: "",
+    materials: "",
+    dimensions: "",
+    tempLimit: "",
+    frequencyRange: "",
+    tolerances: "",
+    startingPrice: "",
+    moq: "",
+    variants: "",
+    imageKey: "cones"
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   
@@ -73,6 +90,20 @@ export default function AdminPage() {
         }
       }
 
+      // 5. Load custom products from localStorage
+      const storedCustom = localStorage.getItem("gsp_custom_products");
+      if (storedCustom) {
+        try {
+          const parsed = JSON.parse(storedCustom);
+          const timer5 = setTimeout(() => {
+            setCustomProducts(parsed);
+          }, 0);
+          activeTimers.push(timer5);
+        } catch (e) {
+          console.error("Error loading custom products", e);
+        }
+      }
+
       return () => {
         activeTimers.forEach(t => clearTimeout(t));
       };
@@ -100,6 +131,45 @@ export default function AdminPage() {
       }
       return updated;
     });
+  };
+
+  // Handle adding custom product
+  const handleAddProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const productWithId = {
+      ...newProduct,
+      id: `custom-${Date.now()}`
+    };
+    const updated = [productWithId, ...customProducts];
+    setCustomProducts(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("gsp_custom_products", JSON.stringify(updated));
+    }
+    // Reset form and close modal
+    setNewProduct({
+      name: "",
+      category: "Speaker Cones",
+      desc: "",
+      materials: "",
+      dimensions: "",
+      tempLimit: "",
+      frequencyRange: "",
+      tolerances: "",
+      startingPrice: "",
+      moq: "",
+      variants: "",
+      imageKey: "cones"
+    });
+    setIsAddProductOpen(false);
+  };
+
+  // Handle deleting custom product
+  const handleDeleteProduct = (id: string) => {
+    const updated = customProducts.filter(prod => prod.id !== id);
+    setCustomProducts(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("gsp_custom_products", JSON.stringify(updated));
+    }
   };
 
   // Filtered inquiries logic
@@ -423,62 +493,331 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* TAB 3: PRODUCT INVENTORY MANAGER */}
+          {/* TAB 3: PRODUCT INVENTORY MANAGER & CATALOG */}
           {activeTab === "products" && (
-            <div className="bg-white border border-border-cool rounded-premium shadow-soft p-6 space-y-6 animate-fade-in">
-              <div className="flex justify-between items-center border-b border-border-cool pb-5">
-                <div>
-                  <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider">
-                    Manufacturing Component Status
-                  </h3>
-                  <p className="text-[10px] text-slate-400 font-light">Inventory statistics and machining tolerances.</p>
+            <div className="space-y-8 animate-fade-in font-sans">
+              
+              {/* Product inventory status */}
+              <div className="bg-white border border-[#EAEAEA] rounded-premium p-6 space-y-6">
+                <div className="flex justify-between items-center border-b border-[#EAEAEA] pb-5">
+                  <div>
+                    <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">
+                      Manufacturing Component Status
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-light">Inventory statistics and machining tolerances.</p>
+                  </div>
+                  <button 
+                    onClick={() => setIsAddProductOpen(true)}
+                    className="btn-primary inline-flex items-center justify-center px-5 py-2 text-[10px] font-bold tracking-wider cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    <span>ADD NEW PRODUCT</span>
+                  </button>
                 </div>
-                <button className="btn-primary inline-flex items-center justify-center px-5 py-2 text-[10px] font-bold tracking-wider cursor-pointer">
-                  <Plus className="w-3.5 h-3.5 mr-1" />
-                  <span>ADD NEW MOLD</span>
-                </button>
+
+                {/* Product inventory table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b border-[#EAEAEA]">
+                      <tr>
+                        <th className="px-4 py-3">Transducer Component Category</th>
+                        <th className="px-4 py-3">Mold / Production Status</th>
+                        <th className="px-4 py-3">Stored Inventory / Raw Weight</th>
+                        <th className="px-4 py-3">Machined Tolerances</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#EAEAEA] text-slate-700">
+                      {productInventory.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                            No active manufacturing tooling molds logged. (Total: 0)
+                          </td>
+                        </tr>
+                      ) : (
+                        productInventory.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-bg-snow/30">
+                            <td className="px-4 py-3.5 font-bold text-slate-800">{item.category}</td>
+                            <td className="px-4 py-3.5">
+                              <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
+                                item.moldStatus === "Active" 
+                                  ? "bg-green-50 text-green-700 border border-green-200" 
+                                  : "bg-amber-50 text-amber-700 border border-amber-200"
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${item.moldStatus === "Active" ? "bg-green-500" : "bg-amber-500"}`} />
+                                {item.moldStatus}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3.5 font-light text-slate-500">{item.stockTons}</td>
+                            <td className="px-4 py-3.5 text-[#0F0F10] font-mono font-semibold">{item.tolerance}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              {/* Product inventory table */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-bg-snow text-primary-midnight font-bold border-b border-border-cool">
-                    <tr>
-                      <th className="px-4 py-3">Transducer Component Category</th>
-                      <th className="px-4 py-3">Mold / Production Status</th>
-                      <th className="px-4 py-3">Stored Inventory / Raw Weight</th>
-                      <th className="px-4 py-3">Machined Tolerances</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border-cool text-slate-700">
-                    {productInventory.length === 0 ? (
+              {/* Custom B2B catalog manager list */}
+              <div className="bg-white border border-[#EAEAEA] rounded-premium p-6 space-y-6">
+                <div>
+                  <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">
+                    Added Custom B2B Products
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-light">Custom speaker components published live to the user catalog page.</p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b border-[#EAEAEA]">
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
-                          No active manufacturing tooling molds logged. (Total: 0)
-                        </td>
+                        <th className="px-4 py-3">Component Name</th>
+                        <th className="px-4 py-3">Category</th>
+                        <th className="px-4 py-3">Starting Price</th>
+                        <th className="px-4 py-3">MOQ</th>
+                        <th className="px-4 py-3">Tolerance</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
-                    ) : (
-                      productInventory.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-bg-snow/30">
-                          <td className="px-4 py-3.5 font-bold text-slate-800">{item.category}</td>
-                          <td className="px-4 py-3.5">
-                            <span className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
-                              item.moldStatus === "Active" 
-                                ? "bg-green-50 text-green-700 border border-green-200" 
-                                : "bg-amber-50 text-amber-700 border border-amber-200"
-                            }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${item.moldStatus === "Active" ? "bg-green-500" : "bg-amber-500"}`} />
-                              {item.moldStatus}
-                            </span>
+                    </thead>
+                    <tbody className="divide-y divide-[#EAEAEA] text-slate-700">
+                      {customProducts.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                            No custom B2B products added yet. Click &quot;Add New Product&quot; to populate your custom catalogue. (Total: 0)
                           </td>
-                          <td className="px-4 py-3.5 font-light text-slate-500">{item.stockTons}</td>
-                          <td className="px-4 py-3.5 text-accent-cyan font-mono font-semibold">{item.tolerance}</td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        customProducts.map((prod) => (
+                          <tr key={prod.id} className="hover:bg-bg-snow/30">
+                            <td className="px-4 py-3.5 font-bold text-slate-800">{prod.name}</td>
+                            <td className="px-4 py-3.5 font-medium">{prod.category}</td>
+                            <td className="px-4 py-3.5 font-bold font-numbers">{prod.startingPrice}</td>
+                            <td className="px-4 py-3.5 font-light">{prod.moq}</td>
+                            <td className="px-4 py-3.5 font-mono text-[#5C5C63]">{prod.tolerances}</td>
+                            <td className="px-4 py-3.5 text-right">
+                              <button 
+                                onClick={() => handleDeleteProduct(prod.id)}
+                                className="text-red-650 hover:text-red-700 font-bold hover:underline cursor-pointer"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+
+              {/* Add Product Modal Overlay */}
+              {isAddProductOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/50 backdrop-blur-xs font-sans">
+                  <div className="bg-white border border-[#D6D6D8] w-full max-w-2xl rounded-premium shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto scrollbar-thin">
+                    
+                    {/* Header */}
+                    <div className="flex justify-between items-center border-b border-[#EAEAEA] pb-4 mb-4">
+                      <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">
+                        Add New B2B Product Card
+                      </h3>
+                      <button 
+                        onClick={() => setIsAddProductOpen(false)}
+                        className="p-1 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-[#0F0F10] cursor-pointer"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Form */}
+                    <form onSubmit={handleAddProductSubmit} className="space-y-4 text-xs text-[#4A4A4F]">
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Product Title *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. Carbon Fiber Composite Woofer Cones"
+                            value={newProduct.name}
+                            onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Category *</label>
+                          <select 
+                            value={newProduct.category}
+                            onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white cursor-pointer"
+                          >
+                            <option value="Speaker Cones">Speaker Cones</option>
+                            <option value="Voice Coils">Voice Coils</option>
+                            <option value="Spiders (Dampers)">Spiders (Dampers)</option>
+                            <option value="Dust Caps">Dust Caps</option>
+                            <option value="Speaker Surrounds">Speaker Surrounds</option>
+                            <option value="Magnets">Magnets</option>
+                            <option value="Pole Pieces">Pole Pieces</option>
+                            <option value="Top Plates">Top Plates</option>
+                            <option value="Bottom Plates">Bottom Plates</option>
+                            <option value="Speaker Frames">Speaker Frames</option>
+                            <option value="T-Yokes">T-Yokes</option>
+                            <option value="Terminals">Terminals</option>
+                            <option value="Tweeter Parts">Tweeter Parts</option>
+                            <option value="Complete Speaker Components">Complete Speaker Components</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">B2B Product Description *</label>
+                        <textarea 
+                          required
+                          rows={2}
+                          placeholder="Provide a detailed mechanical and operational summary suited for sound engineers and purchasing desks."
+                          value={newProduct.desc}
+                          onChange={(e) => setNewProduct({...newProduct, desc: e.target.value})}
+                          className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white resize-none"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Material Composition *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. High-modulus carbon pulp, rubber surround"
+                            value={newProduct.materials}
+                            onChange={(e) => setNewProduct({...newProduct, materials: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Dimensional Ranges *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. 5.25, 6.5, 8.0, 10.0, 12.0 inches"
+                            value={newProduct.dimensions}
+                            onChange={(e) => setNewProduct({...newProduct, dimensions: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Operating Temperature Limits *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. -40°C to 110°C continuous load"
+                            value={newProduct.tempLimit}
+                            onChange={(e) => setNewProduct({...newProduct, tempLimit: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Acoustic Tuning / Frequency Ranges *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. 30 Hz - 4.5 kHz response range"
+                            value={newProduct.frequencyRange}
+                            onChange={(e) => setNewProduct({...newProduct, frequencyRange: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Machining Tolerances *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. ±0.15 mm thickness accuracy"
+                            value={newProduct.tolerances}
+                            onChange={(e) => setNewProduct({...newProduct, tolerances: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Starting Price / Unit *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. $1.80 / unit"
+                            value={newProduct.startingPrice}
+                            onChange={(e) => setNewProduct({...newProduct, startingPrice: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Minimum Order Quantity (MOQ) *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="e.g. 1,000 units"
+                            value={newProduct.moq}
+                            onChange={(e) => setNewProduct({...newProduct, moq: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Product Custom Variants *</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder='e.g. Sizes: 5.25", 6.5" • Edge: Rubber, Foam'
+                            value={newProduct.variants}
+                            onChange={(e) => setNewProduct({...newProduct, variants: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Representative High-Quality Catalog Image *</label>
+                        <select 
+                          value={newProduct.imageKey}
+                          onChange={(e) => setNewProduct({...newProduct, imageKey: e.target.value})}
+                          className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white cursor-pointer"
+                        >
+                          <option value="cones">Speaker Cones</option>
+                          <option value="coils">Voice Coils</option>
+                          <option value="spiders">Spiders (Dampers)</option>
+                          <option value="dustcaps">Dust Caps / Tweeter parts</option>
+                          <option value="surrounds">Speaker Surrounds</option>
+                          <option value="magnets">Magnets</option>
+                          <option value="frames">Speaker Frames / Yokes</option>
+                          <option value="terminals">Speaker Terminals</option>
+                          <option value="tweeterparts">Tweeters / Diaphragms</option>
+                        </select>
+                      </div>
+
+                      <div className="flex justify-end gap-3 border-t border-[#EAEAEA] pt-4 mt-6">
+                        <button 
+                          type="button"
+                          onClick={() => setIsAddProductOpen(false)}
+                          className="btn-secondary px-5 py-2 hover:bg-[#F7F7F8] cursor-pointer"
+                        >
+                          CANCEL
+                        </button>
+                        <button 
+                          type="submit"
+                          className="btn-primary px-5 py-2 cursor-pointer"
+                        >
+                          SAVE PRODUCT CARD
+                        </button>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+              )}
 
             </div>
           )}
