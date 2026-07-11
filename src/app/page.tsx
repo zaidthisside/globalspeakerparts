@@ -70,7 +70,7 @@ export default function Home() {
         {/* Background Dark Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-10000 ease-out scale-100"
-          style={{ backgroundImage: "url('/hero-bookshelf-speaker.jpg')" }}
+          style={{ backgroundImage: "url('/hero-bookshelf-speaker.png')" }}
         />
         {/* Black Vignette Radial Overlay to make text pop and match ambient atmosphere */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0F0F10]/70 via-[#0F0F10]/50 to-[#0F0F10]/85 z-10" />
