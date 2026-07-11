@@ -73,8 +73,9 @@ export default function Home() {
           style={{ backgroundImage: "url('/bg-illustration.jpg')" }}
         />
         
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-10 xl:px-16 relative z-10">
-          <div className="grid grid-cols-5 gap-y-5 gap-x-1.5 sm:gap-x-4 lg:gap-x-6 max-w-[1280px] mx-auto font-sans">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 relative z-10">
+          {/* DESKTOP LAYOUT: 5 columns, 2 rows (includes all 10 categories, border-2 thick lines) */}
+          <div className="hidden sm:grid grid-cols-5 gap-y-5 gap-x-4 lg:gap-x-6 max-w-[1280px] mx-auto font-sans">
             {homeCategories.map((cat) => (
               <Link 
                 key={cat.name}
@@ -102,12 +103,51 @@ export default function Home() {
 
                 {/* Category name below the card */}
                 <div className="mt-2.5 text-center flex justify-center">
-                  <span className="inline-block border-2 border-black rounded-premium px-1.5 py-1 sm:px-4 sm:py-1.5 font-display text-[7.5px] sm:text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm truncate max-w-full">
+                  <span className="inline-block border-2 border-black rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm truncate max-w-full">
                     {cat.name}
                   </span>
                 </div>
               </Link>
             ))}
+          </div>
+
+          {/* MOBILE LAYOUT: 3 columns, 3 rows (excludes Magnets, border very thin) */}
+          <div className="grid sm:hidden grid-cols-3 gap-y-4 gap-x-2.5 max-w-[480px] mx-auto font-sans">
+            {homeCategories
+              .filter((cat) => cat.name !== "Magnets")
+              .map((cat) => (
+                <Link 
+                  key={cat.name}
+                  href={cat.href}
+                  className="group block cursor-pointer"
+                >
+                  {/* Image Container Card - Studio White background with thin border border-black */}
+                  <div className="relative w-full aspect-square rounded-premium overflow-hidden border border-black bg-[#FAFAFA] hover:scale-[1.02] transition-all duration-300 ease-out transform block shadow-sm">
+                    {/* Ken Burns Animated Background Image */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
+                      style={{ backgroundImage: `url('${cat.image}')` }}
+                    />
+                    
+                    {/* Subtle overlay for styling */}
+                    <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300 z-10" />
+
+                    {/* Subtitle / Tech Spec line (faint on hover) */}
+                    <div className="absolute inset-x-0 bottom-1.5 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-[6.5px] font-mono tracking-widest text-white uppercase bg-[#0F0F10]/85 px-1 py-0.5 rounded border border-white/20">
+                        VIEW
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Category name below the card */}
+                  <div className="mt-2 text-center flex justify-center">
+                    <span className="inline-block border border-black rounded-premium px-2 py-1 font-display text-[7.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm truncate max-w-full">
+                      {cat.name}
+                    </span>
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
       </section>
