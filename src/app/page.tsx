@@ -200,58 +200,58 @@ export default function Home() {
       </section>
 
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-b border-[#EAEAEA]">
+      <section className="w-full py-20 bg-white border-b border-black">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
             
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
                 <Settings2 className="w-6 h-6 text-[#5C5C63]" />
               </div>
               <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Acoustics, Reimagined</h3>
               <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 We use 100% certified raw materials and carbon fiber matrices, we craft speaker cones and voice coils without compromising on acoustic weight.
               </p>
-              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
+              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 100% Certified
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
                 <ShieldCheck className="w-6 h-6 text-[#5C5C63]" />
               </div>
               <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Made for the Stage</h3>
               <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Reliability is not just a trend for us - it is reflected in every coil we wind and the physical tests we make in our labs.
               </p>
-              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
+              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 Performance Driven
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
                 <Cpu className="w-6 h-6 text-[#5C5C63]" />
               </div>
               <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Copper, Reclaimed</h3>
               <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Made from top-tier CCAW and high-purity copper wires, our voice coil winding lines transform metals into thermal acoustic coils.
               </p>
-              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
+              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 CCAW / Pure Copper
               </div>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
                 <Factory className="w-6 h-6 text-[#5C5C63]" />
               </div>
               <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Pressure Tolerant</h3>
               <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
                 Crafted through strict high-pressure hot pressing, our speaker surrounds and spiders support linear displacement curves.
               </p>
-              <div className="bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
+              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
                 Zero Defect
               </div>
             </div>
@@ -315,12 +315,12 @@ export default function Home() {
           </div>
 
           {/* Symmetrical stats border grid */}
-          <div className="mt-14 w-full border border-[#D6D6D8] grid grid-cols-2 lg:grid-cols-5 divide-y divide-x divide-[#D6D6D8] border-collapse bg-transparent font-sans">
+          <div className="mt-14 w-full border border-black grid grid-cols-2 lg:grid-cols-5 divide-y divide-x divide-black border-collapse bg-transparent font-sans">
             <div className="flex flex-col items-center justify-center py-6 text-center px-3">
               <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">2001</span>
               <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Established</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-6 text-center px-3 border-t border-[#D6D6D8] lg:border-t-0">
+            <div className="flex flex-col items-center justify-center py-6 text-center px-3 border-t border-black lg:border-t-0">
               <span className="text-3xl sm:text-4xl text-[#0F0F10] font-semibold font-numbers mb-1.5">14</span>
               <span className="text-[#5C5C63] text-[10px] font-bold uppercase tracking-wider">Product Categories</span>
             </div>
@@ -342,9 +342,9 @@ export default function Home() {
       </section>
 
       {/* 4. Materials Pillars Grid */}
-      <section className="w-full py-16 bg-white border-b border-[#EAEAEA]">
+      <section className="w-full py-16 bg-white border-b border-black">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
             
             <div className="flex flex-col items-center text-center space-y-3 font-sans">
               <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
@@ -352,7 +352,7 @@ export default function Home() {
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 The primary cone structural fiber — strong, low-mass, high-stiffness. Carbon fiber pulp sheets outlive traditional paper by decades.
               </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-3 font-sans">
@@ -361,7 +361,7 @@ export default function Home() {
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 High structural integrity formers give our voice coils their unique thermal limits — stable continuous power load up to 280°C.
               </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-3 font-sans">
@@ -370,7 +370,7 @@ export default function Home() {
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 High magnetic energy Y35 Ferrite and NdFeB rings create maximum gap flux density, translating electrical power into clean movement.
               </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
             </div>
 
             <div className="flex flex-col items-center text-center space-y-3 font-sans">
@@ -379,7 +379,7 @@ export default function Home() {
               <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
                 The silent step. Every batch is evaluated in isolated anechoic chambers to record frequency sweep plots.
               </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
+              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
             </div>
 
           </div>
@@ -416,7 +416,7 @@ export default function Home() {
                 href={col.href}
                 className="flex flex-col group cursor-pointer"
               >
-                <div className="w-full aspect-square bg-[#F7F7F8] mb-4 overflow-hidden rounded-lg border border-[#EAEAEA] flex items-center justify-center">
+                <div className="w-full aspect-square bg-[#F7F7F8] mb-4 overflow-hidden rounded-lg border border-black flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={col.image} 
@@ -438,7 +438,7 @@ export default function Home() {
       </section>
 
       {/* 6. Custom B2B Quote Card (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-t border-[#EAEAEA]">
+      <section className="w-full py-20 bg-white border-t border-black">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-16">
             
