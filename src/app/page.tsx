@@ -73,40 +73,6 @@ export default function Home() {
           style={{ backgroundImage: "url('/hero-bookshelf-speaker.png')" }}
         />
       </section>
-
-      {/* Marquee banner tape strip */}
-      <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative border-b border-black">
-        <div className="flex whitespace-nowrap animate-marquee-left w-max">
-          <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
-            <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">B2B OEM CONTRACTS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-          </div>
-          <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
-            <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">B2B OEM CONTRACTS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-            <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-            <span className="text-[#5C5C63] mx-2">◆</span>
-          </div>
-        </div>
-      </div>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full pt-8 pb-8 bg-white border-b-2 border-black relative overflow-hidden">
         {/* Background Illustration Overlay (30% Opacity) */}
