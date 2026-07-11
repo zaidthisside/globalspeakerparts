@@ -65,26 +65,32 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
-      {/* Category Grid: 2 rows, 5 columns (Directly below navbar) */}
-      <section className="w-full pt-8 pb-6 bg-white border-b border-[#EAEAEA]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-7 gap-x-3.5 lg:gap-x-4.5 font-sans">
+      {/* Category Grid: 5 rows, 2 columns (fits perfectly on mobile & desktop) */}
+      <section className="w-full pt-10 pb-10 bg-white border-b-2 border-black relative overflow-hidden">
+        {/* Background Illustration Overlay (30% Opacity) */}
+        <div 
+          className="absolute inset-0 bg-no-repeat bg-cover bg-center pointer-events-none opacity-30 z-0"
+          style={{ backgroundImage: "url('/bg-illustration.jpg')" }}
+        />
+        
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 relative z-10">
+          <div className="grid grid-cols-2 gap-y-8 gap-x-4 sm:gap-x-8 max-w-[720px] mx-auto font-sans">
             {homeCategories.map((cat) => (
               <Link 
                 key={cat.name}
                 href={cat.href}
                 className="group block cursor-pointer"
               >
-                {/* Image Container Card */}
-                <div className="relative w-full aspect-square rounded-premium overflow-hidden border border-[#0F0F10] hover:border-transparent hover:scale-[1.03] transition-all duration-300 ease-out transform block">
-                  {/* Ken Burns Animated Background Image (Cinemagraph GIF effect) */}
+                {/* Image Container Card - Studio White background with border-2 border-black */}
+                <div className="relative w-full aspect-square rounded-premium overflow-hidden border-2 border-black bg-[#FAFAFA] hover:scale-[1.02] transition-all duration-300 ease-out transform block shadow-sm">
+                  {/* Ken Burns Animated Background Image */}
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-750 ease-out scale-100 group-hover:scale-103 animate-kenburns"
                     style={{ backgroundImage: `url('${cat.image}')` }}
                   />
                   
-                  {/* Dark overlay for readability */}
-                  <div className="absolute inset-0 bg-[#0F0F10]/15 group-hover:bg-[#0F0F10]/5 transition-all duration-300 z-10" />
+                  {/* Subtle overlay for styling */}
+                  <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300 z-10" />
 
                   {/* Subtitle / Tech Spec line (faint on hover) */}
                   <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -96,7 +102,7 @@ export default function Home() {
 
                 {/* Category name below the card */}
                 <div className="mt-3.5 text-center flex justify-center">
-                  <span className="inline-block border border-[#0F0F10] rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200">
+                  <span className="inline-block border-2 border-black rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm">
                     {cat.name}
                   </span>
                 </div>
