@@ -279,7 +279,14 @@ function ProductsCatalogSection() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedProduct, setSelectedProduct] = useState<typeof productsData[0] | null>(null);
+  const [isSampleMode, setIsSampleMode] = useState(false);
   const [customProducts, setCustomProducts] = useState<typeof productsData>([]);
+  const [whatsappNumberCleaned, setWhatsappNumberCleaned] = useState("919214361550");
+
+  const getWhatsAppUrl = (prodName: string) => {
+    const msg = `Hello, I am interested in inquiring about the ${prodName} component for our B2B needs.`;
+    return `https://wa.me/${whatsappNumberCleaned}?text=${encodeURIComponent(msg)}`;
+  };
 
   const [cartItems, setCartItems] = useState<Record<string, string>[]>([]);
   const [bulkSubmitted, setBulkSubmitted] = useState(false);
@@ -296,17 +303,33 @@ function ProductsCatalogSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("gsp_custom_products");
+      let timer: NodeJS.Timeout | null = null;
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          const timer = setTimeout(() => {
+          timer = setTimeout(() => {
             setCustomProducts(parsed);
           }, 0);
-          return () => clearTimeout(timer);
         } catch (e) {
           console.error("Error loading custom products", e);
         }
       }
+
+      let timerWhatsapp: NodeJS.Timeout | null = null;
+      const rawNum = localStorage.getItem("gsp_whatsapp_number");
+      if (rawNum) {
+        const cleaned = rawNum.replace(/\D/g, "");
+        if (cleaned) {
+          timerWhatsapp = setTimeout(() => {
+            setWhatsappNumberCleaned(cleaned);
+          }, 0);
+        }
+      }
+
+      return () => {
+        if (timer) clearTimeout(timer);
+        if (timerWhatsapp) clearTimeout(timerWhatsapp);
+      };
     }
   }, []);
 
@@ -420,7 +443,7 @@ function ProductsCatalogSection() {
     if (bulkSubmitted) {
       return (
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 font-sans text-center max-w-xl flex flex-col items-center justify-center relative z-10 min-h-[60vh]">
-          <CheckCircle className="w-16 h-16 text-[#0F0F10] mb-6 animate-pulse" />
+          <CheckCircle className="w-16 h-16 text-accent-cyan mb-6 animate-pulse" />
           <h2 className="font-display text-2xl font-extrabold text-[#0F0F10] mb-3 uppercase tracking-tight">Bulk Enquiry Transmitted</h2>
           <p className="text-[#4A4A4F] text-sm leading-relaxed mb-8 font-light max-w-md">
             Thank you. Your consolidated RFQs have been securely transmitted to the Global Speaker Parts export desk. Our acoustic engineering team will contact you within 24 business hours.
@@ -430,7 +453,7 @@ function ProductsCatalogSection() {
               setBulkSubmitted(false);
               router.push("/products");
             }}
-            className="bg-[#0F0F10] hover:bg-[#2E2E33] text-white px-8 py-3 rounded-lg font-bold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer animate-fade-in"
+            className="bg-[#0F0F10] hover:bg-accent-cyan-hover text-white px-8 py-3 rounded-lg font-bold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer animate-fade-in"
           >
             RETURN TO COMPONENT CATALOG
           </button>
@@ -444,7 +467,7 @@ function ProductsCatalogSection() {
         {/* Back Link */}
         <button
           onClick={() => router.push("/products")}
-          className="flex items-center gap-2 text-xs font-bold text-[#5C5C63] hover:text-[#0F0F10] mb-6 uppercase tracking-wider cursor-pointer"
+          className="flex items-center gap-2 text-xs font-bold text-[#5C5C63] hover:text-accent-cyan mb-6 uppercase tracking-wider cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Catalog</span>
@@ -462,7 +485,7 @@ function ProductsCatalogSection() {
             </p>
             <button
               onClick={() => router.push("/products")}
-              className="bg-[#0F0F10] hover:bg-[#2E2E33] text-white inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-xs font-bold tracking-wider cursor-pointer mt-4"
+              className="bg-[#0F0F10] hover:bg-accent-cyan-hover text-white inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-xs font-bold tracking-wider cursor-pointer mt-4"
             >
               BROWSE CATALOG
             </button>
@@ -527,7 +550,7 @@ function ProductsCatalogSection() {
                       required
                       value={bulkForm.name}
                       onChange={(e) => setBulkForm({...bulkForm, name: e.target.value})}
-                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
                       placeholder="e.g. Jane Smith"
                     />
                   </div>
@@ -539,7 +562,7 @@ function ProductsCatalogSection() {
                       required
                       value={bulkForm.email}
                       onChange={(e) => setBulkForm({...bulkForm, email: e.target.value})}
-                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
                       placeholder="name@company.com"
                     />
                   </div>
@@ -551,7 +574,7 @@ function ProductsCatalogSection() {
                       required
                       value={bulkForm.company}
                       onChange={(e) => setBulkForm({...bulkForm, company: e.target.value})}
-                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
                       placeholder="e.g. Apex Acoustic Labs"
                     />
                   </div>
@@ -563,7 +586,7 @@ function ProductsCatalogSection() {
                         type="tel"
                         value={bulkForm.phone}
                         onChange={(e) => setBulkForm({...bulkForm, phone: e.target.value})}
-                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
                         placeholder="+1 (555) 000-0000"
                       />
                     </div>
@@ -574,7 +597,7 @@ function ProductsCatalogSection() {
                         required
                         value={bulkForm.country}
                         onChange={(e) => setBulkForm({...bulkForm, country: e.target.value})}
-                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
                         placeholder="e.g. United Kingdom"
                       />
                     </div>
@@ -586,7 +609,7 @@ function ProductsCatalogSection() {
                       rows={3}
                       value={bulkForm.message}
                       onChange={(e) => setBulkForm({...bulkForm, message: e.target.value})}
-                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all resize-none font-light font-sans"
+                      className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all resize-none font-light font-sans"
                       placeholder="Specify custom tooling requirements, magnet grades, adhesive configurations, or delivery schedules."
                     />
                   </div>
@@ -594,7 +617,7 @@ function ProductsCatalogSection() {
                   <button
                     type="submit"
                     disabled={bulkSubmitting}
-                    className="w-full inline-flex items-center justify-center py-3.5 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-[#2E2E33] rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans mt-2"
+                    className="w-full inline-flex items-center justify-center py-3.5 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-accent-cyan-hover rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans mt-2"
                   >
                     {bulkSubmitting ? (
                       <span>TRANSMITTING BULK RFQ...</span>
@@ -638,13 +661,13 @@ function ProductsCatalogSection() {
               placeholder="Search component catalog..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-[#EAEAEA] rounded-premium px-4 py-3 pl-10 text-xs text-[#0F0F10] outline-none focus:border-[#0F0F10] transition-colors placeholder:text-slate-400"
+              className="w-full bg-white border border-[#EAEAEA] rounded-premium px-4 py-3 pl-10 text-xs text-[#0F0F10] outline-none focus:border-accent-cyan transition-colors placeholder:text-slate-400"
             />
             <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
             {search && (
               <button 
                 onClick={() => setSearch("")}
-                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-[#0F0F10] text-[10px] font-bold"
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-accent-cyan text-[10px] font-bold"
               >
                 CLEAR
               </button>
@@ -654,7 +677,7 @@ function ProductsCatalogSection() {
       </section>
 
       {/* Main Grid */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-4 gap-10 relative z-10 font-sans">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 relative z-10 font-sans">
         
         {/* Sidebar Filters */}
         <div className="lg:col-span-1 space-y-4">
@@ -672,8 +695,8 @@ function ProductsCatalogSection() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-2 text-left rounded-lg text-xs font-semibold whitespace-nowrap tracking-wide transition-all ${
                     isSelected
-                      ? "bg-white border-l-3 border-[#0F0F10] text-[#0F0F10] font-bold"
-                      : "text-slate-500 hover:bg-[#F7F7F8] hover:text-[#0F0F10] border-l-3 border-transparent"
+                      ? "bg-[#F7F7F8] border-l-3 border-accent-cyan text-accent-cyan font-bold"
+                      : "text-slate-500 hover:bg-[#F7F7F8] hover:text-accent-cyan border-l-3 border-transparent"
                   }`}
                 >
                   {cat}
@@ -695,74 +718,103 @@ function ProductsCatalogSection() {
               <p className="text-xs text-slate-500 font-light">No components match your search filter.</p>
               <button
                 onClick={() => { setSearch(""); setSelectedCategory("All Categories"); }}
-                className="mt-4 text-xs font-bold text-[#0F0F10] hover:text-[#2E2E33]"
+                className="mt-4 text-xs font-bold text-[#0F0F10] hover:text-accent-cyan"
               >
                 Reset Filters
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
               {filteredProducts.map((prod) => {
                 const imgUrl = productImages[prod.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80";
                 return (
                   <div 
                     key={prod.id}
-                    onClick={() => setSelectedProduct(prod)}
-                    className="glass-panel glass-panel-hover p-4 rounded-premium cursor-pointer flex flex-col justify-between"
+                    onClick={() => {
+                      setIsSampleMode(false);
+                      setSelectedProduct(prod);
+                    }}
+                    className="bg-white border-2 border-black p-2.5 sm:p-3 rounded-premium cursor-pointer flex flex-col justify-between shadow-sm hover:translate-y-[-2px] transition-all"
                   >
                     <div>
-                      {/* Product Image */}
-                      <div className="w-full h-44 rounded-lg overflow-hidden border border-[#EAEAEA] mb-4 relative">
+                      {/* Product Image - Square Shape */}
+                      <div className="w-full aspect-square rounded-lg overflow-hidden border border-black mb-2.5 relative">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={imgUrl}
                           alt={prod.name}
                           className="w-full h-full object-cover transition-transform duration-500 hover:scale-103"
                         />
-                        <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-1.5 py-0.5 rounded border border-[#EAEAEA]">
-                          CAD: READY
+                        <div className="absolute top-1.5 right-1.5 bg-white text-[7px] font-mono text-black font-bold px-1 py-0.5 rounded border border-black">
+                          CAD
                         </div>
                       </div>
 
-                      <span className="text-[10px] font-bold text-[#5C5C63] tracking-wider uppercase block mb-1">
+                      <span className="text-[8px] sm:text-[9px] font-extrabold text-black tracking-wider uppercase block mb-0.5">
                         {prod.category}
                       </span>
-                      <h3 className="font-display text-sm font-bold text-[#0F0F10] mb-2">
+                      <h3 className="font-display text-xs font-extrabold text-black mb-1.5 line-clamp-2 leading-tight">
                         {prod.name}
                       </h3>
-                      <p className="text-xs text-[#4A4A4F] leading-relaxed line-clamp-2 font-light font-sans">
-                        {prod.desc}
-                      </p>
 
                       {/* Variants & Pricing Info */}
-                      <div className="mt-3.5 space-y-1.5 text-[11px] text-slate-500 font-light border-t border-[#EAEAEA] pt-3">
+                      <div className="mt-2 space-y-1 text-[9px] sm:text-[10px] text-black font-semibold border-t border-black pt-2">
                         <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-1 font-sans">
-                            <Tag className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>Starting Price:</span>
+                          <span className="flex items-center gap-0.5 font-sans">
+                            <Tag className="w-3.5 h-3.5 text-black shrink-0" />
+                            <span>Price:</span>
                           </span>
-                          <strong className="text-[#0F0F10] font-bold font-numbers text-xs">{prod.startingPrice}</strong>
+                          <strong className="text-black font-extrabold font-numbers text-[9px] sm:text-xs">{prod.startingPrice}</strong>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-1 font-sans">
-                            <Box className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="flex items-center gap-0.5 font-sans">
+                            <Box className="w-3.5 h-3.5 text-black shrink-0" />
                             <span>MOQ:</span>
                           </span>
-                          <span className="font-semibold text-[#0F0F10]">{prod.moq}</span>
+                          <span className="font-bold text-black">{prod.moq}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 pt-1 font-light italic truncate font-sans">
+                        <div className="text-[8px] sm:text-[9px] text-black pt-0.5 font-medium italic truncate font-sans">
                           {prod.variants}
                         </div>
                       </div>
+
+                      {/* B2B Action Buttons */}
+                      <div className="mt-3 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSampleMode(true);
+                            setSelectedProduct(prod);
+                          }}
+                          className="w-full bg-[#0F0F10] text-white hover:bg-accent-cyan transition-colors text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider text-center cursor-pointer border border-[#0F0F10] hover:border-accent-cyan shadow-sm flex items-center justify-center gap-1"
+                        >
+                          <span>Buy Sample Now</span>
+                        </button>
+                        
+                        <a
+                          href={getWhatsAppUrl(prod.name)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors text-[9px] font-bold py-1 rounded-lg uppercase tracking-wider text-center flex items-center justify-center gap-1 cursor-pointer shadow-sm"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img 
+                            src="/whatsapp.png" 
+                            className="w-3.5 h-3.5 shrink-0" 
+                            alt="WhatsApp" 
+                          />
+                          <span>Contact Us</span>
+                        </a>
+                      </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-[#EAEAEA] flex items-center justify-between">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                        TOLERANCE: {prod.tolerances}
+                    <div className="mt-2.5 pt-2 border-t border-black flex items-center justify-between">
+                      <span className="text-[8px] font-bold text-black uppercase tracking-wider font-mono truncate max-w-[55%]">
+                        TOL: {prod.tolerances}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F0F10]">
-                        <span>SPECS / RFQ</span>
-                        <Info className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="inline-flex items-center gap-1 text-[9px] sm:text-xs font-bold text-black hover:text-accent-cyan transition-colors">
+                        <span>RFQ</span>
+                        <Info className="w-3.5 h-3.5 text-black shrink-0" />
                       </span>
                     </div>
                   </div>
@@ -787,7 +839,7 @@ function ProductsCatalogSection() {
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="p-2 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] hover:bg-[#E8E8EA] text-slate-500 hover:text-[#0F0F10] transition-colors cursor-pointer"
+                className="p-2 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] hover:bg-[#E8E8EA] text-slate-500 hover:text-accent-cyan transition-colors cursor-pointer"
                 aria-label="Close details"
               >
                 <X className="w-5 h-5" />
@@ -862,8 +914,8 @@ function ProductsCatalogSection() {
                       </tr>
                       <tr>
                         <td className="px-4 py-3 font-medium text-slate-400">Compliance Directives</td>
-                        <td className="px-4 py-3 flex items-center gap-1.5 font-light font-sans">
-                          <ShieldCheck className="w-4 h-4 text-green-550 shrink-0" />
+                        <td className="px-4 py-3 flex items-center gap-1.5 font-light font-sans text-accent-cyan font-semibold">
+                          <ShieldCheck className="w-4 h-4 text-accent-cyan shrink-0" />
                           <span>{selectedProduct.compliance}</span>
                         </td>
                       </tr>
@@ -881,7 +933,11 @@ function ProductsCatalogSection() {
 
               {/* B2B RFQ Form (Col 5) */}
               <div className="lg:col-span-5">
-                <InquiryForm defaultCategory={selectedProduct.category} product={selectedProduct} />
+                <InquiryForm 
+                  defaultCategory={selectedProduct.category} 
+                  initialSampleMode={isSampleMode} 
+                  product={selectedProduct} 
+                />
               </div>
 
             </div>

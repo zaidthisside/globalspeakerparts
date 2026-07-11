@@ -12,7 +12,7 @@ export default function Logo({
   light = false 
 }: LogoProps) {
   const brandBlue = "#0F0F10"; // Premium Jet Black
-  const brandOrange = light ? "#FFFFFF" : "#0F0F10"; // Matches theme text for monochrome consistency
+  const brandOrange = light ? "#FFFFFF" : "#0EA5E9"; // Matches brand accent color #0EA5E9
   
   const mainColor = light ? "#FFFFFF" : brandBlue;
   const textColor = light ? "#A3A3A8" : "#5C5C63"; // Steel Gray for secondary tagline text

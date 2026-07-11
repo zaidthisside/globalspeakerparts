@@ -3,9 +3,9 @@
 @theme {
   --color-primary-midnight: #0F0F10; /* Jet Black */
   --color-secondary-graphite: #1E1E20; /* Charcoal Section */
-  --color-accent-cyan: #0F0F10;      /* Jet Black button status */
-  --color-accent-cyan-hover: #2E2E33; /* Graphite Gray hover */
-  --color-highlight-royal: #5C5C63; /* Steel Gray text */
+  --color-accent-cyan: #0EA5E9;      /* Sky Blue Accent */
+  --color-accent-cyan-hover: #0284C7; /* Darker Sky Blue Hover */
+  --color-highlight-royal: #0EA5E9; /* Sky Blue Highlight */
   --color-bg-snow: #FFFFFF;          /* Pure White */
   --color-card-white: #FFFFFF;
   --color-border-cool: #EAEAEA;      /* Subtle border #EAEAEA */

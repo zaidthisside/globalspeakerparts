@@ -180,7 +180,7 @@ export default function Navbar() {
                 >
                   <Link 
                     href={item.href}
-                    className={`px-1 py-1 rounded transition-colors duration-150 hover:text-[#A3A3A8] ${
+                    className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan ${
                       isActive ? "text-white font-bold" : "text-[#E8E8EA]"
                     }`}
                   >
@@ -204,7 +204,7 @@ export default function Navbar() {
                           <Link
                             key={sub.name}
                             href={sub.href}
-                            className="block px-4 py-2.5 text-[#E8E8EA] hover:bg-[#2E2E33] hover:text-[#FFFFFF] font-medium transition-colors border-b border-[#2E2E33]/30 last:border-0"
+                            className="block px-4 py-2.5 text-[#E8E8EA] hover:bg-[#2E2E33] hover:text-accent-cyan font-medium transition-colors border-b border-[#2E2E33]/30 last:border-0"
                           >
                             {sub.name}
                           </Link>
@@ -236,7 +236,7 @@ export default function Navbar() {
             >
               <ShoppingBag className="w-5 h-5 text-[#E8E8EA] hover:text-[#FFFFFF] transition-colors" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-white text-[#0F0F10] text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#0F0F10] font-mono shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-accent-cyan text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-accent-cyan font-mono shadow-sm">
                   {cartCount}
                 </span>
               )}
@@ -314,7 +314,7 @@ export default function Navbar() {
                               key={sub.name}
                               href={sub.href}
                               onClick={() => setIsOpen(false)}
-                              className="py-1.5 block hover:text-[#0F0F10] border-b border-[#EAEAEA]/40 last:border-0"
+                              className="py-1.5 block hover:text-accent-cyan border-b border-[#EAEAEA]/40 last:border-0"
                             >
                               {sub.name}
                             </Link>

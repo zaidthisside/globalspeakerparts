@@ -30,11 +30,17 @@ export default function AdminPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [whatsappNumber, setWhatsappNumber] = useState("+91 9214361550");
   
   // Authentication states
   const [passcode, setPasscode] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState("");
+
+  const handleSaveWhatsapp = () => {
+    localStorage.setItem("gsp_whatsapp_number", whatsappNumber);
+    alert("Global B2B contact settings updated successfully!");
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -46,6 +52,15 @@ export default function AdminPage() {
           setIsAuthenticated(true);
         }, 0);
         activeTimers.push(timer1);
+      }
+
+      // Load WhatsApp number settings
+      const storedWhatsapp = localStorage.getItem("gsp_whatsapp_number");
+      if (storedWhatsapp) {
+        const timerWhatsapp = setTimeout(() => {
+          setWhatsappNumber(storedWhatsapp);
+        }, 0);
+        activeTimers.push(timerWhatsapp);
       }
       
       // 2. Load inquiries from localStorage
@@ -340,52 +355,87 @@ export default function AdminPage() {
                 ))}
               </div>
 
-              {/* Recent Inquiries Quick List */}
-              <div className="bg-white border border-border-cool rounded-premium shadow-soft overflow-hidden">
-                <div className="p-5 border-b border-border-cool bg-bg-snow flex items-center justify-between">
-                  <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider">
-                    Recent OEM Specifications Incoming
-                  </h3>
-                  <button 
-                    onClick={() => setActiveTab("inquiries")}
-                    className="text-xs font-bold text-accent-cyan hover:text-accent-cyan-hover"
-                  >
-                    View All
-                  </button>
+              {/* Grid for Inquiries and Settings */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Recent Inquiries Quick List (Col 2) */}
+                <div className="lg:col-span-2 bg-white border border-border-cool rounded-premium shadow-soft overflow-hidden">
+                  <div className="p-5 border-b border-border-cool bg-bg-snow flex items-center justify-between">
+                    <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider">
+                      Recent OEM Specifications Incoming
+                    </h3>
+                    <button 
+                      onClick={() => setActiveTab("inquiries")}
+                      className="text-xs font-bold text-accent-cyan hover:text-accent-cyan-hover"
+                    >
+                      View All
+                    </button>
+                  </div>
+
+                  <div className="divide-y divide-border-cool">
+                    {inquiries.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400 text-xs font-light">
+                        No inquiries logged. Submit a specification on the contact form to see it here. (Total: 0)
+                      </div>
+                    ) : (
+                      inquiries.slice(0, 3).map((inq) => (
+                        <div key={inq.id} className="p-5 flex justify-between items-start text-xs gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <strong className="text-primary-midnight font-bold text-sm">{inq.company}</strong>
+                              <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-1.5 py-0.5 rounded font-mono font-bold">
+                                {inq.id}
+                              </span>
+                            </div>
+                            <p className="text-slate-500 font-light leading-relaxed max-w-xl">{inq.specs}</p>
+                            <div className="text-[10px] text-slate-400 flex items-center gap-3">
+                              <span>Parts: <strong className="text-body-slate font-semibold">{inq.category}</strong></span>
+                              <span>•</span>
+                              <span>Volume: <strong className="text-body-slate font-semibold">{inq.quantity}</strong></span>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <span className="inline-block text-[10px] font-bold text-highlight-royal bg-bg-snow border border-border-cool px-2.5 py-1 rounded-premium uppercase mb-1.5">
+                              {inq.status}
+                            </span>
+                            <span className="block text-[9px] text-slate-400 font-semibold">{inq.date}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
 
-                <div className="divide-y divide-border-cool">
-                  {inquiries.length === 0 ? (
-                    <div className="p-8 text-center text-slate-400 text-xs font-light">
-                      No inquiries logged. Submit a specification on the contact form to see it here. (Total: 0)
+                {/* Settings Panel (Col 1) */}
+                <div className="bg-white border border-border-cool p-5 rounded-premium shadow-soft space-y-4">
+                  <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider border-b border-border-cool pb-2.5">
+                    B2B Channel Settings
+                  </h3>
+                  
+                  <div className="space-y-3.5 text-xs text-[#4A4A4F]">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-semibold text-slate-400 uppercase tracking-wider text-[9px] font-sans">
+                        Global WhatsApp Contact Number
+                      </label>
+                      <input
+                        type="text"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-2.5 text-[#0F0F10] outline-none focus:border-accent-cyan transition-all font-light font-sans"
+                        placeholder="+91 9214361550"
+                      />
+                      <span className="text-[8.5px] text-slate-400 font-light leading-normal">
+                        This is the official WhatsApp B2B channel linked to product cards and inquiries. Include country code (e.g. +91).
+                      </span>
                     </div>
-                  ) : (
-                    inquiries.slice(0, 3).map((inq) => (
-                      <div key={inq.id} className="p-5 flex justify-between items-start text-xs gap-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <strong className="text-primary-midnight font-bold text-sm">{inq.company}</strong>
-                            <span className="text-[9px] bg-bg-snow border border-border-cool text-primary-midnight px-1.5 py-0.5 rounded font-mono font-bold">
-                              {inq.id}
-                            </span>
-                          </div>
-                          <p className="text-slate-500 font-light leading-relaxed max-w-xl">{inq.specs}</p>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-3">
-                            <span>Parts: <strong className="text-body-slate font-semibold">{inq.category}</strong></span>
-                            <span>•</span>
-                            <span>Volume: <strong className="text-body-slate font-semibold">{inq.quantity}</strong></span>
-                          </div>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <span className="inline-block text-[10px] font-bold text-highlight-royal bg-bg-snow border border-border-cool px-2.5 py-1 rounded-premium uppercase mb-1.5">
-                            {inq.status}
-                          </span>
-                          <span className="block text-[9px] text-slate-400 font-semibold">{inq.date}</span>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                    
+                    <button
+                      onClick={handleSaveWhatsapp}
+                      className="w-full inline-flex items-center justify-center py-2.5 px-4 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-accent-cyan rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans border border-[#0F0F10] hover:border-accent-cyan"
+                    >
+                      Save Settings
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

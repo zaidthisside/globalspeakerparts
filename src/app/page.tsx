@@ -96,7 +96,7 @@ export default function Home() {
 
                 {/* Category name below the card */}
                 <div className="mt-3.5 text-center flex justify-center">
-                  <span className="inline-block border border-[#0F0F10] rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] tracking-wider uppercase group-hover:bg-[#0F0F10] group-hover:text-white transition-all duration-200">
+                  <span className="inline-block border border-[#0F0F10] rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200">
                     {cat.name}
                   </span>
                 </div>

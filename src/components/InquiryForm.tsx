@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, FileText, CheckCircle, ShieldAlert, ShoppingBag, Sparkles } from "lucide-react";
 
 interface InquiryFormProps {
   defaultCategory?: string;
+  initialSampleMode?: boolean;
   product?: {
     id: string;
     name: string;
@@ -15,7 +16,11 @@ interface InquiryFormProps {
   } | null;
 }
 
-export default function InquiryForm({ defaultCategory = "Speaker Cones", product = null }: InquiryFormProps) {
+export default function InquiryForm({ 
+  defaultCategory = "Speaker Cones", 
+  initialSampleMode = false, 
+  product = null 
+}: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,7 +28,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
     phone: "",
     country: "",
     category: defaultCategory,
-    quantity: "1000-5000",
+    quantity: "1,000 - 5,000 units (Wholesale)",
     message: "",
   });
 
@@ -32,6 +37,29 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
   const [error, setError] = useState("");
   const [justAddedCart, setJustAddedCart] = useState(false);
   const [sampleModeActive, setSampleModeActive] = useState(false);
+
+  useEffect(() => {
+    const timerSample = setTimeout(() => {
+      if (initialSampleMode && product) {
+        setSampleModeActive(true);
+        setFormData((prev) => ({
+          ...prev,
+          quantity: "Under 1,000 units (Sample Run)",
+          message: prev.message.startsWith("[SAMPLE EVALUATION REQUEST]") 
+            ? prev.message 
+            : `[SAMPLE EVALUATION REQUEST] Requesting a physical evaluation sample of ${product.name}. `
+        }));
+      } else {
+        setSampleModeActive(false);
+        setFormData((prev) => ({
+          ...prev,
+          quantity: "1,000 - 5,000 units (Wholesale)",
+          message: prev.message.replace(/^\[SAMPLE EVALUATION REQUEST\].*?\.\s*/, "")
+        }));
+      }
+    }, 0);
+    return () => clearTimeout(timerSample);
+  }, [initialSampleMode, product]);
 
   const categories = [
     "Speaker Cones",
@@ -146,7 +174,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
         phone: "",
         country: "",
         category: defaultCategory,
-        quantity: "1000-5000",
+        quantity: "1,000 - 5,000 units (Wholesale)",
         message: "",
       });
     } catch {
@@ -159,14 +187,14 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
   if (submitted) {
     return (
       <div className="glass-panel p-8 rounded-premium text-center flex flex-col items-center justify-center min-h-[400px] animate-fade-in font-sans">
-        <CheckCircle className="w-14 h-14 text-[#0F0F10] mb-4" />
+        <CheckCircle className="w-14 h-14 text-accent-cyan mb-4" />
         <h3 className="font-display text-xl font-extrabold text-[#0F0F10] mb-2">Inquiry Logged</h3>
         <p className="text-[#4A4A4F] text-xs max-w-sm mb-6 leading-relaxed font-light">
           Thank you for contacting Global Speaker Parts. Our B2B Export & Wholesale desk will review your technical requirements and reply with a formal quote within 24 business hours.
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="text-xs font-semibold tracking-wider bg-[#F7F7F8] hover:bg-[#E8E8EA] text-[#0F0F10] border border-[#EAEAEA] rounded-lg px-5 py-3 transition-all duration-150 cursor-pointer"
+          className="text-xs font-semibold tracking-wider bg-[#F7F7F8] hover:bg-[#E8E8EA] text-[#0F0F10] border border-[#EAEAEA] rounded-lg px-5 py-3 transition-all duration-150 cursor-pointer hover:text-accent-cyan hover:border-accent-cyan"
         >
           SUBMIT ANOTHER SPECIFICATION
         </button>
@@ -207,7 +235,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               required
               value={formData.name}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. John Doe"
             />
           </div>
@@ -221,7 +249,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               required
               value={formData.email}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="name@company.com"
             />
           </div>
@@ -238,7 +266,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               required
               value={formData.company}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. Acoustic Systems Ltd"
             />
           </div>
@@ -251,7 +279,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="+1 (555) 000-0000"
             />
           </div>
@@ -268,7 +296,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               required
               value={formData.country}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. Germany"
             />
           </div>
@@ -281,7 +309,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
               required
               value={formData.category}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all cursor-pointer font-light font-sans"
+              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -301,7 +329,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
             required
             value={formData.quantity}
             onChange={handleChange}
-            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all cursor-pointer font-light font-sans"
+            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
           >
             {quantities.map((qty) => (
               <option key={qty} value={qty}>
@@ -320,13 +348,13 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
             rows={4}
             value={formData.message}
             onChange={handleChange}
-            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white transition-all resize-none font-light font-sans"
+            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all resize-none font-light font-sans"
             placeholder="Specify dimensions, voice coil former types, composite cone materials, suspension stiffness coefficients, compliance certifications, etc."
           />
         </div>
 
         {justAddedCart && (
-          <div className="p-2 bg-green-50 border border-green-200 text-green-700 text-[10px] text-center rounded font-semibold animate-fade-in font-sans">
+          <div className="p-2 bg-sky-50 border border-sky-100 text-sky-700 text-[10px] text-center rounded font-semibold animate-fade-in font-sans">
             ✓ Component added to B2B Enquiry list.
           </div>
         )}
@@ -340,7 +368,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full inline-flex items-center justify-center py-3 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-[#2E2E33] rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans"
+          className="w-full inline-flex items-center justify-center py-3 px-5 text-xs font-bold tracking-widest text-white bg-[#0F0F10] hover:bg-accent-cyan-hover rounded-lg transition-all duration-150 shadow-sm cursor-pointer uppercase font-sans"
         >
           {isSubmitting ? (
             <span>TRANSMITTING SPECIFICATIONS...</span>
@@ -356,7 +384,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
           <button
             type="button"
             onClick={handleAddToEnquiry}
-            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#0F0F10] bg-white hover:bg-[#F7F7F8] border border-[#0F0F10] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#0F0F10] bg-white hover:bg-[#F7F7F8] border border-[#0F0F10] hover:border-accent-cyan hover:text-accent-cyan rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
           >
             <ShoppingBag className="w-3.5 h-3.5 mr-1.5 shrink-0" />
             <span>Add to Enquiry</span>
@@ -365,7 +393,7 @@ export default function InquiryForm({ defaultCategory = "Speaker Cones", product
           <button
             type="button"
             onClick={handleBuySampleNow}
-            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#4A4A4F] bg-[#F7F7F8] hover:bg-[#E8E8EA] border border-[#EAEAEA] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#4A4A4F] bg-[#F7F7F8] hover:bg-[#E8E8EA] border border-[#EAEAEA] hover:border-[#0F0F10] hover:text-[#0F0F10] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
           >
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500 shrink-0" />
             <span>Buy Sample Now</span>

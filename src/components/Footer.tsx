@@ -62,7 +62,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3.5 text-xs">
               {productLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="hover:text-white transition-colors flex items-center group text-[#A3A3A8]">
+                  <Link href={link.href} className="hover:text-accent-cyan transition-colors flex items-center group text-[#A3A3A8]">
                     <span>{link.name}</span>
                     <ArrowUpRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-150" />
                   </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3.5 text-xs">
               {corporateLinks.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="hover:text-white transition-colors flex items-center group text-[#A3A3A8]">
+                  <Link href={link.href} className="hover:text-accent-cyan transition-colors flex items-center group text-[#A3A3A8]">
                     <span>{link.name}</span>
                     <ArrowUpRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-all duration-150" />
                   </Link>
@@ -103,13 +103,13 @@ export default function Footer() {
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Phone className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
-                  <a href="tel:+919876543210" className="hover:text-white transition-colors font-light text-slate-400">
+                  <a href="tel:+919876543210" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
                     +91 98765 43210 (Global Sales)
                   </a>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Mail className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
-                  <a href="mailto:export@globalspeakerparts.com" className="hover:text-white transition-colors font-light text-slate-400">
+                  <a href="mailto:export@globalspeakerparts.com" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
                     export@globalspeakerparts.com
                   </a>
                 </li>
@@ -142,14 +142,14 @@ export default function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="mt-14 pt-7 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+        <div className="mt-14 pt-7 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-550 gap-4">
           <p className="font-sans">
             &copy; {new Date().getFullYear()} GLOBAL SPEAKER PARTS. All rights reserved.
           </p>
           <div className="flex gap-5 font-sans">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Supply</Link>
-            <Link href="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>
+            <Link href="/privacy" className="hover:text-accent-cyan transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-accent-cyan transition-colors">Terms of Supply</Link>
+            <Link href="/sitemap" className="hover:text-accent-cyan transition-colors">Sitemap</Link>
           </div>
         </div>
 
