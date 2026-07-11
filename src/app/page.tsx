@@ -65,16 +65,16 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
-      {/* Category Grid: 5 rows, 2 columns (fits perfectly on mobile & desktop) */}
-      <section className="w-full pt-10 pb-10 bg-white border-b-2 border-black relative overflow-hidden">
+      {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
+      <section className="w-full pt-8 pb-8 bg-white border-b-2 border-black relative overflow-hidden">
         {/* Background Illustration Overlay (30% Opacity) */}
         <div 
           className="absolute inset-0 bg-no-repeat bg-cover bg-center pointer-events-none opacity-30 z-0"
           style={{ backgroundImage: "url('/bg-illustration.jpg')" }}
         />
         
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 relative z-10">
-          <div className="grid grid-cols-2 gap-y-8 gap-x-4 sm:gap-x-8 max-w-[720px] mx-auto font-sans">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-10 xl:px-16 relative z-10">
+          <div className="grid grid-cols-5 gap-y-5 gap-x-1.5 sm:gap-x-4 lg:gap-x-6 max-w-[1280px] mx-auto font-sans">
             {homeCategories.map((cat) => (
               <Link 
                 key={cat.name}
@@ -95,14 +95,14 @@ export default function Home() {
                   {/* Subtitle / Tech Spec line (faint on hover) */}
                   <div className="absolute inset-x-0 bottom-2 text-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span className="text-[7.5px] font-mono tracking-widest text-white uppercase bg-[#0F0F10]/85 px-1.5 py-0.5 rounded border border-white/20">
-                      VIEW PRODUCTS
+                      VIEW
                     </span>
                   </div>
                 </div>
 
                 {/* Category name below the card */}
-                <div className="mt-3.5 text-center flex justify-center">
-                  <span className="inline-block border-2 border-black rounded-premium px-4 py-1.5 font-display text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm">
+                <div className="mt-2.5 text-center flex justify-center">
+                  <span className="inline-block border-2 border-black rounded-premium px-1.5 py-1 sm:px-4 sm:py-1.5 font-display text-[7.5px] sm:text-[9.5px] lg:text-[10.5px] font-bold text-[#0F0F10] bg-white tracking-wider uppercase group-hover:bg-accent-cyan group-hover:border-accent-cyan group-hover:text-white transition-all duration-200 shadow-sm truncate max-w-full">
                     {cat.name}
                   </span>
                 </div>
