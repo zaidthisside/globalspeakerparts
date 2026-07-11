@@ -65,6 +65,99 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
+      {/* Dynamic Brand Hero Banner Section (Inspired by North Speaker Parts) */}
+      <section className="w-full relative h-[420px] sm:h-[520px] lg:h-[640px] flex items-center justify-center overflow-hidden border-b border-black bg-black">
+        {/* Background Dark Image Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-10000 ease-out scale-100"
+          style={{ backgroundImage: "url('/hero-speaker-cabinets.jpg')" }}
+        />
+        {/* Black Vignette Radial Overlay to make text pop and match ambient atmosphere */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0F0F10]/70 via-[#0F0F10]/50 to-[#0F0F10]/85 z-10" />
+
+        <div className="relative z-20 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
+          {/* Trustpilot-style Rating Badge */}
+          <div className="flex items-center gap-1 bg-black/45 backdrop-blur-md px-3.5 py-1 rounded-premium border border-white/10 mb-5">
+            <div className="flex text-[#00ff87] text-xs font-semibold tracking-tighter">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-medium text-white ml-2 uppercase tracking-widest">
+              Excellent <span className="font-bold">4.8 out of 5</span>
+            </span>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight uppercase leading-none font-display drop-shadow-lg max-w-4xl select-none">
+            GLOBAL SPEAKER PARTS
+          </h1>
+
+          {/* Subheading */}
+          <p className="mt-4 text-xs sm:text-sm lg:text-base font-light text-slate-200 tracking-wide max-w-2xl leading-relaxed select-none font-sans drop-shadow-md">
+            Jaipur, India Based High-Precision OEM & Export Quality Replacement Speaker Components.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Link href="/products">
+              <button className="bg-[#00ff87] text-black font-extrabold uppercase text-xs tracking-widest px-8 py-3.5 hover:bg-white transition-all duration-300 shadow-md rounded-premium cursor-pointer border border-[#00ff87] hover:border-white">
+                Shop now
+              </button>
+            </Link>
+            <Link href="/contact">
+              <button className="bg-transparent border-2 border-white text-white font-extrabold uppercase text-xs tracking-widest px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 shadow-md rounded-premium cursor-pointer">
+                Contact Us
+              </button>
+            </Link>
+          </div>
+
+          {/* Bottom Brand Partner Logos */}
+          <div className="absolute bottom-6 left-0 right-0 w-full px-4 overflow-hidden hidden sm:flex justify-center items-center select-none opacity-80">
+            <div className="flex items-center justify-center gap-8 sm:gap-12 lg:gap-16 max-w-6xl w-full flex-wrap">
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">BOSE</span>
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">JBL</span>
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">B&W</span>
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">TECHNICS</span>
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">PARADIGM</span>
+              <span className="text-white/40 text-sm font-extrabold tracking-widest font-mono uppercase">PIONEER</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Marquee banner tape strip */}
+      <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative border-b border-black">
+        <div className="flex whitespace-nowrap animate-marquee-left w-max">
+          <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
+            <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">B2B OEM CONTRACTS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+          </div>
+          <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
+            <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">B2B OEM CONTRACTS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+            <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
+            <span className="text-[#5C5C63] mx-2">◆</span>
+          </div>
+        </div>
+      </div>
+      
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full pt-8 pb-8 bg-white border-b-2 border-black relative overflow-hidden">
         {/* Background Illustration Overlay (30% Opacity) */}
@@ -152,52 +245,6 @@ export default function Home() {
         </div>
       </section>
 
-
-      {/* Hero Slideshow Banner & Marquee (Kagzi Layout Clone) */}
-      <section className="w-full flex flex-col">
-        <div className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] border-b border-border-cool">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src={images.heroSpeaker} 
-            alt="Speaker Component Macro View" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        {/* Marquee banner tape strip */}
-        <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative border-b border-[#2E2E33]">
-          <div className="flex whitespace-nowrap animate-marquee-left w-max">
-            <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
-              <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">B2B OEM CONTRACTS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-            </div>
-            <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
-              <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">ZERO-DEFECT QUALITY SYSTEM</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">B2B OEM CONTRACTS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">MADE IN JAIPUR EXPORT PLANT</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">HIGH TEMPERATURE VOICE COILS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-              <span className="px-6">ROHS & REACH COMPLIANT LOGISTICS</span>
-              <span className="text-[#5C5C63] mx-2">◆</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
       <section className="w-full py-20 bg-white border-b border-black">
