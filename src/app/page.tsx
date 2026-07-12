@@ -82,6 +82,21 @@ export default function Home() {
         />
         
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 relative z-10">
+          {/* Header section identical in style to the catalog collage section */}
+          <div className="text-center mb-12 space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-12 h-[1px] bg-black" />
+              <span className="text-black text-xs font-bold uppercase tracking-widest">PRODUCT CATEGORIES</span>
+              <div className="w-12 h-[1px] bg-black" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold uppercase">
+              Precision-Engineered Speaker Parts
+            </h2>
+            <p className="text-xs sm:text-sm text-[#4A4A4F] max-w-2xl mx-auto leading-relaxed font-light">
+              Select from our comprehensive catalog of high-performance replacement and manufacturing parts. From voice coils and speaker cones to custom spider profiles and lead wires, we supply top-tier speaker builders and repair centers worldwide.
+            </p>
+          </div>
+
           {/* DESKTOP LAYOUT: 5 columns, 2 rows (includes all 10 categories, border-2 thick lines) */}
           <div className="hidden sm:grid grid-cols-5 gap-y-5 gap-x-4 lg:gap-x-6 max-w-[1280px] mx-auto font-sans">
             {homeCategories.map((cat) => (
