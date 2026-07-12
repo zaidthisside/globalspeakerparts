@@ -166,11 +166,11 @@ export default function Logo({
         className="w-full h-full object-contain"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Left Circle Icon (2x size: width/height increased to 240) */}
-        <g transform="translate(10, 10)">
+        {/* Left Circle Icon (2x size: width/height increased to 240, zero margin offset) */}
+        <g transform="translate(10, 15)">
           <image 
             href="/logo-globe.jpg" 
-            x="10" 
+            x="0" 
             y="0" 
             width="240" 
             height="240" 
