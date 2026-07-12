@@ -66,7 +66,7 @@ export default function Home() {
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
       {/* Dynamic Brand Hero Hero Banner Section (Inspired by North Speaker Parts) */}
-      <section className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] flex items-center justify-center overflow-hidden border-b border-black bg-white">
+      <section className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] flex items-center justify-center overflow-hidden bg-white">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -74,7 +74,7 @@ export default function Home() {
         />
       </section>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
-      <section className="w-full pt-8 pb-8 bg-white border-b-2 border-black relative overflow-hidden">
+      <section className="w-full py-5 bg-white relative overflow-hidden">
         {/* Background Illustration Overlay (30% Opacity) */}
         <div 
           className="absolute inset-0 bg-no-repeat bg-cover bg-center pointer-events-none opacity-30 z-0"
@@ -161,7 +161,7 @@ export default function Home() {
       </section>
 
       {/* Marquee banner tape strip */}
-      <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative border-b border-black">
+      <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative">
         <div className="flex whitespace-nowrap animate-marquee-left w-max">
           <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
             <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>
@@ -196,7 +196,7 @@ export default function Home() {
 
 
       {/* 1.5 B2B Product Range Collage Section */}
-      <section className="w-full py-20 bg-white border-b border-black">
+      <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="text-center mb-12 space-y-4">
             <div className="flex items-center justify-center gap-3">
@@ -286,7 +286,7 @@ export default function Home() {
 
 
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-b border-black">
+      <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
             
@@ -347,7 +347,7 @@ export default function Home() {
       </section>
 
       {/* 3. Corporate Legacy & Statistics (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-[#F7F7F8]">
+      <section className="w-full py-5 bg-[#F7F7F8]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
@@ -428,7 +428,7 @@ export default function Home() {
       </section>
 
       {/* 4. Materials Pillars Grid */}
-      <section className="w-full py-16 bg-white border-b border-black">
+      <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
             
@@ -473,7 +473,7 @@ export default function Home() {
       </section>
 
       {/* 5. Browse by Collection (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
@@ -524,7 +524,7 @@ export default function Home() {
       </section>
 
       {/* 6. Custom B2B Quote Card (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-t border-black">
+      <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-16">
             
@@ -556,7 +556,7 @@ export default function Home() {
       </section>
 
       {/* 7. Client Testimonials Marquee (Kagzi Layout Clone) */}
-      <section className="w-full py-20 bg-white border-t border-[#EAEAEA] overflow-hidden">
+      <section className="w-full py-5 bg-white overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-[1px] bg-[#0F0F10]" />
@@ -613,7 +613,7 @@ export default function Home() {
       </section>
 
       {/* 8. FAQs */}
-      <section className="py-20 px-4 sm:px-6 lg:px-10 xl:px-16 bg-white border-t border-[#EAEAEA]">
+      <section className="py-5 px-4 sm:px-6 lg:px-10 xl:px-16 bg-white">
         <div className="max-w-4xl mx-auto">
           
           <div className="text-center mb-16 space-y-2">
