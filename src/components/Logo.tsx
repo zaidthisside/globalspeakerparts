@@ -83,29 +83,29 @@ export default function Logo({
     );
   }
 
-  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer)
+  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer - scaled 4x)
   if (variant === "stacked") {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
         <svg 
-          viewBox="0 0 360 430" 
+          viewBox="0 0 500 690" 
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Globe Earth Silhouette Only (2x size: width/height increased to 220) */}
-          <g transform="translate(70, 15)">
+          {/* Globe Earth Silhouette Only (4x size: width/height increased to 480) */}
+          <g transform="translate(10, 15)">
             <image 
               href="/logo-globe.jpg" 
               x="0" 
               y="0" 
-              width="220" 
-              height="220" 
+              width="480" 
+              height="480" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
           </g>
 
-          {/* Centered Wordmarks on Bottom (Shifted down for 2x globe size) */}
-          <g transform="translate(0, 255)">
+          {/* Centered Wordmarks on Bottom (Shifted down and offset by 70px to center on 500 width) */}
+          <g transform="translate(70, 505)">
             <text 
               x="180" 
               y="60" 
