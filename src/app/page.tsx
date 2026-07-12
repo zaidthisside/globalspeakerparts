@@ -72,6 +72,20 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/hero-banner.png')" }}
         />
+        
+        {/* Clean, minimal overlay content at the top 40% (white space) */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full relative z-10 flex flex-col justify-start pt-12 sm:pt-16 lg:pt-20 text-left">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold uppercase text-black leading-[1.15] max-w-2xl">
+            The Foundation of Great Sound
+          </h1>
+          
+          {/* Small rectangular B2B trust box */}
+          <div className="mt-4 self-start">
+            <div className="inline-block border border-black/10 bg-white/85 backdrop-blur-xs px-3 py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
+              Trusted by Leading Brands
+            </div>
+          </div>
+        </div>
       </section>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full py-5 bg-white relative overflow-hidden">
