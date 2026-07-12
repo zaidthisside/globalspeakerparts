@@ -92,9 +92,6 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold uppercase">
               Precision-Engineered Speaker Parts
             </h2>
-            <p className="text-xs sm:text-sm text-[#4A4A4F] max-w-2xl mx-auto leading-relaxed font-light">
-              Select from our comprehensive catalog of high-performance replacement and manufacturing parts. From voice coils and speaker cones to custom spider profiles and lead wires, we supply top-tier speaker builders and repair centers worldwide.
-            </p>
           </div>
 
           {/* DESKTOP LAYOUT: 5 columns, 2 rows (includes all 10 categories, border-2 thick lines) */}
