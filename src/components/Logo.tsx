@@ -25,13 +25,13 @@ export default function Logo({
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
-            {/* Symmetrical Globe Earth Silhouette Only */}
+            {/* Symmetrical Globe Earth Silhouette Only (Filled to bounds) */}
             <image 
               href="/logo-globe.jpg" 
-              x="20" 
-              y="20" 
-              width="160" 
-              height="160" 
+              x="0" 
+              y="0" 
+              width="200" 
+              height="200" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
           </g>
@@ -83,29 +83,29 @@ export default function Logo({
     );
   }
 
-  // 3. STACKED ICON OVER TEXT VARIANT
+  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer)
   if (variant === "stacked") {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
         <svg 
-          viewBox="0 0 360 320" 
+          viewBox="0 0 360 430" 
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Globe Earth Silhouette Only */}
-          <g transform="translate(100, 15)">
+          {/* Globe Earth Silhouette Only (2x size: width/height increased to 220) */}
+          <g transform="translate(70, 15)">
             <image 
               href="/logo-globe.jpg" 
-              x="20" 
+              x="0" 
               y="0" 
-              width="120" 
-              height="120" 
+              width="220" 
+              height="220" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
           </g>
 
-          {/* Centered Wordmarks on Bottom */}
-          <g transform="translate(0, 155)">
+          {/* Centered Wordmarks on Bottom (Shifted down for 2x globe size) */}
+          <g transform="translate(0, 255)">
             <text 
               x="180" 
               y="60" 
@@ -158,28 +158,28 @@ export default function Logo({
     );
   }
 
-  // 4. PRIMARY HORIZONTAL VARIANT (DEFAULT)
+  // 4. PRIMARY HORIZONTAL VARIANT (DEFAULT - Used in Navbar)
   return (
     <div className={`flex items-center select-none ${className}`}>
       <svg 
-        viewBox="0 0 600 240" 
+        viewBox="0 0 680 270" 
         className="w-full h-full object-contain"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Left Circle Icon */}
-        <g transform="translate(10, 15)">
+        {/* Left Circle Icon (2x size: width/height increased to 240) */}
+        <g transform="translate(10, 10)">
           <image 
             href="/logo-globe.jpg" 
-            x="20" 
+            x="10" 
             y="0" 
-            width="140" 
-            height="140" 
+            width="240" 
+            height="240" 
             style={{ filter: light ? 'invert(1)' : 'none' }}
           />
         </g>
 
-        {/* Right Side Text Block */}
-        <g transform="translate(210, 30)">
+        {/* Right Side Text Block (Shifted to right for 2x globe size) */}
+        <g transform="translate(280, 50)">
           <text 
             x="0" 
             y="65" 
@@ -211,10 +211,10 @@ export default function Logo({
           </text>
         </g>
 
-        {/* Tagline under both */}
+        {/* Tagline under both (Centered in expanded viewbox) */}
         <text 
-          x="300" 
-          y="218" 
+          x="340" 
+          y="255" 
           fill={light ? "#A3A3A8" : "#5C5C63"} 
           textAnchor="middle"
           style={{ 
