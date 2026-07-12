@@ -148,20 +148,20 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/70 backdrop-blur-xl border-b border-slate-200/50 ${
-        scrolled ? "py-2 shadow-xs" : "py-4"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white border-b border-slate-200 ${
+        scrolled ? "py-2 shadow-sm" : "py-4"
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between">
           
-          {/* Left Block: Brand Logo (Top left) - icon globe only */}
+          {/* Left Block: Brand Logo (Top left) */}
           <Link href="/" className="flex items-center group shrink-0 z-10">
             <Logo 
-              variant="icon"
+              variant="primary"
               light={false}
               className={`transition-all duration-500 ease-in-out ${
-                scrolled ? "h-8 sm:h-9 xl:h-9.5" : "h-11 sm:h-13 xl:h-14"
+                scrolled ? "h-8.5 sm:h-9.5 xl:h-10" : "h-12 sm:h-14 xl:h-15"
               } hover:opacity-90 transition-opacity`} 
             />
           </Link>
@@ -196,7 +196,7 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
+                        className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
                       >
                         <div className="px-3.5 py-1 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 mb-1">
                           {item.name} Options
