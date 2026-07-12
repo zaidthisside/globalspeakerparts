@@ -148,19 +148,20 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-[#000000] border-b border-[#2E2E33] ${
-        scrolled ? "py-2 shadow-md" : "py-4"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white/70 backdrop-blur-xl border-b border-slate-200/50 ${
+        scrolled ? "py-2 shadow-xs" : "py-4"
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between">
           
-          {/* Left Block: Brand Logo (Top left) */}
+          {/* Left Block: Brand Logo (Top left) - icon globe only */}
           <Link href="/" className="flex items-center group shrink-0 z-10">
             <Logo 
-              light={true}
+              variant="icon"
+              light={false}
               className={`transition-all duration-500 ease-in-out ${
-                scrolled ? "h-8.5 sm:h-9.5 xl:h-10" : "h-12 sm:h-14 xl:h-15"
+                scrolled ? "h-8 sm:h-9 xl:h-9.5" : "h-11 sm:h-13 xl:h-14"
               } hover:opacity-90 transition-opacity`} 
             />
           </Link>
@@ -181,8 +182,8 @@ export default function Navbar() {
                   <Link 
                     href={item.href}
                     className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan ${
-                      isActive ? "text-white font-bold" : "text-[#E8E8EA]"
-                    }`}
+                      isActive ? "text-[#000000] font-bold" : "text-slate-800"
+                     }`}
                   >
                     {item.name}
                   </Link>
@@ -195,16 +196,16 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-[#1E1E20] border border-[#2E2E33] rounded-lg shadow-2xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
+                        className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
                       >
-                        <div className="px-3.5 py-1 text-[9px] font-bold text-[#A3A3A8] uppercase tracking-widest border-b border-[#2E2E33] mb-1">
+                        <div className="px-3.5 py-1 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 mb-1">
                           {item.name} Options
                         </div>
                         {item.subItems.map((sub) => (
                           <Link
                             key={sub.name}
                             href={sub.href}
-                            className="block px-4 py-2.5 text-[#E8E8EA] hover:bg-[#2E2E33] hover:text-accent-cyan font-medium transition-colors border-b border-[#2E2E33]/30 last:border-0"
+                            className="block px-4 py-2.5 text-slate-800 hover:bg-slate-50 hover:text-accent-cyan font-medium transition-colors border-b border-slate-100/50 last:border-0"
                           >
                             {sub.name}
                           </Link>
@@ -222,19 +223,19 @@ export default function Navbar() {
             {/* Search Icon */}
             <Link 
               href="/products"
-              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-full hover:bg-black/5 transition-colors"
               aria-label="Search Products"
             >
-              <Search className="w-5 h-5 text-[#E8E8EA] hover:text-[#FFFFFF] transition-colors" />
+              <Search className="w-5 h-5 text-slate-800 hover:text-black transition-colors" />
             </Link>
 
             {/* Cart Icon */}
             <Link 
               href="/products?cart=true"
-              className="relative p-1.5 rounded-full hover:bg-white/10 transition-colors"
+              className="relative p-1.5 rounded-full hover:bg-black/5 transition-colors"
               aria-label="Cart"
             >
-              <ShoppingBag className="w-5 h-5 text-[#E8E8EA] hover:text-[#FFFFFF] transition-colors" />
+              <ShoppingBag className="w-5 h-5 text-slate-800 hover:text-black transition-colors" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-accent-cyan text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-accent-cyan font-mono shadow-sm">
                   {cartCount}
@@ -244,7 +245,7 @@ export default function Navbar() {
 
             {/* Quote button (desktop/tablet) */}
             <Link href="/contact?rfq=true" className="hidden sm:block">
-              <button className="bg-white text-[#0F0F10] border border-white px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wider hover:bg-[#E8E8EA] transition-all uppercase cursor-pointer">
+              <button className="bg-black text-white border border-black px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wider hover:bg-slate-800 transition-all uppercase cursor-pointer">
                 Request Quote
               </button>
             </Link>
@@ -252,7 +253,7 @@ export default function Navbar() {
             {/* Hamburger menu button (mobile/tablet - Triggered below lg screen width) */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-white hover:text-[#A3A3A8] transition-colors cursor-pointer"
+              className="lg:hidden p-2 text-black hover:text-slate-600 transition-colors cursor-pointer"
               aria-label="Open menu"
             >
               {isOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
