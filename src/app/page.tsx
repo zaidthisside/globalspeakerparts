@@ -80,7 +80,7 @@ export default function Home() {
           </h1>
           
           {/* Small rectangular B2B trust box */}
-          <div className="mt-4 self-start">
+          <div className="mt-2 self-start">
             <div className="inline-block border border-black/10 bg-white/85 backdrop-blur-xs px-3 py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
               Trusted by Leading Brands
             </div>
