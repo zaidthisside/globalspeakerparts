@@ -12,7 +12,7 @@ export default function Logo({
   light = false 
 }: LogoProps) {
   const brandBlue = "#000000"; // Pure Black (from Shutterstock logo black)
-  const accentColor = light ? "#FFFFFF" : "#0EA5E9"; // Sky Blue accent bar / cap
+  const accentColor = "#0EA5E9"; // Always Sky Blue accent bar / cap
   const mainColor = light ? "#FFFFFF" : brandBlue;
 
   // 1. ICON ONLY VARIANT
@@ -83,55 +83,55 @@ export default function Logo({
     );
   }
 
-  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer - scaled 4x)
+  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer - scaled 4x globe + 1.5x text)
   if (variant === "stacked") {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
         <svg 
-          viewBox="0 0 500 690" 
+          viewBox="0 0 560 620" 
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Globe Earth Silhouette Only (4x size: width/height increased to 480) */}
-          <g transform="translate(10, 15)">
+          {/* Globe Earth Silhouette Only (Centering a 360x360 globe in a 560 width viewBox) */}
+          <g transform="translate(100, 15)">
             <image 
               href="/logo-globe.jpg" 
               x="0" 
               y="0" 
-              width="480" 
-              height="480" 
+              width="360" 
+              height="360" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
           </g>
 
-          {/* Centered Wordmarks on Bottom (Shifted down and offset by 70px to center on 500 width) */}
-          <g transform="translate(70, 505)">
+          {/* Centered Wordmarks on Bottom (1.5x scale, horizontal center at 280, minimal gap) */}
+          <g transform="translate(280, 385) scale(1.5)">
             <text 
-              x="180" 
-              y="60" 
+              x="0" 
+              y="40" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
                 fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 800, 
-                fontSize: "74px", 
+                fontSize: "64px", 
                 letterSpacing: "-1px" 
               }}
             >
               GLOBAL
             </text>
             
-            <rect x="25" y="75" width="310" height="9.5" fill={accentColor} rx="1" />
+            <rect x="-130" y="55" width="260" height="9" fill={accentColor} rx="1" />
             
             <text 
-              x="180" 
-              y="117" 
+              x="0" 
+              y="94" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
                 fontFamily: "var(--font-manrope), Manrope, sans-serif", 
                 fontWeight: 700, 
-                fontSize: "35px", 
+                fontSize: "30px", 
                 letterSpacing: "0.8px" 
               }}
             >
@@ -139,15 +139,15 @@ export default function Logo({
             </text>
             
             <text 
-              x="180" 
-              y="147" 
+              x="0" 
+              y="120" 
               fill={light ? "#A3A3A8" : "#5C5C63"} 
               textAnchor="middle"
               style={{ 
                 fontFamily: "var(--font-inter), Inter, sans-serif", 
-                fontWeight: 800, 
-                fontSize: "11px", 
-                letterSpacing: "4.2px" 
+                fontWeight: 850, 
+                fontSize: "9.5px", 
+                letterSpacing: "3.6px" 
               }}
             >
               MANUFACTURING <tspan fill={accentColor}>•</tspan> WHOLESALE <tspan fill={accentColor}>•</tspan> EXPORT

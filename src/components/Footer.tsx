@@ -24,10 +24,10 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#000000] text-[#A3A3A8] font-sans pt-16 pb-8 border-t border-[#2E2E33] relative">
+    <footer className="bg-[#000000] text-[#A3A3A8] font-sans pt-5 pb-5 border-t border-[#2E2E33] relative">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 items-end">
           
           {/* Company details */}
           <div className="flex flex-col gap-4.5">
@@ -142,7 +142,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="mt-14 pt-7 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-550 gap-4">
+        <div className="mt-5 pt-5 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-550 gap-4">
           <p className="font-sans">
             &copy; {new Date().getFullYear()} GLOBAL SPEAKER PARTS. All rights reserved.
           </p>
