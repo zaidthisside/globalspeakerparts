@@ -195,8 +195,8 @@ export default function Logo({
             GLOBAL
           </text>
           
-          {/* Skyblue line aligned with both texts (width expanded to 415 to prevent under-extension) */}
-          <rect x="0" y="105" width="415" height="10.5" fill={accentColor} rx="1.5" />
+          {/* Skyblue line aligned with both texts (width expanded to 435 to cover till the 'S' of PARTS) */}
+          <rect x="0" y="105" width="435" height="10.5" fill={accentColor} rx="1.5" />
           
           <text 
             x="0" 
