@@ -75,9 +75,9 @@ export default function Home() {
       </section>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full py-5 bg-white relative overflow-hidden">
-        {/* Background Illustration Overlay (30% Opacity) */}
+        {/* Background Illustration Overlay (15% Opacity) */}
         <div 
-          className="absolute inset-0 bg-no-repeat bg-cover bg-center pointer-events-none opacity-30 z-0"
+          className="absolute inset-0 bg-no-repeat bg-cover bg-center pointer-events-none opacity-15 z-0"
           style={{ backgroundImage: "url('/bg-illustration.jpg')" }}
         />
         
