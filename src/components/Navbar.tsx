@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ShoppingBag, ChevronDown } from "lucide-react";
-import Logo from "@/components/Logo";
+import Image from "next/image";
 
 // Main Menu hierarchy strictly matching user's uploaded branding menu structure
 const navigationItems = [
@@ -155,19 +155,22 @@ export default function Navbar() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between">
           
-          {/* Left Block: Brand Logo (Top left) */}
+          {/* Left Block: Brand Logo (Top left) - using exact uploaded image */}
           <Link href="/" className="flex items-center group shrink-0 z-10">
-            <Logo 
-              variant="primary"
-              light={false}
+            <Image 
+              src="/logo-horizontal.jpg"
+              alt="Global Speaker Parts"
+              width={220}
+              height={72}
+              priority
               className={`transition-all duration-500 ease-in-out ${
-                scrolled ? "h-8.5 sm:h-9.5 xl:h-10" : "h-12 sm:h-14 xl:h-15"
-              } hover:opacity-90 transition-opacity`} 
+                scrolled ? "h-6.5 sm:h-7.5 xl:h-8" : "h-9 sm:h-11 xl:h-12"
+              } w-auto object-contain hover:opacity-90 transition-opacity`} 
             />
           </Link>
 
-          {/* Center Block: Desktop Navigation Menu (Left-aligned, larger text, spans to the right) */}
-          <nav className="hidden lg:flex items-center justify-start flex-1 ml-6 xl:ml-10 space-x-3 xl:space-x-5 2xl:space-x-7 font-sans text-[11px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
+          {/* Center Block: Desktop Navigation Menu (Centered symmetrically in header) */}
+          <nav className="hidden lg:flex items-center justify-center flex-1 space-x-2.5 xl:space-x-4 2xl:space-x-6 font-sans text-[11px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
             {navigationItems.map((item) => {
               const isHovered = hoveredMenu === item.name;
               const isActive = pathname.startsWith(item.href);
@@ -280,7 +283,7 @@ export default function Navbar() {
             >
               <div className="flex items-center justify-between px-5 py-4 border-b border-border-cool">
                 <div className="flex items-center">
-                  <Logo className="h-9" />
+                  <Image src="/logo-horizontal.jpg" alt="Global Speaker Parts" width={128} height={42} className="h-7 w-auto object-contain" />
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
