@@ -70,7 +70,7 @@ export default function Home() {
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/hero-banner.jpg')" }}
+          style={{ backgroundImage: "url('/hero-banner.png')" }}
         />
       </section>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
