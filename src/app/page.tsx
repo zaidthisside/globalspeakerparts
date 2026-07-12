@@ -216,7 +216,7 @@ export default function Home() {
           <div className="grid grid-cols-4 grid-rows-2 gap-1.5 sm:gap-4 w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[24/9] overflow-hidden">
             
             {/* Box 1 (50% Space: col-span-2, row-span-2) */}
-            <div className="col-span-2 row-span-2 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            <div className="col-span-2 row-span-2 h-full relative border border-black lg:border-2 lg:border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* object-top and scale-[1.08] crops out the bottom watermark label perfectly */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
@@ -233,7 +233,7 @@ export default function Home() {
             </div>
 
             {/* Box 2 (25% Space: col-span-2, row-span-1) */}
-            <div className="col-span-2 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            <div className="col-span-2 row-span-1 h-full relative border border-black lg:border-2 lg:border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-coils.jpg" 
@@ -249,7 +249,7 @@ export default function Home() {
             </div>
 
             {/* Box 3 (12.5% Space: col-span-1, row-span-1) */}
-            <div className="col-span-1 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            <div className="col-span-1 row-span-1 h-full relative border border-black lg:border-2 lg:border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-surrounds.jpg" 
@@ -265,7 +265,7 @@ export default function Home() {
             </div>
 
             {/* Box 4 (12.5% Space: col-span-1, row-span-1) */}
-            <div className="col-span-1 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            <div className="col-span-1 row-span-1 h-full relative border border-black lg:border-2 lg:border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-dustcaps.png" 
