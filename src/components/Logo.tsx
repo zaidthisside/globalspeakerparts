@@ -13,6 +13,7 @@ export default function Logo({
 }: LogoProps) {
   const brandBlue = "#0F0F10"; // Premium Jet Black
   const mainColor = light ? "#FFFFFF" : brandBlue;
+  const fillColor = light ? "#0F0F10" : "#FFFFFF"; // Masks background paths perfectly in dark mode
 
   // 1. ICON ONLY VARIANT
   if (variant === "icon") {
@@ -25,7 +26,7 @@ export default function Logo({
         >
           <g>
             {/* Globe (Back) */}
-            <circle cx="100" cy="82" r="62" fill="white" stroke={mainColor} strokeWidth="4.5" />
+            <circle cx="100" cy="82" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
             <path d="M 100,20 L 100,144" stroke={mainColor} strokeWidth="2.5" />
             <path d="M 100,20 A 25,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
             <path d="M 100,20 A 25,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
@@ -40,12 +41,12 @@ export default function Logo({
             <path d="M 22,96 C 10,82 190,82 178,96 C 172,102 28,102 22,96 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 90)" />
 
             {/* Speaker Basket */}
-            <path d="M 46,120 C 46,155 154,155 154,120" fill="white" stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 68,142 C 68,162 132,162 132,142" fill="white" stroke={mainColor} strokeWidth="5.5" />
+            <path d="M 46,120 C 46,155 154,155 154,120" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
+            <path d="M 68,142 C 68,162 132,162 132,142" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
             <path d="M 80,154 C 80,165 120,165 120,154" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
 
             {/* Speaker Gasket */}
-            <ellipse cx="100" cy="116" rx="76" ry="22" fill="white" stroke={mainColor} strokeWidth="5.5" />
+            <ellipse cx="100" cy="116" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
             <ellipse cx="100" cy="116" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
             <ellipse cx="100" cy="116" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
             <ellipse cx="100" cy="116" rx="16" ry="6" fill={mainColor} />
@@ -117,7 +118,7 @@ export default function Logo({
         >
           {/* Logo Icon on Top */}
           <g transform="translate(100, 15)">
-            <circle cx="100" cy="82" r="62" fill="white" stroke={mainColor} strokeWidth="4.5" />
+            <circle cx="100" cy="82" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
             <path d="M 100,20 L 100,144" stroke={mainColor} strokeWidth="2.5" />
             <path d="M 100,20 A 25,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
             <path d="M 100,20 A 25,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
@@ -130,11 +131,11 @@ export default function Logo({
 
             <path d="M 22,96 C 10,82 190,82 178,96 C 172,102 28,102 22,96 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 90)" />
 
-            <path d="M 46,120 C 46,155 154,155 154,120" fill="white" stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 68,142 C 68,162 132,162 132,142" fill="white" stroke={mainColor} strokeWidth="5.5" />
+            <path d="M 46,120 C 46,155 154,155 154,120" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
+            <path d="M 68,142 C 68,162 132,162 132,142" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
             <path d="M 80,154 C 80,165 120,165 120,154" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
 
-            <ellipse cx="100" cy="116" rx="76" ry="22" fill="white" stroke={mainColor} strokeWidth="5.5" />
+            <ellipse cx="100" cy="116" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
             <ellipse cx="100" cy="116" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
             <ellipse cx="100" cy="116" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
             <ellipse cx="100" cy="116" rx="16" ry="6" fill={mainColor} />
@@ -193,7 +194,7 @@ export default function Logo({
       >
         {/* Left Circle Icon */}
         <g transform="translate(-10, -5)">
-          <circle cx="100" cy="92" r="62" fill="white" stroke={mainColor} strokeWidth="4.5" />
+          <circle cx="100" cy="92" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
           <path d="M 100,30 L 100,154" stroke={mainColor} strokeWidth="2.5" />
           <path d="M 100,30 A 25,62 0 0,0 100,154" fill="none" stroke={mainColor} strokeWidth="2.5" />
           <path d="M 100,30 A 25,62 0 0,1 100,154" fill="none" stroke={mainColor} strokeWidth="2.5" />
@@ -206,11 +207,11 @@ export default function Logo({
 
           <path d="M 22,106 C 10,92 190,92 178,106 C 172,112 28,112 22,106 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 100)" />
 
-          <path d="M 46,130 C 46,165 154,165 154,130" fill="white" stroke={mainColor} strokeWidth="5.5" />
-          <path d="M 68,152 C 68,172 132,172 132,152" fill="white" stroke={mainColor} strokeWidth="5.5" />
+          <path d="M 46,130 C 46,165 154,165 154,130" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
+          <path d="M 68,152 C 68,172 132,172 132,152" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
           <path d="M 80,164 C 80,175 120,175 120,164" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
 
-          <ellipse cx="100" cy="126" rx="76" ry="22" fill="white" stroke={mainColor} strokeWidth="5.5" />
+          <ellipse cx="100" cy="126" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
           <ellipse cx="100" cy="126" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
           <ellipse cx="100" cy="126" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
           <ellipse cx="100" cy="126" rx="16" ry="6" fill={mainColor} />
