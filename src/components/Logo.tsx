@@ -26,17 +26,15 @@ export default function Logo({
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
-            {/* Globe (Back) */}
-            <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-            <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-            <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-            
-            <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
+            {/* Globe Earth Silhouette (Back) */}
+            <image 
+              href="/logo-globe.jpg" 
+              x="38" 
+              y="18" 
+              width="124" 
+              height="124" 
+              style={{ filter: light ? 'invert(1)' : 'none' }}
+            />
 
             {/* Speaker Paper Cone (Front) */}
             <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
@@ -104,16 +102,15 @@ export default function Logo({
         >
           {/* Symmetrical Globe + Cone Icon on Top */}
           <g transform="translate(80, 0)">
-            <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-            <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-            <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-            
-            <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
+            {/* Globe Earth Silhouette (Back) */}
+            <image 
+              href="/logo-globe.jpg" 
+              x="38" 
+              y="18" 
+              width="124" 
+              height="124" 
+              style={{ filter: light ? 'invert(1)' : 'none' }}
+            />
 
             <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
             <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
@@ -186,16 +183,15 @@ export default function Logo({
       >
         {/* Left Circle Icon */}
         <g transform="translate(10, 15)">
-          <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-          <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-          <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
-          
-          <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
-          <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
-          <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
+          {/* Globe Earth Silhouette (Back) */}
+          <image 
+            href="/logo-globe.jpg" 
+            x="38" 
+            y="18" 
+            width="124" 
+            height="124" 
+            style={{ filter: light ? 'invert(1)' : 'none' }}
+          />
 
           <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
           <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
