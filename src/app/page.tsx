@@ -66,12 +66,44 @@ export default function Home() {
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
       {/* Dynamic Brand Hero Hero Banner Section (Inspired by North Speaker Parts) */}
-      <section className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] flex items-center justify-center overflow-hidden bg-white">
+      <section className="w-full relative h-[380px] sm:h-[480px] lg:h-[580px] flex flex-col overflow-hidden bg-white">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/hero-bookshelf-speaker.png')" }}
+          style={{ backgroundImage: "url('/hero-banner.jpg')" }}
         />
+        
+        {/* Clean, minimal overlay content at the top 40% (white space) */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full relative z-10 flex flex-col justify-start pt-12 sm:pt-16 lg:pt-20 text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#0EA5E9]">
+              Premium B2B Supply
+            </span>
+          </div>
+          
+          <h1 className="mt-3 text-3xl sm:text-5xl lg:text-6xl font-display font-black tracking-tight text-black uppercase leading-[1.05]">
+            The Foundation of <br /> Great Sound
+          </h1>
+          
+          <p className="mt-3 text-[10px] sm:text-xs text-[#5C5C63] font-light max-w-md uppercase tracking-widest leading-relaxed">
+            Wholesale manufacturing of precision voice coils, speaker cones, compliance surrounds, and custom acoustic parts.
+          </p>
+
+          <div className="flex items-center gap-3 mt-6 sm:mt-8">
+            <Link 
+              href="/products" 
+              className="bg-black text-white px-5 py-3 rounded-lg font-bold text-[10px] sm:text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-sm"
+            >
+              Explore Components
+            </Link>
+            <Link 
+              href="/contact?rfq=true" 
+              className="border border-black bg-white/50 backdrop-blur-xs text-black px-5 py-3 rounded-lg font-bold text-[10px] sm:text-xs uppercase tracking-wider hover:bg-white transition-all"
+            >
+              B2B Inquiry
+            </Link>
+          </div>
+        </div>
       </section>
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full py-5 bg-white relative overflow-hidden">
