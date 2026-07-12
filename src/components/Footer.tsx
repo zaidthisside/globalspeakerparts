@@ -32,7 +32,7 @@ export default function Footer() {
           {/* Company details */}
           <div className="flex flex-col gap-4.5">
             <Link href="/" className="flex items-center group">
-              <Logo className="h-64 sm:h-72 lg:h-80 w-auto mb-1" variant="stacked" light />
+              <Logo className="h-32 sm:h-36 lg:h-40 w-auto mb-1" variant="stacked" light />
             </Link>
             <p className="text-xs leading-relaxed text-slate-400 font-light font-sans">
               Leading OEM/ODM manufacturer, wholesale supplier, and exporter of high-precision speaker components globally. Serving automotive, pro-audio, and consumer electronics brands.
