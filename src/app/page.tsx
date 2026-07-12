@@ -212,11 +212,11 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Collage Grid (Proportions: 50% / 25% / 12.5% / 12.5%, Identical on Desktop and Mobile) */}
-          <div className="grid grid-cols-8 gap-1.5 sm:gap-4 w-full aspect-[20/9] sm:aspect-[24/9] md:aspect-[32/9] lg:aspect-[32/8] overflow-hidden">
+          {/* Collage Grid (Identical on Desktop and Mobile) */}
+          <div className="grid grid-cols-4 grid-rows-2 gap-1.5 sm:gap-4 w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[24/9] overflow-hidden">
             
-            {/* Box 1 (50% Space: w=4/8) */}
-            <div className="col-span-4 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            {/* Box 1 (50% Space: col-span-2, row-span-2) */}
+            <div className="col-span-2 row-span-2 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* object-top and scale-[1.08] crops out the bottom watermark label perfectly */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
@@ -232,8 +232,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Box 2 (25% Space: w=2/8) */}
-            <div className="col-span-2 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            {/* Box 2 (25% Space: col-span-2, row-span-1) */}
+            <div className="col-span-2 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-coils.jpg" 
@@ -248,8 +248,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Box 3 (12.5% Space: w=1/8) */}
-            <div className="col-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            {/* Box 3 (12.5% Space: col-span-1, row-span-1) */}
+            <div className="col-span-1 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-surrounds.jpg" 
@@ -264,8 +264,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Box 4 (12.5% Space: w=1/8) */}
-            <div className="col-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+            {/* Box 4 (12.5% Space: col-span-1, row-span-1) */}
+            <div className="col-span-1 row-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/collage-dustcaps.png" 
