@@ -24,7 +24,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0F0F10] text-[#A3A3A8] font-sans pt-16 pb-8 border-t border-[#2E2E33] relative">
+    <footer className="bg-[#000000] text-[#A3A3A8] font-sans pt-16 pb-8 border-t border-[#2E2E33] relative">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -131,7 +131,7 @@ export default function Footer() {
                 />
                 <button
                   type="submit"
-                  className="bg-white hover:bg-[#E8E8EA] text-[#0F0F10] font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider font-sans cursor-pointer"
+                  className="bg-white hover:bg-[#E8E8EA] text-[#000000] font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider font-sans cursor-pointer"
                 >
                   SUBSCRIBE
                 </button>

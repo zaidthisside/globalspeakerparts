@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-midnight: #0F0F10; /* Jet Black */
+  --color-primary-midnight: #000000; /* Pure Black from Shutterstock Globe */
   --color-secondary-graphite: #1E1E20; /* Charcoal Section */
   --color-accent-cyan: #0EA5E9;      /* Sky Blue Accent */
   --color-accent-cyan-hover: #0284C7; /* Darker Sky Blue Hover */
@@ -9,7 +9,7 @@
   --color-bg-snow: #FFFFFF;          /* Pure White */
   --color-card-white: #FFFFFF;
   --color-border-cool: #EAEAEA;      /* Subtle border #EAEAEA */
-  --color-heading-charcoal: #0F0F10; /* Jet Black headings */
+  --color-heading-charcoal: #000000; /* Pure Black headings */
   --color-body-slate: #4A4A4F;       /* Body Text */
   
   --font-sans: var(--font-inter), Arial, sans-serif;
@@ -129,11 +129,11 @@ body {
 
 /* Buttons style utilities */
 .btn-primary {
-  background-color: #0F0F10; /* Jet Black */
+  background-color: #000000; /* Pure Black */
   color: #FFFFFF;
   font-family: var(--font-inter), Arial, sans-serif;
   font-weight: 600;
-  border: 1px solid #0F0F10;
+  border: 1px solid #000000;
   border-radius: 12px; /* Rounded corners 12px */
   transition: all 0.2s ease-in-out;
 }
@@ -148,7 +148,7 @@ body {
 
 .btn-secondary {
   background-color: transparent;
-  color: #0F0F10;
+  color: #000000;
   border: 1.5px solid #D6D6D8; /* Subtle border */
   font-family: var(--font-inter), Arial, sans-serif;
   font-weight: 600;
@@ -157,8 +157,8 @@ body {
 }
 .btn-secondary:hover {
   background-color: #F7F7F8; /* Off White */
-  border-color: #0F0F10;
-  color: #0F0F10;
+  border-color: #000000;
+  color: #000000;
   transform: translateY(-1px);
 }
 .btn-secondary:active {

@@ -148,7 +148,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-[#0F0F10] border-b border-[#2E2E33] ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-[#000000] border-b border-[#2E2E33] ${
         scrolled ? "py-2 shadow-md" : "py-4"
       }`}
     >
@@ -283,7 +283,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 text-[#0F0F10] hover:text-[#5C5C63] cursor-pointer"
+                  className="p-2 text-[#000000] hover:text-[#5C5C63] cursor-pointer"
                   aria-label="Close menu"
                 >
                   <X className="w-5.5 h-5.5" />
@@ -298,7 +298,7 @@ export default function Navbar() {
                     <div key={item.name} className="border-b border-[#EAEAEA] pb-2">
                       <button
                         onClick={() => setOpenMobileSub(isMobileSubOpen ? null : item.name)}
-                        className="w-full flex items-center justify-between py-2 text-[#0F0F10] hover:text-[#5C5C63] text-left font-bold"
+                        className="w-full flex items-center justify-between py-2 text-[#000000] hover:text-[#5C5C63] text-left font-bold"
                       >
                         <span>{item.name}</span>
                         <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
@@ -328,7 +328,7 @@ export default function Navbar() {
 
               <div className="mt-auto px-6 py-6 border-t border-[#EAEAEA]">
                 <Link href="/contact?rfq=true" onClick={() => setIsOpen(false)}>
-                  <button className="w-full bg-[#0F0F10] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#2E2E33] transition-all cursor-pointer">
+                  <button className="w-full bg-[#000000] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#2E2E33] transition-all cursor-pointer">
                     REQUEST B2B QUOTE
                   </button>
                 </Link>

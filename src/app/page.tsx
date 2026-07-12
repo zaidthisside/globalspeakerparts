@@ -161,7 +161,7 @@ export default function Home() {
       </section>
 
       {/* Marquee banner tape strip */}
-      <div className="w-full bg-[#0F0F10] py-4 overflow-hidden flex relative">
+      <div className="w-full bg-[#000000] py-4 overflow-hidden flex relative">
         <div className="flex whitespace-nowrap animate-marquee-left w-max">
           <div className="flex items-center text-xs font-bold tracking-widest text-white uppercase">
             <span className="px-6">PRECISION ENGINEERED SINCE 2001</span>

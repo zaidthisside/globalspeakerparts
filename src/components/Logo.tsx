@@ -11,10 +11,9 @@ export default function Logo({
   variant = "primary", 
   light = false 
 }: LogoProps) {
-  const brandBlue = "#0F0F10"; // Premium Jet Black
+  const brandBlue = "#000000"; // Pure Black (from Shutterstock logo black)
   const accentColor = light ? "#FFFFFF" : "#0EA5E9"; // Sky Blue accent bar / cap
   const mainColor = light ? "#FFFFFF" : brandBlue;
-  const fillColor = light ? "#0F0F10" : "#FFFFFF"; // Masks background paths perfectly in dark mode
 
   // 1. ICON ONLY VARIANT
   if (variant === "icon") {
@@ -26,22 +25,15 @@ export default function Logo({
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
-            {/* Globe Earth Silhouette (Back) */}
+            {/* Symmetrical Globe Earth Silhouette Only */}
             <image 
               href="/logo-globe.jpg" 
-              x="38" 
-              y="18" 
-              width="124" 
-              height="124" 
+              x="20" 
+              y="20" 
+              width="160" 
+              height="160" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
-
-            {/* Speaker Paper Cone (Front) */}
-            <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
-            <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
-            <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
-            <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
           </g>
         </svg>
       </div>
@@ -100,30 +92,23 @@ export default function Logo({
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Symmetrical Globe + Cone Icon on Top */}
-          <g transform="translate(80, 0)">
-            {/* Globe Earth Silhouette (Back) */}
+          {/* Globe Earth Silhouette Only */}
+          <g transform="translate(100, 15)">
             <image 
               href="/logo-globe.jpg" 
-              x="38" 
-              y="18" 
-              width="124" 
-              height="124" 
+              x="20" 
+              y="0" 
+              width="120" 
+              height="120" 
               style={{ filter: light ? 'invert(1)' : 'none' }}
             />
-
-            <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
-            <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
-            <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
-            <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
           </g>
 
           {/* Centered Wordmarks on Bottom */}
-          <g>
+          <g transform="translate(0, 155)">
             <text 
               x="180" 
-              y="215" 
+              y="60" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
@@ -136,11 +121,11 @@ export default function Logo({
               GLOBAL
             </text>
             
-            <rect x="25" y="230" width="310" height="9.5" fill={accentColor} rx="1" />
+            <rect x="25" y="75" width="310" height="9.5" fill={accentColor} rx="1" />
             
             <text 
               x="180" 
-              y="272" 
+              y="117" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
@@ -155,7 +140,7 @@ export default function Logo({
             
             <text 
               x="180" 
-              y="302" 
+              y="147" 
               fill={light ? "#A3A3A8" : "#5C5C63"} 
               textAnchor="middle"
               style={{ 
@@ -183,21 +168,14 @@ export default function Logo({
       >
         {/* Left Circle Icon */}
         <g transform="translate(10, 15)">
-          {/* Globe Earth Silhouette (Back) */}
           <image 
             href="/logo-globe.jpg" 
-            x="38" 
-            y="18" 
-            width="124" 
-            height="124" 
+            x="20" 
+            y="0" 
+            width="140" 
+            height="140" 
             style={{ filter: light ? 'invert(1)' : 'none' }}
           />
-
-          <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
-          <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
-          <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
-          <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
         </g>
 
         {/* Right Side Text Block */}
