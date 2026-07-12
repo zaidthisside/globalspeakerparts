@@ -12,6 +12,7 @@ export default function Logo({
   light = false 
 }: LogoProps) {
   const brandBlue = "#0F0F10"; // Premium Jet Black
+  const accentColor = light ? "#FFFFFF" : "#0EA5E9"; // Sky Blue accent bar / cap
   const mainColor = light ? "#FFFFFF" : brandBlue;
   const fillColor = light ? "#0F0F10" : "#FFFFFF"; // Masks background paths perfectly in dark mode
 
@@ -26,33 +27,23 @@ export default function Logo({
         >
           <g>
             {/* Globe (Back) */}
-            <circle cx="100" cy="82" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-            <path d="M 100,20 L 100,144" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 25,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 25,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 48,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2" />
-            <path d="M 100,20 A 48,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2" />
+            <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
+            <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
+            <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
             
-            <line x1="48" y1="52" x2="152" y2="52" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="38" y1="82" x2="162" y2="82" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="48" y1="112" x2="152" y2="112" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
 
-            {/* Orbit Ring */}
-            <path d="M 22,96 C 10,82 190,82 178,96 C 172,102 28,102 22,96 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 90)" />
-
-            {/* Speaker Basket */}
-            <path d="M 46,120 C 46,155 154,155 154,120" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 68,142 C 68,162 132,162 132,142" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 80,154 C 80,165 120,165 120,154" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
-
-            {/* Speaker Gasket */}
-            <ellipse cx="100" cy="116" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <ellipse cx="100" cy="116" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
-            <ellipse cx="100" cy="116" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <ellipse cx="100" cy="116" rx="16" ry="6" fill={mainColor} />
-            
-            <circle cx="28" cy="116" r="3.5" fill={mainColor} />
-            <circle cx="172" cy="116" r="3.5" fill={mainColor} />
+            {/* Speaker Paper Cone (Front) */}
+            <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
+            <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
+            <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
+            <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
           </g>
         </svg>
       </div>
@@ -64,43 +55,38 @@ export default function Logo({
     return (
       <div className={`flex items-center ${className}`}>
         <svg 
-          viewBox="0 0 400 130" 
+          viewBox="0 0 350 140" 
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
           <g>
             <text 
-              x="200" 
-              y="68" 
+              x="10" 
+              y="60" 
               fill={mainColor} 
-              textAnchor="middle"
               style={{ 
-                fontFamily: "Georgia, 'Times New Roman', serif", 
-                fontWeight: 900, 
-                fontSize: "72px", 
-                letterSpacing: "4px"
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+                fontWeight: 800, 
+                fontSize: "76px", 
+                letterSpacing: "-1px" 
               }}
             >
               GLOBAL
             </text>
-            
+            <rect x="10" y="74" width="330" height="9.5" fill={accentColor} rx="1" />
             <text 
-              x="200" 
-              y="110" 
+              x="10" 
+              y="114" 
               fill={mainColor} 
-              textAnchor="middle"
               style={{ 
-                fontFamily: "Georgia, 'Times New Roman', serif", 
-                fontWeight: "bold", 
-                fontSize: "19px", 
-                letterSpacing: "4.5px"
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+                fontWeight: 700, 
+                fontSize: "36px", 
+                letterSpacing: "0.8px" 
               }}
             >
               SPEAKER PARTS
             </text>
-            
-            <line x1="15" y1="103" x2="88" y2="103" stroke={mainColor} strokeWidth="1.8" />
-            <line x1="312" y1="103" x2="385" y2="103" stroke={mainColor} strokeWidth="1.8" />
           </g>
         </svg>
       </div>
@@ -112,72 +98,78 @@ export default function Logo({
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
         <svg 
-          viewBox="0 0 400 350" 
+          viewBox="0 0 360 320" 
           className="w-full h-full object-contain"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Logo Icon on Top */}
-          <g transform="translate(100, 15)">
-            <circle cx="100" cy="82" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-            <path d="M 100,20 L 100,144" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 25,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 25,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <path d="M 100,20 A 48,62 0 0,0 100,144" fill="none" stroke={mainColor} strokeWidth="2" />
-            <path d="M 100,20 A 48,62 0 0,1 100,144" fill="none" stroke={mainColor} strokeWidth="2" />
+          {/* Symmetrical Globe + Cone Icon on Top */}
+          <g transform="translate(80, 0)">
+            <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
+            <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
+            <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
             
-            <line x1="48" y1="52" x2="152" y2="52" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="38" y1="82" x2="162" y2="82" stroke={mainColor} strokeWidth="2.5" />
-            <line x1="48" y1="112" x2="152" y2="112" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
+            <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
 
-            <path d="M 22,96 C 10,82 190,82 178,96 C 172,102 28,102 22,96 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 90)" />
-
-            <path d="M 46,120 C 46,155 154,155 154,120" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 68,142 C 68,162 132,162 132,142" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <path d="M 80,154 C 80,165 120,165 120,154" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
-
-            <ellipse cx="100" cy="116" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-            <ellipse cx="100" cy="116" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
-            <ellipse cx="100" cy="116" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
-            <ellipse cx="100" cy="116" rx="16" ry="6" fill={mainColor} />
-            
-            <circle cx="28" cy="116" r="3.5" fill={mainColor} />
-            <circle cx="172" cy="116" r="3.5" fill={mainColor} />
+            <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
+            <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
+            <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
+            <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
+            <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
           </g>
 
           {/* Centered Wordmarks on Bottom */}
-          <g transform="translate(0, 195)">
+          <g>
             <text 
-              x="200" 
-              y="68" 
+              x="180" 
+              y="215" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
-                fontFamily: "Georgia, 'Times New Roman', serif", 
-                fontWeight: 900, 
-                fontSize: "72px", 
-                letterSpacing: "4px"
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+                fontWeight: 800, 
+                fontSize: "74px", 
+                letterSpacing: "-1px" 
               }}
             >
               GLOBAL
             </text>
             
+            <rect x="25" y="230" width="310" height="9.5" fill={accentColor} rx="1" />
+            
             <text 
-              x="200" 
-              y="110" 
+              x="180" 
+              y="272" 
               fill={mainColor} 
               textAnchor="middle"
               style={{ 
-                fontFamily: "Georgia, 'Times New Roman', serif", 
-                fontWeight: "bold", 
-                fontSize: "19px", 
-                letterSpacing: "4.5px"
+                fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+                fontWeight: 700, 
+                fontSize: "35px", 
+                letterSpacing: "0.8px" 
               }}
             >
               SPEAKER PARTS
             </text>
             
-            <line x1="15" y1="103" x2="88" y2="103" stroke={mainColor} strokeWidth="1.8" />
-            <line x1="312" y1="103" x2="385" y2="103" stroke={mainColor} strokeWidth="1.8" />
+            <text 
+              x="180" 
+              y="302" 
+              fill={light ? "#A3A3A8" : "#5C5C63"} 
+              textAnchor="middle"
+              style={{ 
+                fontFamily: "var(--font-inter), Inter, sans-serif", 
+                fontWeight: 800, 
+                fontSize: "11px", 
+                letterSpacing: "4.2px" 
+              }}
+            >
+              MANUFACTURING <tspan fill={accentColor}>•</tspan> WHOLESALE <tspan fill={accentColor}>•</tspan> EXPORT
+            </text>
           </g>
         </svg>
       </div>
@@ -188,70 +180,78 @@ export default function Logo({
   return (
     <div className={`flex items-center select-none ${className}`}>
       <svg 
-        viewBox="0 0 520 180" 
+        viewBox="0 0 600 240" 
         className="w-full h-full object-contain"
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Left Circle Icon */}
-        <g transform="translate(-10, -5)">
-          <circle cx="100" cy="92" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
-          <path d="M 100,30 L 100,154" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,30 A 25,62 0 0,0 100,154" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,30 A 25,62 0 0,1 100,154" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <path d="M 100,30 A 48,62 0 0,0 100,154" fill="none" stroke={mainColor} strokeWidth="2" />
-          <path d="M 100,30 A 48,62 0 0,1 100,154" fill="none" stroke={mainColor} strokeWidth="2" />
+        <g transform="translate(10, 15)">
+          <circle cx="100" cy="80" r="62" fill={fillColor} stroke={mainColor} strokeWidth="4.5" />
+          <path d="M 100,18 L 100,142" stroke={mainColor} strokeWidth="2.5" />
+          <path d="M 100,18 A 25,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+          <path d="M 100,18 A 25,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.5" />
+          <path d="M 100,18 A 48,62 0 0,0 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
+          <path d="M 100,18 A 48,62 0 0,1 100,142" fill="none" stroke={mainColor} strokeWidth="2.0" />
           
-          <line x1="48" y1="62" x2="152" y2="62" stroke={mainColor} strokeWidth="2.5" />
-          <line x1="38" y1="92" x2="162" y2="92" stroke={mainColor} strokeWidth="2.5" />
-          <line x1="48" y1="122" x2="152" y2="122" stroke={mainColor} strokeWidth="2.5" />
+          <line x1="48" y1="50" x2="152" y2="50" stroke={mainColor} strokeWidth="2.5" />
+          <line x1="38" y1="80" x2="162" y2="80" stroke={mainColor} strokeWidth="2.5" />
+          <line x1="48" y1="110" x2="152" y2="110" stroke={mainColor} strokeWidth="2.5" />
 
-          <path d="M 22,106 C 10,92 190,92 178,106 C 172,112 28,112 22,106 Z" fill="none" stroke={mainColor} strokeWidth="4.5" transform="rotate(-6 100 100)" />
-
-          <path d="M 46,130 C 46,165 154,165 154,130" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-          <path d="M 68,152 C 68,172 132,172 132,152" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-          <path d="M 80,164 C 80,175 120,175 120,164" fill={mainColor} stroke={mainColor} strokeWidth="5.5" />
-
-          <ellipse cx="100" cy="126" rx="76" ry="22" fill={fillColor} stroke={mainColor} strokeWidth="5.5" />
-          <ellipse cx="100" cy="126" rx="64" ry="17.5" fill="none" stroke={mainColor} strokeWidth="3" />
-          <ellipse cx="100" cy="126" rx="52" ry="13.5" fill="none" stroke={mainColor} strokeWidth="2.5" />
-          <ellipse cx="100" cy="126" rx="16" ry="6" fill={mainColor} />
-          
-          <circle cx="28" cy="126" r="3.5" fill={mainColor} />
-          <circle cx="172" cy="126" r="3.5" fill={mainColor} />
+          <ellipse cx="100" cy="116" rx="76" ry="24" fill={fillColor} stroke={mainColor} strokeWidth="5" />
+          <ellipse cx="100" cy="116" rx="63" ry="20" fill="none" stroke={mainColor} strokeWidth="2.5" />
+          <ellipse cx="100" cy="116" rx="50" ry="16" fill="none" stroke={mainColor} strokeWidth="2" />
+          <ellipse cx="100" cy="116" rx="37" ry="12" fill="none" stroke={mainColor} strokeWidth="1.8" />
+          <ellipse cx="100" cy="116" rx="18" ry="6" fill={accentColor} />
         </g>
 
         {/* Right Side Text Block */}
-        <g transform="translate(165, 20)">
+        <g transform="translate(210, 30)">
           <text 
             x="0" 
             y="65" 
             fill={mainColor} 
             style={{ 
-              fontFamily: "Georgia, 'Times New Roman', serif", 
-              fontWeight: 900, 
-              fontSize: "65px", 
-              letterSpacing: "4px"
+              fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+              fontWeight: 800, 
+              fontSize: "94px", 
+              letterSpacing: "-1.5px" 
             }}
           >
             GLOBAL
           </text>
           
+          <rect x="0" y="82" width="356" height="11" fill={accentColor} rx="1.5" />
+          
           <text 
             x="0" 
-            y="108" 
+            y="132" 
             fill={mainColor} 
             style={{ 
-              fontFamily: "Georgia, 'Times New Roman', serif", 
-              fontWeight: "bold", 
-              fontSize: "17.5px", 
-              letterSpacing: "4.5px"
+              fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+              fontWeight: 700, 
+              fontSize: "45px", 
+              letterSpacing: "1.2px" 
             }}
           >
             SPEAKER PARTS
           </text>
-          
-          <line x1="172" y1="102" x2="310" y2="102" stroke={mainColor} strokeWidth="1.8" />
         </g>
+
+        {/* Tagline under both */}
+        <text 
+          x="300" 
+          y="218" 
+          fill={light ? "#A3A3A8" : "#5C5C63"} 
+          textAnchor="middle"
+          style={{ 
+            fontFamily: "var(--font-manrope), Manrope, sans-serif", 
+            fontWeight: 700, 
+            fontSize: "17.5px", 
+            letterSpacing: "5.6px" 
+          }}
+        >
+          MANUFACTURING <tspan fill={accentColor} dy="-1.5">•</tspan><tspan dy="1.5"> WHOLESALE </tspan><tspan fill={accentColor} dy="-1.5">•</tspan><tspan dy="1.5"> EXPORT</tspan>
+        </text>
       </svg>
     </div>
   );
