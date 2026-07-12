@@ -159,11 +159,11 @@ export default function Logo({
     );
   }
 
-  // 4. PRIMARY HORIZONTAL VARIANT (Used in Navbar - tagline removed, logomark/text height equal)
+  // 4. PRIMARY HORIZONTAL VARIANT (Used in Navbar - tagline removed, expanded width to prevent clipping)
   return (
     <div className={`flex items-center select-none ${className}`}>
       <svg 
-        viewBox="0 0 680 240" 
+        viewBox="0 0 740 240" 
         className="w-full h-full object-contain"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -179,7 +179,7 @@ export default function Logo({
           />
         </g>
 
-        {/* Right Side Text Block (Height aligned to match 240px globe height exactly) */}
+        {/* Right Side Text Block (Height aligned, width expanded to prevent cut-offs) */}
         <g transform="translate(280, 15)">
           <text 
             x="0" 
@@ -195,8 +195,8 @@ export default function Logo({
             GLOBAL
           </text>
           
-          {/* Skyblue line thinner by 0.5 units (from 11 to 10.5) */}
-          <rect x="0" y="105" width="370" height="10.5" fill={accentColor} rx="1.5" />
+          {/* Skyblue line aligned with both texts (width expanded to 415 to prevent under-extension) */}
+          <rect x="0" y="105" width="415" height="10.5" fill={accentColor} rx="1.5" />
           
           <text 
             x="0" 
