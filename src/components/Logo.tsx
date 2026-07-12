@@ -63,7 +63,7 @@ export default function Logo({
             >
               GLOBAL
             </text>
-            <rect x="10" y="74" width="330" height="9.5" fill={accentColor} rx="1" />
+            <rect x="10" y="74" width="330" height="9" fill={accentColor} rx="1" />
             <text 
               x="10" 
               y="114" 
@@ -83,7 +83,7 @@ export default function Logo({
     );
   }
 
-  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer - scaled 4x globe + 1.5x text)
+  // 3. STACKED ICON OVER TEXT VARIANT (Used in Footer)
   if (variant === "stacked") {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
@@ -121,7 +121,8 @@ export default function Logo({
               GLOBAL
             </text>
             
-            <rect x="-130" y="55" width="260" height="9" fill={accentColor} rx="1" />
+            {/* Skyblue line thinner by 0.5 units (from 9 to 8.5) */}
+            <rect x="-130" y="55" width="260" height="8.5" fill={accentColor} rx="1" />
             
             <text 
               x="0" 
@@ -158,16 +159,16 @@ export default function Logo({
     );
   }
 
-  // 4. PRIMARY HORIZONTAL VARIANT (DEFAULT - Used in Navbar)
+  // 4. PRIMARY HORIZONTAL VARIANT (Used in Navbar - tagline removed, logomark/text height equal)
   return (
     <div className={`flex items-center select-none ${className}`}>
       <svg 
-        viewBox="0 0 680 270" 
+        viewBox="0 0 680 240" 
         className="w-full h-full object-contain"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Left Circle Icon (2x size: width/height increased to 240, zero margin offset) */}
-        <g transform="translate(10, 15)">
+        {/* Left Circle Icon (Symmetrical 240x240 size) */}
+        <g transform="translate(10, 0)">
           <image 
             href="/logo-globe.jpg" 
             x="0" 
@@ -178,54 +179,39 @@ export default function Logo({
           />
         </g>
 
-        {/* Right Side Text Block (Shifted to right for 2x globe size) */}
-        <g transform="translate(280, 50)">
+        {/* Right Side Text Block (Height aligned to match 240px globe height exactly) */}
+        <g transform="translate(280, 15)">
           <text 
             x="0" 
-            y="65" 
+            y="85" 
             fill={mainColor} 
             style={{ 
               fontFamily: "var(--font-manrope), Manrope, sans-serif", 
               fontWeight: 800, 
-              fontSize: "94px", 
-              letterSpacing: "-1.5px" 
+              fontSize: "112px", 
+              letterSpacing: "-2px" 
             }}
           >
             GLOBAL
           </text>
           
-          <rect x="0" y="82" width="356" height="11" fill={accentColor} rx="1.5" />
+          {/* Skyblue line thinner by 0.5 units (from 11 to 10.5) */}
+          <rect x="0" y="105" width="370" height="10.5" fill={accentColor} rx="1.5" />
           
           <text 
             x="0" 
-            y="132" 
+            y="175" 
             fill={mainColor} 
             style={{ 
               fontFamily: "var(--font-manrope), Manrope, sans-serif", 
               fontWeight: 700, 
-              fontSize: "45px", 
-              letterSpacing: "1.2px" 
+              fontSize: "54px", 
+              letterSpacing: "2.4px" 
             }}
           >
             SPEAKER PARTS
           </text>
         </g>
-
-        {/* Tagline under both (Centered in expanded viewbox) */}
-        <text 
-          x="340" 
-          y="255" 
-          fill={light ? "#A3A3A8" : "#5C5C63"} 
-          textAnchor="middle"
-          style={{ 
-            fontFamily: "var(--font-manrope), Manrope, sans-serif", 
-            fontWeight: 700, 
-            fontSize: "17.5px", 
-            letterSpacing: "5.6px" 
-          }}
-        >
-          MANUFACTURING <tspan fill={accentColor} dy="-1.5">•</tspan><tspan dy="1.5"> WHOLESALE </tspan><tspan fill={accentColor} dy="-1.5">•</tspan><tspan dy="1.5"> EXPORT</tspan>
-        </text>
       </svg>
     </div>
   );
