@@ -195,6 +195,96 @@ export default function Home() {
       </div>
 
 
+      {/* 1.5 B2B Product Range Collage Section */}
+      <section className="w-full py-20 bg-white border-b border-black">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="text-center mb-12 space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-12 h-[1px] bg-black" />
+              <span className="text-black text-xs font-bold uppercase tracking-widest">PRODUCT PORTFOLIO Showcase</span>
+              <div className="w-12 h-[1px] bg-black" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold uppercase">
+              Unmatched Sizing, Materials & Custom Variants
+            </h2>
+            <p className="text-xs sm:text-sm text-[#4A4A4F] max-w-2xl mx-auto leading-relaxed font-light">
+              Explore our extensive range of high-precision wholesale components. We manufacture thousands of custom variations of speaker cones, high-temp voice coils, compliance surrounds, and dust caps. Engineered to fit vintage cabinets and modern high-power transducers alike.
+            </p>
+          </div>
+
+          {/* Collage Grid (Proportions: 50% / 25% / 12.5% / 12.5%, Identical on Desktop and Mobile) */}
+          <div className="grid grid-cols-8 gap-1.5 sm:gap-4 w-full aspect-[20/9] sm:aspect-[24/9] md:aspect-[32/9] lg:aspect-[32/8] overflow-hidden">
+            
+            {/* Box 1 (50% Space: w=4/8) */}
+            <div className="col-span-4 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+              {/* object-top and scale-[1.08] crops out the bottom watermark label perfectly */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/collage-all.jpg" 
+                alt="Speaker Cones and Components Group Collage" 
+                className="absolute inset-0 w-full h-full object-cover object-top scale-[1.08] origin-top group-hover:scale-[1.10] transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300" />
+              <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20">
+                <span className="inline-block border border-black bg-white rounded-premium px-1.5 py-0.5 sm:px-3 sm:py-1 font-display text-[6.5px] sm:text-[9.5px] font-bold text-[#0F0F10] uppercase tracking-wider shadow-sm">
+                  Full Range
+                </span>
+              </div>
+            </div>
+
+            {/* Box 2 (25% Space: w=2/8) */}
+            <div className="col-span-2 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/collage-coils.jpg" 
+                alt="Speaker Voice Coils Collection" 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300" />
+              <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20">
+                <span className="inline-block border border-black bg-white rounded-premium px-1.5 py-0.5 sm:px-3 sm:py-1 font-display text-[6.5px] sm:text-[9.5px] font-bold text-[#0F0F10] uppercase tracking-wider shadow-sm">
+                  Voice Coils
+                </span>
+              </div>
+            </div>
+
+            {/* Box 3 (12.5% Space: w=1/8) */}
+            <div className="col-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/collage-surrounds.jpg" 
+                alt="Foam and Rubber surrounds collection" 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300" />
+              <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20">
+                <span className="inline-block border border-black bg-white rounded-premium px-1 py-0.5 sm:px-2.5 sm:py-1 font-display text-[5.5px] sm:text-[8.5px] font-bold text-[#0F0F10] uppercase tracking-wider shadow-sm truncate max-w-[90%]">
+                  Surrounds
+                </span>
+              </div>
+            </div>
+
+            {/* Box 4 (12.5% Space: w=1/8) */}
+            <div className="col-span-1 h-full relative border-2 border-black rounded-premium overflow-hidden bg-white group hover:scale-[1.01] transition-all duration-300 shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/collage-dustcaps.png" 
+                alt="Speaker dust caps collection" 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-[#0F0F10]/5 group-hover:bg-[#0F0F10]/0 transition-all duration-300" />
+              <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20">
+                <span className="inline-block border border-black bg-white rounded-premium px-1 py-0.5 sm:px-2.5 sm:py-1 font-display text-[5.5px] sm:text-[8.5px] font-bold text-[#0F0F10] uppercase tracking-wider shadow-sm truncate max-w-[90%]">
+                  Dust Caps
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
       <section className="w-full py-20 bg-white border-b border-black">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
