@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Filter, Info, X, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send } from "lucide-react";
+import { Search, Filter, Info, X, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import InquiryForm from "@/components/InquiryForm";
 
 // Real Unsplash photo URLs for B2B industrial speaker components
@@ -269,6 +269,191 @@ const allCategories = [
   "Complete Speaker Components"
 ];
 
+interface ProductItem {
+  id: string;
+  name: string;
+  category: string;
+  imageKey: string;
+  desc: string;
+  materials: string;
+  dimensions: string;
+  tempLimit: string;
+  frequencyRange: string;
+  tolerances: string;
+  startingPrice: string;
+  moq: string;
+  variants: string;
+  mediaUrls?: string;
+  compliance?: string;
+}
+
+function ProductCard({ 
+  prod, 
+  onSelect, 
+  onSelectSample, 
+  getWhatsAppUrl, 
+  productImages 
+}: { 
+  prod: ProductItem; 
+  onSelect: (p: ProductItem) => void; 
+  onSelectSample: (p: ProductItem) => void; 
+  getWhatsAppUrl: (name: string) => string; 
+  productImages: Record<string, string>;
+}) {
+  const [mediaIdx, setMediaIdx] = useState(0);
+
+  const mediaUrls = prod.mediaUrls 
+    ? prod.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
+    : [];
+  const mediaItems = mediaUrls.length > 0 
+    ? mediaUrls 
+    : [productImages[prod.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"];
+
+  const activeUrl = mediaItems[mediaIdx];
+  const isVideo = activeUrl?.endsWith(".mp4") || activeUrl?.endsWith(".webm") || activeUrl?.endsWith(".ogg") || activeUrl?.includes("youtube.com") || activeUrl?.includes("vimeo.com");
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMediaIdx(prev => (prev + 1) % mediaItems.length);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMediaIdx(prev => (prev - 1 + mediaItems.length) % mediaItems.length);
+  };
+
+  return (
+    <div 
+      onClick={() => onSelect(prod)}
+      className="bg-white border-2 border-black p-2.5 sm:p-3 rounded-premium cursor-pointer flex flex-col justify-between shadow-sm hover:translate-y-[-2px] transition-all w-full"
+    >
+      <div>
+        {/* Product Image - Square Shape */}
+        <div className="w-full aspect-square rounded-lg overflow-hidden border border-black mb-2.5 relative group/card">
+          {isVideo ? (
+            <video 
+              src={activeUrl} 
+              className="w-full h-full object-cover" 
+              muted 
+              loop 
+              playsInline
+              autoPlay={false}
+            />
+          ) : (
+            <img
+              src={activeUrl}
+              alt={prod.name}
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-103"
+            />
+          )}
+
+          {/* Arrows navigation (visible when hover group/card and mediaItems.length > 1) */}
+          {mediaItems.length > 1 && (
+            <>
+              <button 
+                onClick={handlePrev}
+                className="absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 border border-black text-black flex items-center justify-center hover:bg-black hover:text-white transition-all opacity-0 group-hover/card:opacity-100 cursor-pointer shadow-sm z-20"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button 
+                onClick={handleNext}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 border border-black text-black flex items-center justify-center hover:bg-black hover:text-white transition-all opacity-0 group-hover/card:opacity-100 cursor-pointer shadow-sm z-20"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-full z-20">
+                {mediaItems.map((_: string, i: number) => (
+                  <span 
+                    key={i} 
+                    className={`w-1 h-1 rounded-full transition-all ${
+                      i === mediaIdx ? "bg-accent-cyan scale-125" : "bg-white"
+                    }`} 
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="absolute top-1.5 right-1.5 bg-white text-[7px] font-mono text-black font-bold px-1 py-0.5 rounded border border-black z-20">
+            CAD
+          </div>
+          {isVideo && (
+            <div className="absolute top-1.5 left-1.5 bg-accent-cyan text-white text-[7px] font-mono font-bold px-1 py-0.5 rounded border border-[#0EA5E9] z-20">
+              VIDEO
+            </div>
+          )}
+        </div>
+
+        <span className="text-[8px] sm:text-[9px] font-extrabold text-black tracking-wider uppercase block mb-0.5">
+          {prod.category}
+        </span>
+        <h3 className="font-display text-xs font-extrabold text-black mb-1.5 line-clamp-2 leading-tight">
+          {prod.name}
+        </h3>
+
+        {/* Variants & Pricing Info */}
+        <div className="mt-2 space-y-1 text-[9px] sm:text-[10px] text-black font-semibold border-t border-black pt-2">
+          <div className="flex justify-between items-center">
+            <span className="flex items-center gap-0.5 font-sans">
+              <Tag className="w-3.5 h-3.5 text-black shrink-0" />
+              <span>Price:</span>
+            </span>
+            <strong className="text-black font-extrabold font-numbers text-[9px] sm:text-xs">{prod.startingPrice}</strong>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="flex items-center gap-0.5 font-sans">
+              <Box className="w-3.5 h-3.5 text-black shrink-0" />
+              <span>MOQ:</span>
+            </span>
+            <span className="font-bold text-black">{prod.moq}</span>
+          </div>
+          <div className="text-[8px] sm:text-[9px] text-black pt-0.5 font-medium italic truncate font-sans">
+            {prod.variants}
+          </div>
+        </div>
+
+        {/* B2B Action Buttons */}
+        <div className="mt-3 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => onSelectSample(prod)}
+            className="w-full bg-[#0F0F10] text-white hover:bg-accent-cyan transition-colors text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider text-center cursor-pointer border border-[#0F0F10] hover:border-accent-cyan shadow-sm flex items-center justify-center gap-1"
+          >
+            <span>Buy Sample Now</span>
+          </button>
+          
+          <a
+            href={getWhatsAppUrl(prod.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors text-[9px] font-bold py-1 rounded-lg uppercase tracking-wider text-center flex items-center justify-center gap-1 cursor-pointer shadow-sm"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/whatsapp.png" 
+              className="w-3.5 h-3.5 shrink-0" 
+              alt="WhatsApp" 
+            />
+            <span>Contact Us</span>
+          </a>
+        </div>
+      </div>
+
+      <div className="mt-2.5 pt-2 border-t border-black flex items-center justify-between">
+        <span className="text-[8px] font-bold text-black uppercase tracking-wider font-mono truncate max-w-[55%]">
+          TOL: {prod.tolerances}
+        </span>
+        <span className="inline-flex items-center gap-1 text-[9px] sm:text-xs font-bold text-black hover:text-accent-cyan transition-colors">
+          <span>RFQ</span>
+          <Info className="w-3.5 h-3.5 text-black shrink-0" />
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function ProductsCatalogSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -278,9 +463,17 @@ function ProductsCatalogSection() {
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedProduct, setSelectedProduct] = useState<typeof productsData[0] | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [modalMediaIdx, setModalMediaIdx] = useState(0);
   const [isSampleMode, setIsSampleMode] = useState(false);
-  const [customProducts, setCustomProducts] = useState<typeof productsData>([]);
+
+  const handleSelectProduct = (prod: ProductItem | null, sampleMode = false) => {
+    setSelectedProduct(prod);
+    setModalMediaIdx(0);
+    setIsSampleMode(sampleMode);
+  };
+
+  const [customProducts, setCustomProducts] = useState<ProductItem[]>([]);
   const [whatsappNumberCleaned, setWhatsappNumberCleaned] = useState("919214361550");
 
   const getWhatsAppUrl = (prodName: string) => {
@@ -725,101 +918,16 @@ function ProductsCatalogSection() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-              {filteredProducts.map((prod) => {
-                const imgUrl = productImages[prod.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80";
-                return (
-                  <div 
-                    key={prod.id}
-                    onClick={() => {
-                      setIsSampleMode(false);
-                      setSelectedProduct(prod);
-                    }}
-                    className="bg-white border-2 border-black p-2.5 sm:p-3 rounded-premium cursor-pointer flex flex-col justify-between shadow-sm hover:translate-y-[-2px] transition-all"
-                  >
-                    <div>
-                      {/* Product Image - Square Shape */}
-                      <div className="w-full aspect-square rounded-lg overflow-hidden border border-black mb-2.5 relative">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={imgUrl}
-                          alt={prod.name}
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-103"
-                        />
-                        <div className="absolute top-1.5 right-1.5 bg-white text-[7px] font-mono text-black font-bold px-1 py-0.5 rounded border border-black">
-                          CAD
-                        </div>
-                      </div>
-
-                      <span className="text-[8px] sm:text-[9px] font-extrabold text-black tracking-wider uppercase block mb-0.5">
-                        {prod.category}
-                      </span>
-                      <h3 className="font-display text-xs font-extrabold text-black mb-1.5 line-clamp-2 leading-tight">
-                        {prod.name}
-                      </h3>
-
-                      {/* Variants & Pricing Info */}
-                      <div className="mt-2 space-y-1 text-[9px] sm:text-[10px] text-black font-semibold border-t border-black pt-2">
-                        <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-0.5 font-sans">
-                            <Tag className="w-3.5 h-3.5 text-black shrink-0" />
-                            <span>Price:</span>
-                          </span>
-                          <strong className="text-black font-extrabold font-numbers text-[9px] sm:text-xs">{prod.startingPrice}</strong>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-0.5 font-sans">
-                            <Box className="w-3.5 h-3.5 text-black shrink-0" />
-                            <span>MOQ:</span>
-                          </span>
-                          <span className="font-bold text-black">{prod.moq}</span>
-                        </div>
-                        <div className="text-[8px] sm:text-[9px] text-black pt-0.5 font-medium italic truncate font-sans">
-                          {prod.variants}
-                        </div>
-                      </div>
-
-                      {/* B2B Action Buttons */}
-                      <div className="mt-3 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsSampleMode(true);
-                            setSelectedProduct(prod);
-                          }}
-                          className="w-full bg-[#0F0F10] text-white hover:bg-accent-cyan transition-colors text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider text-center cursor-pointer border border-[#0F0F10] hover:border-accent-cyan shadow-sm flex items-center justify-center gap-1"
-                        >
-                          <span>Buy Sample Now</span>
-                        </button>
-                        
-                        <a
-                          href={getWhatsAppUrl(prod.name)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors text-[9px] font-bold py-1 rounded-lg uppercase tracking-wider text-center flex items-center justify-center gap-1 cursor-pointer shadow-sm"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img 
-                            src="/whatsapp.png" 
-                            className="w-3.5 h-3.5 shrink-0" 
-                            alt="WhatsApp" 
-                          />
-                          <span>Contact Us</span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="mt-2.5 pt-2 border-t border-black flex items-center justify-between">
-                      <span className="text-[8px] font-bold text-black uppercase tracking-wider font-mono truncate max-w-[55%]">
-                        TOL: {prod.tolerances}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[9px] sm:text-xs font-bold text-black hover:text-accent-cyan transition-colors">
-                        <span>RFQ</span>
-                        <Info className="w-3.5 h-3.5 text-black shrink-0" />
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredProducts.map((prod) => (
+                <ProductCard 
+                  key={prod.id} 
+                  prod={prod} 
+                  onSelect={(p) => handleSelectProduct(p, false)}
+                  onSelectSample={(p) => handleSelectProduct(p, true)}
+                  getWhatsAppUrl={getWhatsAppUrl}
+                  productImages={productImages}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -838,7 +946,7 @@ function ProductsCatalogSection() {
                 <h3 className="font-display text-base font-extrabold text-[#0F0F10] leading-tight">{selectedProduct.name}</h3>
               </div>
               <button
-                onClick={() => setSelectedProduct(null)}
+                onClick={() => handleSelectProduct(null)}
                 className="p-2 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] hover:bg-[#E8E8EA] text-slate-500 hover:text-accent-cyan transition-colors cursor-pointer"
                 aria-label="Close details"
               >
@@ -853,17 +961,75 @@ function ProductsCatalogSection() {
               <div className="lg:col-span-7 space-y-6">
                 
                 {/* Large Product Image in Modal */}
-                <div className="w-full h-56 rounded-premium overflow-hidden border border-[#EAEAEA] relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"}
-                    alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-2 py-0.5 rounded border border-[#EAEAEA]">
-                    CROSS-SECTION SCHEMATIC
-                  </div>
-                </div>
+                {(() => {
+                  const modalMediaUrls = selectedProduct.mediaUrls 
+                    ? selectedProduct.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
+                    : [];
+                  const modalMediaItems = modalMediaUrls.length > 0 
+                    ? modalMediaUrls 
+                    : [productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"];
+
+                  const modalActiveUrl = modalMediaItems[modalMediaIdx] || modalMediaItems[0];
+                  const isModalVideo = modalActiveUrl?.endsWith(".mp4") || modalActiveUrl?.endsWith(".webm") || modalActiveUrl?.endsWith(".ogg") || modalActiveUrl?.includes("youtube.com") || modalActiveUrl?.includes("vimeo.com");
+
+                  return (
+                    <div className="w-full h-64 sm:h-72 rounded-premium overflow-hidden border border-[#EAEAEA] relative group">
+                      {isModalVideo ? (
+                        <video 
+                          src={modalActiveUrl} 
+                          controls 
+                          className="w-full h-full object-cover" 
+                          muted 
+                          loop 
+                          playsInline
+                          autoPlay={true}
+                        />
+                      ) : (
+                        <img
+                          src={modalActiveUrl}
+                          alt={selectedProduct.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      
+                      {/* Arrows navigation for modal */}
+                      {modalMediaItems.length > 1 && (
+                        <>
+                          <button 
+                            onClick={() => setModalMediaIdx(prev => (prev - 1 + modalMediaItems.length) % modalMediaItems.length)}
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 border border-[#EAEAEA] text-[#0F0F10] hover:bg-[#0EA5E9] hover:text-white transition-all flex items-center justify-center font-bold text-sm shadow-md cursor-pointer z-20"
+                            aria-label="Previous slide"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => setModalMediaIdx(prev => (prev + 1) % modalMediaItems.length)}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 border border-[#EAEAEA] text-[#0F0F10] hover:bg-[#0EA5E9] hover:text-white transition-all flex items-center justify-center font-bold text-sm shadow-md cursor-pointer z-20"
+                            aria-label="Next slide"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                          
+                          {/* Dots indicator for modal */}
+                          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#0F0F10]/50 px-2.5 py-1 rounded-full z-20">
+                            {modalMediaItems.map((_: string, i: number) => (
+                              <span 
+                                key={i} 
+                                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                                  i === modalMediaIdx ? "bg-[#0EA5E9] scale-125" : "bg-white"
+                                }`} 
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-2 py-0.5 rounded border border-[#EAEAEA] z-20">
+                        {isModalVideo ? "PRODUCT VIDEO DEMO" : "PRODUCT CATALOG IMAGE"}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="space-y-2">
                   <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider">Acoustic & Mechanical Profile</h4>

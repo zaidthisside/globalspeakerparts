@@ -25,7 +25,8 @@ export default function AdminPage() {
     startingPrice: "",
     moq: "",
     variants: "",
-    imageKey: "cones"
+    imageKey: "cones",
+    mediaUrls: ""
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -173,7 +174,8 @@ export default function AdminPage() {
       startingPrice: "",
       moq: "",
       variants: "",
-      imageKey: "cones"
+      imageKey: "cones",
+      mediaUrls: ""
     });
     setIsAddProductOpen(false);
   };
@@ -846,6 +848,17 @@ export default function AdminPage() {
                           <option value="terminals">Speaker Terminals</option>
                           <option value="tweeterparts">Tweeters / Diaphragms</option>
                         </select>
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Custom Product Image or Video URLs (Comma-separated)</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. /my-image1.jpg, https://example.com/video.mp4, /my-image2.png"
+                          value={newProduct.mediaUrls || ""}
+                          onChange={(e) => setNewProduct({...newProduct, mediaUrls: e.target.value})}
+                          className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white font-sans text-xs"
+                        />
                       </div>
 
                       <div className="flex justify-end gap-3 border-t border-[#EAEAEA] pt-4 mt-6">
