@@ -4,6 +4,7 @@ import path from "path";
 
 interface ProductItem {
   id?: string;
+  action?: string;
   name: string;
   category: string;
   desc: string;
@@ -22,73 +23,64 @@ interface ProductItem {
 }
 
 const filePath = path.join(process.cwd(), "custom_products.json");
-const CLOUD_URL = "https://extendsclass.com/api/json-storage/bin/cadeade";
 
-// Local file backup helpers
-function readLocal(): ProductItem[] {
+function ensureFile() {
   try {
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(content);
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, "[]", "utf-8");
     }
   } catch (e) {
-    console.error("Local database read failed:", e);
+    console.error("ensureFile error:", e);
+  }
+}
+
+function readProducts(): ProductItem[] {
+  try {
+    ensureFile();
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+  } catch (e) {
+    console.error("readProducts error:", e);
   }
   return [];
 }
 
-function writeLocal(data: ProductItem[]) {
+function writeProducts(products: ProductItem[]) {
   try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    ensureFile();
+    fs.writeFileSync(filePath, JSON.stringify(products, null, 2), "utf-8");
   } catch (e) {
-    console.error("Local database write failed:", e);
+    console.error("writeProducts error:", e);
   }
 }
 
 export async function GET() {
-  try {
-    const res = await fetch(CLOUD_URL, { cache: "no-store" });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        writeLocal(data); // Sync local backup
-        return NextResponse.json(data);
-      }
-    }
-  } catch (error) {
-    console.error("GET cloud products error, falling back:", error);
-  }
-
-  // Fallback to local file backup
-  return NextResponse.json(readLocal());
+  const products = readProducts();
+  return NextResponse.json(products, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+    },
+  });
 }
 
 export async function POST(request: Request) {
   try {
     const product = await request.json();
-    
-    // Get existing products list (try cloud first)
-    let products: ProductItem[] = [];
-    try {
-      const res = await fetch(CLOUD_URL, { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          products = data;
-        }
-      } else {
-        products = readLocal();
-      }
-    } catch (e) {
-      console.warn("Cloud read failed in POST, trying local read:", e);
-      products = readLocal();
-    }
+    const products = readProducts();
 
-    let updatedProducts: ProductItem[] = [];
+    let updatedProducts: ProductItem[];
+
     if (product.action === "delete") {
-      updatedProducts = products.filter((p: { id?: string }) => p.id !== product.id);
+      updatedProducts = products.filter((p) => p.id !== product.id);
     } else {
-      const existingIndex = products.findIndex((p: { id?: string }) => p.id === product.id);
+      const existingIndex = products.findIndex((p) => p.id === product.id);
       if (existingIndex > -1) {
         products[existingIndex] = product;
         updatedProducts = [...products];
@@ -97,23 +89,22 @@ export async function POST(request: Request) {
       }
     }
 
-    // Save local backup
-    writeLocal(updatedProducts);
+    writeProducts(updatedProducts);
 
-    // Save to Cloud storage
-    try {
-      await fetch(CLOUD_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProducts)
-      });
-    } catch (cloudError) {
-      console.error("POST cloud update failed:", cloudError);
-    }
-
-    return NextResponse.json({ success: true, products: updatedProducts });
+    return NextResponse.json(
+      { success: true, products: updatedProducts },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Pragma": "no-cache",
+        },
+      }
+    );
   } catch (error) {
     console.error("POST custom products error:", error);
-    return NextResponse.json({ error: "Failed to write custom products" }, { status: 550 });
+    return NextResponse.json(
+      { error: "Failed to write custom products" },
+      { status: 500 }
+    );
   }
 }
