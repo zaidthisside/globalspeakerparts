@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { createClient } from "@supabase/supabase-js";
 
 interface ProductItem {
   id?: string;
-  action?: string;
   name: string;
   category: string;
   desc: string;
@@ -22,89 +20,81 @@ interface ProductItem {
   compliance?: string;
 }
 
-const filePath = path.join(process.cwd(), "custom_products.json");
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://qvjcheciijcwafiqaigx.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_aswir1JOSTt4rvIYevngGg_qttBBNZx";
 
-function ensureFile() {
-  try {
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, "[]", "utf-8");
-    }
-  } catch (e) {
-    console.error("ensureFile error:", e);
-  }
-}
-
-function readProducts(): ProductItem[] {
-  try {
-    ensureFile();
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-  } catch (e) {
-    console.error("readProducts error:", e);
-  }
-  return [];
-}
-
-function writeProducts(products: ProductItem[]) {
-  try {
-    ensureFile();
-    fs.writeFileSync(filePath, JSON.stringify(products, null, 2), "utf-8");
-  } catch (e) {
-    console.error("writeProducts error:", e);
-  }
-}
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function GET() {
-  const products = readProducts();
-  return NextResponse.json(products, {
-    headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
-    },
-  });
+  try {
+    const { data, error } = await supabase
+      .from("custom_products")
+      .select("data")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase SELECT error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const products = data ? data.map((row: { data: unknown }) => row.data as ProductItem) : [];
+    return NextResponse.json(products, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      },
+    });
+  } catch (error) {
+    console.error("GET custom products error:", error);
+    return NextResponse.json({ error: "Failed to read custom products" }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const product = await request.json();
-    const products = readProducts();
-
-    let updatedProducts: ProductItem[];
 
     if (product.action === "delete") {
-      updatedProducts = products.filter((p) => p.id !== product.id);
+      const { error } = await supabase
+        .from("custom_products")
+        .delete()
+        .eq("id", product.id);
+
+      if (error) {
+        console.error("Supabase DELETE error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
     } else {
-      const existingIndex = products.findIndex((p) => p.id === product.id);
-      if (existingIndex > -1) {
-        products[existingIndex] = product;
-        updatedProducts = [...products];
-      } else {
-        updatedProducts = [product, ...products];
+      // Upsert the custom product (uses product.id as primary key)
+      const { error } = await supabase
+        .from("custom_products")
+        .upsert({
+          id: product.id,
+          data: product
+        });
+
+      if (error) {
+        console.error("Supabase UPSERT error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
       }
     }
 
-    writeProducts(updatedProducts);
+    // Fetch and return the updated products list to keep client in sync
+    const { data: selectData, error: selectError } = await supabase
+      .from("custom_products")
+      .select("data")
+      .order("created_at", { ascending: false });
 
-    return NextResponse.json(
-      { success: true, products: updatedProducts },
-      {
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate",
-          "Pragma": "no-cache",
-        },
-      }
-    );
+    if (selectError) {
+      console.error("Supabase select after write error:", selectError);
+      return NextResponse.json({ error: selectError.message }, { status: 500 });
+    }
+
+    const products = selectData ? selectData.map((row: { data: unknown }) => row.data as ProductItem) : [];
+    return NextResponse.json({ success: true, products });
   } catch (error) {
     console.error("POST custom products error:", error);
-    return NextResponse.json(
-      { error: "Failed to write custom products" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to write custom products" }, { status: 500 });
   }
 }
