@@ -499,32 +499,35 @@ function ProductsCatalogSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       let timerWhatsapp: NodeJS.Timeout | null = null;
+      let syncInterval: NodeJS.Timeout | null = null;
 
-      // Load custom products from API with localStorage fallback
-      fetch("/api/custom-products")
-        .then(res => res.json())
-        .then(data => {
-          if (Array.isArray(data) && data.length > 0) {
-            setCustomProducts(data);
-            localStorage.setItem("gsp_custom_products", JSON.stringify(data));
-          } else {
+      const fetchCustomProducts = () => {
+        fetch("/api/custom-products?t=" + Date.now())
+          .then(res => res.json())
+          .then(data => {
+            if (Array.isArray(data)) {
+              setCustomProducts(data);
+              localStorage.setItem("gsp_custom_products", JSON.stringify(data));
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching custom products from API, falling back...", err);
             const stored = localStorage.getItem("gsp_custom_products");
             if (stored) {
-              setCustomProducts(JSON.parse(stored));
+              try {
+                setCustomProducts(JSON.parse(stored));
+              } catch (e) {
+                console.error("Error loading custom products from localStorage fallback", e);
+              }
             }
-          }
-        })
-        .catch(err => {
-          console.error("Error fetching custom products from API, falling back...", err);
-          const stored = localStorage.getItem("gsp_custom_products");
-          if (stored) {
-            try {
-              setCustomProducts(JSON.parse(stored));
-            } catch (e) {
-              console.error("Error loading custom products from localStorage fallback", e);
-            }
-          }
-        });
+          });
+      };
+
+      // Run on mount
+      fetchCustomProducts();
+
+      // Poll every 5 seconds for real-time multi-device sync
+      syncInterval = setInterval(fetchCustomProducts, 5000);
 
       const rawNum = localStorage.getItem("gsp_whatsapp_number");
       if (rawNum) {
@@ -538,6 +541,7 @@ function ProductsCatalogSection() {
 
       return () => {
         if (timerWhatsapp) clearTimeout(timerWhatsapp);
+        if (syncInterval) clearInterval(syncInterval);
       };
     }
   }, []);

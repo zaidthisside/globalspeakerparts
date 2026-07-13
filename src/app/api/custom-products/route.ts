@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const filePath = path.join(process.cwd(), "src/data/custom_products.json");
+const filePath = path.join(process.cwd(), "custom_products.json");
 
 // Ensure directory and file exist
 function ensureFile() {

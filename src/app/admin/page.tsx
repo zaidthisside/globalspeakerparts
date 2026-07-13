@@ -125,34 +125,38 @@ export default function AdminPage() {
         }
       }
 
-      // 5. Load custom products from API with localStorage fallback
-      fetch("/api/custom-products")
-        .then(res => res.json())
-        .then(data => {
-          if (Array.isArray(data) && data.length > 0) {
-            setCustomProducts(data);
-            localStorage.setItem("gsp_custom_products", JSON.stringify(data));
-          } else {
+      // 5. Load custom products from API with localStorage fallback and 5s polling interval
+      const fetchCustomProducts = () => {
+        fetch("/api/custom-products?t=" + Date.now())
+          .then(res => res.json())
+          .then(data => {
+            if (Array.isArray(data)) {
+              setCustomProducts(data);
+              localStorage.setItem("gsp_custom_products", JSON.stringify(data));
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching custom products from API, falling back...", err);
             const storedCustom = localStorage.getItem("gsp_custom_products");
             if (storedCustom) {
-              setCustomProducts(JSON.parse(storedCustom));
+              try {
+                setCustomProducts(JSON.parse(storedCustom));
+              } catch (e) {
+                console.error("Error parsing localStorage custom products", e);
+              }
             }
-          }
-        })
-        .catch(err => {
-          console.error("Error fetching custom products from API, falling back...", err);
-          const storedCustom = localStorage.getItem("gsp_custom_products");
-          if (storedCustom) {
-            try {
-              setCustomProducts(JSON.parse(storedCustom));
-            } catch (e) {
-              console.error("Error parsing localStorage custom products", e);
-            }
-          }
-        });
+          });
+      };
+
+      // Run on mount
+      fetchCustomProducts();
+
+      // Poll every 5 seconds for real-time multi-device sync
+      const syncInterval = setInterval(fetchCustomProducts, 5000);
 
       return () => {
         activeTimers.forEach(t => clearTimeout(t));
+        clearInterval(syncInterval);
       };
     }
   }, []);
