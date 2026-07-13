@@ -184,28 +184,82 @@ export default function AdminPage() {
     });
   };
 
-  // Convert uploaded files to base64 data URLs
+  // Convert uploaded files to base64 data URLs with canvas compression
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const fileList = Array.from(files);
-    const loadedData: string[] = [];
+    let loadedCount = 0;
+    const loadedData: string[] = new Array(fileList.length);
 
-    fileList.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          loadedData.push(reader.result);
-          if (loadedData.length === fileList.length) {
-            setNewProduct(prev => ({
-              ...prev,
-              mediaList: [...(prev.mediaList || []), ...loadedData]
-            }));
-          }
+    fileList.forEach((file, index) => {
+      if (file.type.startsWith("video/")) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert("Video files must be under 2MB for cloud sync.");
+          return;
         }
-      };
-      reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            loadedData[index] = reader.result;
+            loadedCount++;
+            if (loadedCount === fileList.length) {
+              const filtered = loadedData.filter(Boolean);
+              setNewProduct(prev => ({
+                ...prev,
+                mediaList: [...(prev.mediaList || []), ...filtered]
+              }));
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 400;
+            const MAX_HEIGHT = 400;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6);
+              loadedData[index] = compressedBase64;
+            } else {
+              loadedData[index] = event.target?.result as string;
+            }
+            loadedCount++;
+            if (loadedCount === fileList.length) {
+              const filtered = loadedData.filter(Boolean);
+              setNewProduct(prev => ({
+                ...prev,
+                mediaList: [...(prev.mediaList || []), ...filtered]
+              }));
+            }
+          };
+          img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      }
     });
   };
 
