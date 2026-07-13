@@ -203,10 +203,10 @@ export default function InquiryForm({
   }
 
   return (
-    <div className="glass-panel p-6 sm:p-8 rounded-premium relative overflow-hidden font-sans border border-[#EAEAEA]">
+    <div className="glass-panel p-6 sm:p-8 rounded-premium relative overflow-hidden font-sans border-2 border-black">
       
       <div className="flex items-center gap-3.5 mb-6">
-        <div className="w-10 h-10 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-lg bg-[#F7F7F8] border-2 border-black flex items-center justify-center">
           <FileText className="w-5 h-5 text-[#0F0F10]" />
         </div>
         <div>

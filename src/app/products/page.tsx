@@ -940,17 +940,17 @@ function ProductsCatalogSection() {
       {/* Modal Detail Overlay */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/40 backdrop-blur-xs animate-fade-in font-sans">
-          <div className="glass-panel-solid w-full max-w-5xl rounded-premium overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col border border-[#D6D6D8]">
+          <div className="glass-panel-solid w-full max-w-5xl rounded-premium overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col border-2 border-black">
             
             {/* Modal Header */}
-            <div className="p-5 bg-transparent border-b border-[#EAEAEA] flex items-center justify-between">
+            <div className="p-5 bg-transparent border-b-2 border-black flex items-center justify-between">
               <div>
                 <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">{selectedProduct.category}</span>
                 <h3 className="font-display text-base font-extrabold text-[#0F0F10] leading-tight">{selectedProduct.name}</h3>
               </div>
               <button
                 onClick={() => handleSelectProduct(null)}
-                className="p-2 rounded-lg bg-[#F7F7F8] border border-[#EAEAEA] hover:bg-[#E8E8EA] text-slate-500 hover:text-accent-cyan transition-colors cursor-pointer"
+                className="p-2 rounded-lg bg-[#F7F7F8] border-2 border-black hover:bg-[#E8E8EA] text-slate-500 hover:text-accent-cyan transition-colors cursor-pointer"
                 aria-label="Close details"
               >
                 <X className="w-5 h-5" />
@@ -978,7 +978,7 @@ function ProductsCatalogSection() {
                   const isModalVideo = modalActiveUrl?.startsWith("data:video/") || modalActiveUrl?.endsWith(".mp4") || modalActiveUrl?.endsWith(".webm") || modalActiveUrl?.endsWith(".ogg") || modalActiveUrl?.includes("youtube.com") || modalActiveUrl?.includes("vimeo.com");
 
                   return (
-                    <div className="w-full h-64 sm:h-72 rounded-premium overflow-hidden border border-[#EAEAEA] relative group">
+                    <div className="w-full aspect-square rounded-premium overflow-hidden border-2 border-black relative group">
                       {isModalVideo ? (
                         <video 
                           src={modalActiveUrl} 
@@ -1042,15 +1042,15 @@ function ProductsCatalogSection() {
                 </div>
 
                 {/* Specs Table */}
-                <div className="border border-[#EAEAEA] rounded-premium overflow-hidden">
+                <div className="border-2 border-black rounded-premium overflow-hidden">
                   <table className="w-full text-xs text-left">
-                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b border-[#EAEAEA]">
+                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b-2 border-black">
                       <tr>
                         <th className="px-4 py-3">Specification Parameter</th>
                         <th className="px-4 py-3">OEM Compliance Value</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#EAEAEA] text-[#0F0F10]">
+                    <tbody className="divide-y divide-black text-[#0F0F10]">
                       <tr>
                         <td className="px-4 py-3 font-medium text-slate-400">Product Variants / Sizing</td>
                         <td className="px-4 py-3 font-bold text-[#0F0F10]">{selectedProduct.variants}</td>
@@ -1094,7 +1094,7 @@ function ProductsCatalogSection() {
                   </table>
                 </div>
 
-                <div className="flex gap-4 p-4 rounded-premium bg-[#F7F7F8] border border-[#EAEAEA] text-xs text-slate-500 leading-relaxed font-light">
+                <div className="flex gap-4 p-4 rounded-premium bg-[#F7F7F8] border-2 border-black text-xs text-slate-500 leading-relaxed font-light">
                   <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                   <span>
                     GLOBAL SPEAKER PARTS supports customization of any sizing, stiffness index, adhesive chemical compositions, and electrical impedance to integrate into your production assembly lines.
