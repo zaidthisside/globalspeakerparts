@@ -2,18 +2,36 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { 
-  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert, X 
+  BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert, X, Upload 
 } from "lucide-react";
 import Logo from "@/components/Logo";
+
+interface AdminProductItem {
+  id?: string;
+  name: string;
+  category: string;
+  desc: string;
+  materials: string;
+  dimensions: string;
+  tempLimit: string;
+  frequencyRange: string;
+  tolerances: string;
+  startingPrice: string;
+  moq: string;
+  variants: string;
+  imageKey: string;
+  mediaUrls?: string;
+  mediaList?: string[];
+}
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "products" | "logistics">("overview");
   const [inquiries, setInquiries] = useState<Record<string, string>[]>([]);
   const [productInventory, setProductInventory] = useState<Record<string, string>[]>([]);
   const [shippingLogs, setShippingLogs] = useState<Record<string, string>[]>([]);
-  const [customProducts, setCustomProducts] = useState<Record<string, string>[]>([]);
+  const [customProducts, setCustomProducts] = useState<AdminProductItem[]>([]);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({
+  const [newProduct, setNewProduct] = useState<AdminProductItem>({
     name: "",
     category: "Speaker Cones",
     desc: "",
@@ -26,7 +44,8 @@ export default function AdminPage() {
     moq: "",
     variants: "",
     imageKey: "cones",
-    mediaUrls: ""
+    mediaUrls: "",
+    mediaList: []
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -149,6 +168,31 @@ export default function AdminPage() {
     });
   };
 
+  // Convert uploaded files to base64 data URLs
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const fileList = Array.from(files);
+    const loadedData: string[] = [];
+
+    fileList.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          loadedData.push(reader.result);
+          if (loadedData.length === fileList.length) {
+            setNewProduct(prev => ({
+              ...prev,
+              mediaList: [...(prev.mediaList || []), ...loadedData]
+            }));
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   // Handle adding custom product
   const handleAddProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +219,8 @@ export default function AdminPage() {
       moq: "",
       variants: "",
       imageKey: "cones",
-      mediaUrls: ""
+      mediaUrls: "",
+      mediaList: []
     });
     setIsAddProductOpen(false);
   };
@@ -647,7 +692,7 @@ export default function AdminPage() {
                             <td className="px-4 py-3.5 font-mono text-[#5C5C63]">{prod.tolerances}</td>
                             <td className="px-4 py-3.5 text-right">
                               <button 
-                                onClick={() => handleDeleteProduct(prod.id)}
+                                onClick={() => prod.id && handleDeleteProduct(prod.id)}
                                 className="text-red-650 hover:text-red-700 font-bold hover:underline cursor-pointer"
                               >
                                 Delete
@@ -850,15 +895,63 @@ export default function AdminPage() {
                         </select>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Custom Product Image or Video URLs (Comma-separated)</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. /my-image1.jpg, https://example.com/video.mp4, /my-image2.png"
-                          value={newProduct.mediaUrls || ""}
-                          onChange={(e) => setNewProduct({...newProduct, mediaUrls: e.target.value})}
-                          className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-2 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white font-sans text-xs"
-                        />
+                      <div className="flex flex-col gap-2">
+                        <label className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Product Media (PC/Mobile upload or links) *</label>
+                        
+                        {/* Drag and drop upload zone */}
+                        <div className="border-2 border-dashed border-[#EAEAEA] rounded p-6 flex flex-col items-center justify-center bg-[#F7F7F8] hover:bg-white hover:border-[#0F0F10] transition-all cursor-pointer relative">
+                          <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*,video/*"
+                            onChange={handleFileChange}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                          />
+                          <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                          <span className="text-xs text-slate-500 font-medium">Click or drag files to upload</span>
+                          <span className="text-[8px] text-slate-400 mt-1 uppercase font-sans">Images or Videos (Max 1.5MB recommended)</span>
+                        </div>
+
+                        {/* Text backup URLs input */}
+                        <div className="flex flex-col gap-1 mt-1">
+                          <span className="text-[8px] text-slate-400 uppercase font-sans">Or enter media links manually (Comma-separated)</span>
+                          <input 
+                            type="text" 
+                            placeholder="e.g. /image1.jpg, https://example.com/video.mp4"
+                            value={newProduct.mediaUrls || ""}
+                            onChange={(e) => setNewProduct({...newProduct, mediaUrls: e.target.value})}
+                            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded px-3 py-1.5 text-[#0F0F10] outline-none focus:border-[#0F0F10] focus:bg-white font-sans text-xs"
+                          />
+                        </div>
+
+                        {/* Thumbnail previews */}
+                        {(newProduct.mediaList && newProduct.mediaList.length > 0) && (
+                          <div className="grid grid-cols-5 gap-2 mt-2">
+                            {newProduct.mediaList.map((url: string, index: number) => {
+                              const isVideo = url.startsWith("data:video/") || url.endsWith(".mp4") || url.endsWith(".webm") || url.includes("video");
+                              return (
+                                <div key={index} className="relative aspect-square rounded border border-[#EAEAEA] overflow-hidden bg-white group">
+                                  {isVideo ? (
+                                    <video src={url} className="w-full h-full object-cover" muted />
+                                  ) : (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={url} alt="Upload Preview" className="w-full h-full object-cover" />
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = newProduct.mediaList?.filter((_: string, i: number) => i !== index) || [];
+                                      setNewProduct({...newProduct, mediaList: updated});
+                                    }}
+                                    className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[9px] font-bold hover:bg-red-650 shadow-sm z-10 cursor-pointer"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex justify-end gap-3 border-t border-[#EAEAEA] pt-4 mt-6">

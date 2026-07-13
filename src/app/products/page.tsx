@@ -284,6 +284,7 @@ interface ProductItem {
   moq: string;
   variants: string;
   mediaUrls?: string;
+  mediaList?: string[];
   compliance?: string;
 }
 
@@ -305,12 +306,14 @@ function ProductCard({
   const mediaUrls = prod.mediaUrls 
     ? prod.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
     : [];
-  const mediaItems = mediaUrls.length > 0 
-    ? mediaUrls 
-    : [productImages[prod.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"];
+  const mediaItems = prod.mediaList && prod.mediaList.length > 0
+    ? prod.mediaList
+    : (mediaUrls.length > 0 
+        ? mediaUrls 
+        : [productImages[prod.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"]);
 
   const activeUrl = mediaItems[mediaIdx];
-  const isVideo = activeUrl?.endsWith(".mp4") || activeUrl?.endsWith(".webm") || activeUrl?.endsWith(".ogg") || activeUrl?.includes("youtube.com") || activeUrl?.includes("vimeo.com");
+  const isVideo = activeUrl?.startsWith("data:video/") || activeUrl?.endsWith(".mp4") || activeUrl?.endsWith(".webm") || activeUrl?.endsWith(".ogg") || activeUrl?.includes("youtube.com") || activeUrl?.includes("vimeo.com");
 
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -965,12 +968,14 @@ function ProductsCatalogSection() {
                   const modalMediaUrls = selectedProduct.mediaUrls 
                     ? selectedProduct.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
                     : [];
-                  const modalMediaItems = modalMediaUrls.length > 0 
-                    ? modalMediaUrls 
-                    : [productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"];
+                  const modalMediaItems = selectedProduct.mediaList && selectedProduct.mediaList.length > 0
+                    ? selectedProduct.mediaList
+                    : (modalMediaUrls.length > 0 
+                        ? modalMediaUrls 
+                        : [productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"]);
 
                   const modalActiveUrl = modalMediaItems[modalMediaIdx] || modalMediaItems[0];
-                  const isModalVideo = modalActiveUrl?.endsWith(".mp4") || modalActiveUrl?.endsWith(".webm") || modalActiveUrl?.endsWith(".ogg") || modalActiveUrl?.includes("youtube.com") || modalActiveUrl?.includes("vimeo.com");
+                  const isModalVideo = modalActiveUrl?.startsWith("data:video/") || modalActiveUrl?.endsWith(".mp4") || modalActiveUrl?.endsWith(".webm") || modalActiveUrl?.endsWith(".ogg") || modalActiveUrl?.includes("youtube.com") || modalActiveUrl?.includes("vimeo.com");
 
                   return (
                     <div className="w-full h-64 sm:h-72 rounded-premium overflow-hidden border border-[#EAEAEA] relative group">
