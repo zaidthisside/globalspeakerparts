@@ -499,7 +499,6 @@ function ProductsCatalogSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       let timerWhatsapp: NodeJS.Timeout | null = null;
-      let syncInterval: NodeJS.Timeout | null = null;
 
       const fetchCustomProducts = () => {
         fetch("/api/custom-products?t=" + Date.now())
@@ -526,9 +525,6 @@ function ProductsCatalogSection() {
       // Run on mount
       fetchCustomProducts();
 
-      // Poll every 5 seconds for real-time multi-device sync
-      syncInterval = setInterval(fetchCustomProducts, 5000);
-
       const rawNum = localStorage.getItem("gsp_whatsapp_number");
       if (rawNum) {
         const cleaned = rawNum.replace(/\D/g, "");
@@ -541,7 +537,6 @@ function ProductsCatalogSection() {
 
       return () => {
         if (timerWhatsapp) clearTimeout(timerWhatsapp);
-        if (syncInterval) clearInterval(syncInterval);
       };
     }
   }, []);

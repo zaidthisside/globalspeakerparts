@@ -125,7 +125,7 @@ export default function AdminPage() {
         }
       }
 
-      // 5. Load custom products from API with localStorage fallback and 5s polling interval
+      // 5. Load custom products from API with localStorage fallback
       const fetchCustomProducts = () => {
         fetch("/api/custom-products?t=" + Date.now())
           .then(res => res.json())
@@ -151,12 +151,8 @@ export default function AdminPage() {
       // Run on mount
       fetchCustomProducts();
 
-      // Poll every 5 seconds for real-time multi-device sync
-      const syncInterval = setInterval(fetchCustomProducts, 5000);
-
       return () => {
         activeTimers.forEach(t => clearTimeout(t));
-        clearInterval(syncInterval);
       };
     }
   }, []);
