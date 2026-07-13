@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Filter, Info, X, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import InquiryForm from "@/components/InquiryForm";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // Real Unsplash photo URLs for B2B industrial speaker components
 const productImages: Record<string, string> = {
@@ -302,6 +303,7 @@ function ProductCard({
   productImages: Record<string, string>;
 }) {
   const [mediaIdx, setMediaIdx] = useState(0);
+  const { convertPrice } = useCurrency();
 
   const mediaUrls = prod.mediaUrls 
     ? prod.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
@@ -404,7 +406,7 @@ function ProductCard({
               <Tag className="w-3.5 h-3.5 text-black shrink-0" />
               <span>Price:</span>
             </span>
-            <strong className="text-black font-extrabold font-numbers text-[9px] sm:text-xs">{prod.startingPrice}</strong>
+            <strong className="text-black font-extrabold font-numbers text-[9px] sm:text-xs">{convertPrice(prod.startingPrice)}</strong>
           </div>
           <div className="flex justify-between items-center">
             <span className="flex items-center gap-0.5 font-sans">
@@ -462,6 +464,7 @@ function ProductsCatalogSection() {
   const searchParams = useSearchParams();
   const catParam = searchParams.get("cat");
   const cartParam = searchParams.get("cart");
+  const { convertPrice } = useCurrency();
   const isCartView = cartParam === "true";
 
   const [search, setSearch] = useState("");
@@ -718,7 +721,7 @@ function ProductsCatalogSection() {
                       <h4 className="font-display text-sm font-bold text-[#0F0F10]">{item.name}</h4>
                       <p className="text-[10px] text-slate-400 font-light">{item.variants}</p>
                       <div className="text-[10px] text-slate-500 pt-1.5 flex gap-4 font-light">
-                        <span>Starting: <strong className="text-[#0F0F10] font-semibold font-numbers">{item.startingPrice}</strong></span>
+                        <span>Starting: <strong className="text-[#0F0F10] font-semibold font-numbers">{convertPrice(item.startingPrice)}</strong></span>
                         <span>•</span>
                         <span>MOQ: <strong className="text-[#0F0F10] font-semibold">{item.moq}</strong></span>
                       </div>
@@ -1069,7 +1072,7 @@ function ProductsCatalogSection() {
                       </tr>
                       <tr>
                         <td className="px-4 py-3 font-medium text-slate-400">B2B Starting Price</td>
-                        <td className="px-4 py-3 font-bold text-[#0F0F10] font-numbers text-sm">{selectedProduct.startingPrice}</td>
+                        <td className="px-4 py-3 font-bold text-[#0F0F10] font-numbers text-sm">{convertPrice(selectedProduct.startingPrice)}</td>
                       </tr>
                       <tr>
                         <td className="px-4 py-3 font-medium text-slate-400">Minimum Order Volume (MOQ)</td>

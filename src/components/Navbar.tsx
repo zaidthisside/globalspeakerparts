@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ShoppingBag, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext";
 
 // Main Menu hierarchy strictly matching user's uploaded branding menu structure
 const navigationItems = [
@@ -107,6 +108,7 @@ export default function Navbar() {
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [openMobileSub, setOpenMobileSub] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
+  const { currency, setCurrency } = useCurrency();
   
   const pathname = usePathname();
 
@@ -235,7 +237,7 @@ export default function Navbar() {
             {/* Cart Icon */}
             <Link 
               href="/products?cart=true"
-              className="relative p-1.5 rounded-full hover:bg-black/5 transition-colors"
+              className="relative p-1.5 rounded-full hover:bg-black/5 transition-colors mr-1"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5 text-slate-800 hover:text-black transition-colors" />
@@ -245,6 +247,24 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+
+            {/* Currency Selector */}
+            <div className="relative flex items-center mr-1">
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="bg-transparent border border-black hover:bg-black/5 text-black font-semibold text-[10px] tracking-wider uppercase rounded-md px-1.5 py-1.5 transition-all cursor-pointer outline-none font-sans"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="CNY">CNY (¥)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="AUD">AUD ($)</option>
+                <option value="CAD">CAD ($)</option>
+              </select>
+            </div>
 
             {/* Quote button (desktop/tablet) */}
             <Link href="/contact?rfq=true" className="hidden sm:block">
@@ -330,7 +350,25 @@ export default function Navbar() {
                 })}
               </nav>
 
-              <div className="mt-auto px-6 py-6 border-t border-[#EAEAEA]">
+              <div className="mt-auto px-6 py-6 border-t border-[#EAEAEA] space-y-4">
+                {/* Mobile Currency Selector */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-[#4A4A4F] tracking-widest uppercase font-sans">Currency</span>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="bg-transparent border border-black hover:bg-black/5 text-black font-semibold text-[10px] tracking-wider uppercase rounded-md px-2 py-1.5 transition-all cursor-pointer outline-none font-sans"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="INR">INR (₹)</option>
+                    <option value="CNY">CNY (¥)</option>
+                    <option value="JPY">JPY (¥)</option>
+                    <option value="AUD">AUD ($)</option>
+                    <option value="CAD">CAD ($)</option>
+                  </select>
+                </div>
                 <Link href="/contact?rfq=true" onClick={() => setIsOpen(false)}>
                   <button className="w-full bg-[#000000] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#2E2E33] transition-all cursor-pointer">
                     REQUEST B2B QUOTE

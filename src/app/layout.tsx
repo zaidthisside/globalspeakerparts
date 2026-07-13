@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter, Space_Grotesk } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -47,13 +48,15 @@ export default function RootLayout({
       className={`${manrope.variable} ${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white font-sans text-body-slate">
-        <Navbar />
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col pt-20 sm:pt-24 xl:pt-28">
-          {children}
-        </div>
-        {modal}
-        <Footer />
+        <CurrencyProvider>
+          <Navbar />
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col pt-20 sm:pt-24 xl:pt-28">
+            {children}
+          </div>
+          {modal}
+          <Footer />
+        </CurrencyProvider>
       </body>
     </html>
   );
