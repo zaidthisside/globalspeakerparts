@@ -231,7 +231,7 @@ export default function Home() {
               <div className="w-12 h-[1px] bg-black" />
             </div>
             <h2 className="text-3xl sm:text-4xl text-heading-charcoal font-display font-extrabold uppercase">
-              Unmatched Sizing, Materials & Custom Variants
+              Where Precision Components Meet Perfect Sound
             </h2>
             <p className="text-xs sm:text-sm text-[#4A4A4F] max-w-2xl mx-auto leading-relaxed font-light">
               Explore our extensive range of high-precision wholesale components. We manufacture thousands of custom variations of speaker cones, high-temp voice coils, compliance surrounds, and dust caps. Engineered to fit vintage cabinets and modern high-power transducers alike.
