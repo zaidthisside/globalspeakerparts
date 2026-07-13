@@ -186,7 +186,7 @@ export default function InquiryForm({
 
   if (submitted) {
     return (
-      <div className="glass-panel p-8 rounded-premium text-center flex flex-col items-center justify-center min-h-[400px] animate-fade-in font-sans">
+      <div className="glass-panel p-8 rounded-premium text-center flex flex-col items-center justify-center min-h-[400px] animate-fade-in font-sans !border-2 !border-black">
         <CheckCircle className="w-14 h-14 text-accent-cyan mb-4" />
         <h3 className="font-display text-xl font-extrabold text-[#0F0F10] mb-2">Inquiry Logged</h3>
         <p className="text-[#4A4A4F] text-xs max-w-sm mb-6 leading-relaxed font-light">
@@ -203,7 +203,7 @@ export default function InquiryForm({
   }
 
   return (
-    <div className="glass-panel p-6 sm:p-8 rounded-premium relative overflow-hidden font-sans border-2 border-black">
+    <div className="glass-panel p-6 sm:p-8 rounded-premium relative overflow-hidden font-sans !border-2 !border-black">
       
       <div className="flex items-center gap-3.5 mb-6">
         <div className="w-10 h-10 rounded-lg bg-[#F7F7F8] border-2 border-black flex items-center justify-center">
