@@ -125,19 +125,31 @@ export default function AdminPage() {
         }
       }
 
-      // 5. Load custom products from localStorage
-      const storedCustom = localStorage.getItem("gsp_custom_products");
-      if (storedCustom) {
-        try {
-          const parsed = JSON.parse(storedCustom);
-          const timer5 = setTimeout(() => {
-            setCustomProducts(parsed);
-          }, 0);
-          activeTimers.push(timer5);
-        } catch (e) {
-          console.error("Error loading custom products", e);
-        }
-      }
+      // 5. Load custom products from API with localStorage fallback
+      fetch("/api/custom-products")
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setCustomProducts(data);
+            localStorage.setItem("gsp_custom_products", JSON.stringify(data));
+          } else {
+            const storedCustom = localStorage.getItem("gsp_custom_products");
+            if (storedCustom) {
+              setCustomProducts(JSON.parse(storedCustom));
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching custom products from API, falling back...", err);
+          const storedCustom = localStorage.getItem("gsp_custom_products");
+          if (storedCustom) {
+            try {
+              setCustomProducts(JSON.parse(storedCustom));
+            } catch (e) {
+              console.error("Error parsing localStorage custom products", e);
+            }
+          }
+        });
 
       return () => {
         activeTimers.forEach(t => clearTimeout(t));
@@ -205,6 +217,13 @@ export default function AdminPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("gsp_custom_products", JSON.stringify(updated));
     }
+
+    // Persist to server JSON database file
+    fetch("/api/custom-products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(productWithId)
+    }).catch(err => console.error("Error saving custom product to API", err));
     // Reset form and close modal
     setNewProduct({
       name: "",
@@ -232,6 +251,13 @@ export default function AdminPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("gsp_custom_products", JSON.stringify(updated));
     }
+
+    // Persist deletion to server JSON database file
+    fetch("/api/custom-products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", id })
+    }).catch(err => console.error("Error deleting custom product from API", err));
   };
 
   // Filtered inquiries logic

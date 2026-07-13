@@ -498,20 +498,34 @@ function ProductsCatalogSection() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("gsp_custom_products");
-      let timer: NodeJS.Timeout | null = null;
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          timer = setTimeout(() => {
-            setCustomProducts(parsed);
-          }, 0);
-        } catch (e) {
-          console.error("Error loading custom products", e);
-        }
-      }
-
       let timerWhatsapp: NodeJS.Timeout | null = null;
+
+      // Load custom products from API with localStorage fallback
+      fetch("/api/custom-products")
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setCustomProducts(data);
+            localStorage.setItem("gsp_custom_products", JSON.stringify(data));
+          } else {
+            const stored = localStorage.getItem("gsp_custom_products");
+            if (stored) {
+              setCustomProducts(JSON.parse(stored));
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching custom products from API, falling back...", err);
+          const stored = localStorage.getItem("gsp_custom_products");
+          if (stored) {
+            try {
+              setCustomProducts(JSON.parse(stored));
+            } catch (e) {
+              console.error("Error loading custom products from localStorage fallback", e);
+            }
+          }
+        });
+
       const rawNum = localStorage.getItem("gsp_whatsapp_number");
       if (rawNum) {
         const cleaned = rawNum.replace(/\D/g, "");
@@ -523,7 +537,6 @@ function ProductsCatalogSection() {
       }
 
       return () => {
-        if (timer) clearTimeout(timer);
         if (timerWhatsapp) clearTimeout(timerWhatsapp);
       };
     }
