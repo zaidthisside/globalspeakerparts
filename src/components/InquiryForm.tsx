@@ -194,7 +194,7 @@ export default function InquiryForm({
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="text-xs font-semibold tracking-wider bg-[#F7F7F8] hover:bg-[#E8E8EA] text-[#0F0F10] border border-[#EAEAEA] rounded-lg px-5 py-3 transition-all duration-150 cursor-pointer hover:text-accent-cyan hover:border-accent-cyan"
+          className="text-xs font-semibold tracking-wider bg-[#F7F7F8] hover:bg-[#E8E8EA] text-[#0F0F10] border border-black rounded-lg px-5 py-3 transition-all duration-150 cursor-pointer hover:text-accent-cyan hover:border-accent-cyan"
         >
           SUBMIT ANOTHER SPECIFICATION
         </button>
@@ -235,7 +235,7 @@ export default function InquiryForm({
               required
               value={formData.name}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. John Doe"
             />
           </div>
@@ -249,7 +249,7 @@ export default function InquiryForm({
               required
               value={formData.email}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="name@company.com"
             />
           </div>
@@ -266,7 +266,7 @@ export default function InquiryForm({
               required
               value={formData.company}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. Acoustic Systems Ltd"
             />
           </div>
@@ -279,7 +279,7 @@ export default function InquiryForm({
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="+1 (555) 000-0000"
             />
           </div>
@@ -296,7 +296,7 @@ export default function InquiryForm({
               required
               value={formData.country}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all font-light font-sans"
               placeholder="e.g. Germany"
             />
           </div>
@@ -309,7 +309,7 @@ export default function InquiryForm({
               required
               value={formData.category}
               onChange={handleChange}
-              className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
+              className="bg-[#F7F7F8] border border-black rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -329,7 +329,7 @@ export default function InquiryForm({
             required
             value={formData.quantity}
             onChange={handleChange}
-            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
+            className="bg-[#F7F7F8] border border-black rounded-premium px-3 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all cursor-pointer font-light font-sans"
           >
             {quantities.map((qty) => (
               <option key={qty} value={qty}>
@@ -348,7 +348,7 @@ export default function InquiryForm({
             rows={4}
             value={formData.message}
             onChange={handleChange}
-            className="bg-[#F7F7F8] border border-[#EAEAEA] rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all resize-none font-light font-sans"
+            className="bg-[#F7F7F8] border border-black rounded-premium px-3.5 py-3 text-[#0F0F10] outline-none focus:border-accent-cyan focus:bg-white transition-all resize-none font-light font-sans"
             placeholder="Specify dimensions, voice coil former types, composite cone materials, suspension stiffness coefficients, compliance certifications, etc."
           />
         </div>
@@ -384,7 +384,7 @@ export default function InquiryForm({
           <button
             type="button"
             onClick={handleAddToEnquiry}
-            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#0F0F10] bg-white hover:bg-[#F7F7F8] border border-[#0F0F10] hover:border-accent-cyan hover:text-accent-cyan rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#0F0F10] bg-white hover:bg-[#F7F7F8] border border-black hover:border-accent-cyan hover:text-accent-cyan rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
           >
             <ShoppingBag className="w-3.5 h-3.5 mr-1.5 shrink-0" />
             <span>Add to Enquiry</span>
@@ -393,7 +393,7 @@ export default function InquiryForm({
           <button
             type="button"
             onClick={handleBuySampleNow}
-            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#4A4A4F] bg-[#F7F7F8] hover:bg-[#E8E8EA] border border-[#EAEAEA] hover:border-[#0F0F10] hover:text-[#0F0F10] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
+            className="inline-flex items-center justify-center py-2.5 px-2.5 text-[10px] font-bold tracking-wider text-[#4A4A4F] bg-[#F7F7F8] hover:bg-[#E8E8EA] border border-black hover:border-[#0F0F10] hover:text-[#0F0F10] rounded-lg transition-all duration-150 cursor-pointer uppercase font-sans"
           >
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500 shrink-0" />
             <span>Buy Sample Now</span>
