@@ -155,10 +155,11 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div className="flex items-center justify-between">
+        {/* 3-column grid: logo | nav | actions — center nav never overlaps sides */}
+        <div className="grid items-center" style={{gridTemplateColumns: 'auto 1fr auto'}}>
           
-          {/* Left Block: Brand Logo (Top left) - using exact uploaded image */}
-          <div className="flex items-center justify-start flex-1 lg:flex-initial lg:w-[220px] xl:w-[260px] 2xl:w-[300px] shrink-0 z-10">
+          {/* Left Block: Brand Logo */}
+          <div className="flex items-center shrink-0 z-10 pr-4 xl:pr-8">
             <Link href="/" className="flex items-center group">
               <Image 
                 src="/logo-horizontal.jpg"
@@ -171,8 +172,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center Block: Desktop Navigation Menu (Centered symmetrically in header) */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 space-x-1.5 xl:space-x-3.5 2xl:space-x-6 font-sans text-[10px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
+          {/* Center Block: Desktop Navigation Menu */}
+          <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 font-sans text-[10px] xl:text-[11.5px] 2xl:text-[13px] font-semibold uppercase tracking-wider overflow-hidden">
             {navigationItems.map((item) => {
               const isHovered = hoveredMenu === item.name;
               const isActive = pathname.startsWith(item.href);
@@ -224,7 +225,7 @@ export default function Navbar() {
           </nav>
 
           {/* Right Block: Actions & Mobile Hamburger */}
-          <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 lg:flex-initial lg:w-[240px] xl:w-[280px] 2xl:w-[300px] shrink-0 z-10 whitespace-nowrap">
+          <div className="flex items-center justify-end gap-1 xl:gap-2 shrink-0 z-10 pl-4 xl:pl-6">
             {/* Search Icon */}
             <Link 
               href="/products"
