@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('products')
-      .select('*, categories(name, slug)')
+      .select('*, categories(name, slug), variants(*)')
       .eq('is_hidden', false)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true });
@@ -47,13 +47,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Reshape to flatten category info
+    // Reshape to flatten category info and include variants
     const products = (data || []).map((product) => {
-      const { categories, ...rest } = product;
+      const { categories, category, ...rest } = product;
+      const catObj = categories || category;
       return {
         ...rest,
-        category_name: (categories as Record<string, unknown>)?.name ?? null,
-        category_slug: (categories as Record<string, unknown>)?.slug ?? null,
+        category_name: (catObj as Record<string, unknown>)?.name ?? null,
+        category_slug: (catObj as Record<string, unknown>)?.slug ?? null,
       };
     });
 

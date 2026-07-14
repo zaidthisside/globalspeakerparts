@@ -17,10 +17,60 @@ realSupabase.from('categories').select('id', { count: 'exact', head: true }).the
   }
 });
 
+function normalizeStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function normalizeProductRecord(product: any, db: any) {
+  const relation = product.category ?? product.categories ?? null;
+  const categoryFromRelation = relation && typeof relation === 'object'
+    ? {
+        id: relation.id ?? null,
+        name: relation.name ?? null,
+        slug: relation.slug ?? null,
+      }
+    : null;
+
+  const categoryFromId = !categoryFromRelation && product.category_id
+    ? db.categories.find((c: any) => c.id === product.category_id)
+    : null;
+
+  const normalizedCategory = categoryFromRelation || (categoryFromId ? {
+    id: categoryFromId.id,
+    name: categoryFromId.name,
+    slug: categoryFromId.slug,
+  } : null);
+
+  return {
+    ...product,
+    category: normalizedCategory,
+    categories: normalizedCategory ? {
+      id: normalizedCategory.id,
+      name: normalizedCategory.name,
+      slug: normalizedCategory.slug,
+    } : null,
+    category_name: normalizedCategory?.name ?? product.category_name ?? null,
+    category_slug: normalizedCategory?.slug ?? product.category_slug ?? null,
+    applications: normalizeStringArray(product.applications),
+    tags: normalizeStringArray(product.tags),
+  };
+}
+
 // A lightweight mock Postgrest query builder that operates on local JSON database
 class MockQueryBuilder {
   private tableName: string;
-  private filters: Array<{ type: string; col?: string; val?: any }> = [];
+  private filters: Array<{ type: string; col?: string; val?: any; condition?: string }> = [];
   private orderCol: string | null = null;
   private orderAsc = true;
   private isSingle = false;
@@ -63,6 +113,11 @@ class MockQueryBuilder {
     return this;
   }
 
+  or(condition: string) {
+    this.filters.push({ type: 'or', condition });
+    return this;
+  }
+
   order(col: string, options?: { ascending?: boolean }) {
     this.orderCol = col;
     this.orderAsc = options?.ascending !== false;
@@ -98,7 +153,17 @@ class MockQueryBuilder {
         if (table === 'categories') {
           list = localDb.categories.list();
         } else if (table === 'products') {
-          list = localDb.products.list();
+          const db = require('./dbFallback').readDB();
+          list = localDb.products.list().map((p: any) => {
+            const vars = db.variants.filter((v: any) => v.product_id === p.id && v.is_active);
+            return normalizeProductRecord({
+              ...p,
+              variants: vars.map((v: any) => ({
+                ...v,
+                part_numbers: db.part_numbers.filter((pn: any) => pn.variant_id === v.id)
+              }))
+            }, db);
+          });
         } else if (table === 'variants') {
           const prodFilter = this.filters.find(f => f.col === 'product_id');
           if (prodFilter) {
@@ -154,6 +219,16 @@ class MockQueryBuilder {
           } else if (filter.type === 'in') {
             const vals = filter.val as any[];
             list = list.filter(item => vals.includes(item[filter.col!]));
+          } else if (filter.type === 'or') {
+            const condition = String(filter.condition || '');
+            const searchTerm = condition.match(/%([^%]+)%/)?.[1]?.toLowerCase() || '';
+            if (searchTerm) {
+              list = list.filter(item => {
+                const name = String(item.name || '').toLowerCase();
+                const desc = String(item.short_desc || item.long_desc || '').toLowerCase();
+                return name.includes(searchTerm) || desc.includes(searchTerm);
+              });
+            }
           }
         }
 

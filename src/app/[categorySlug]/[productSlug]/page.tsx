@@ -64,8 +64,38 @@ type Product = {
   seo_meta: Record<string, string> | null;
   tags: string[] | null;
   applications: string[] | null;
-  category: { slug: string; name: string };
+  category: { slug: string; name: string } | null;
 };
+
+function normalizeApplications(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function normalizeProduct(product: any): Product {
+  const category = product?.category && typeof product.category === 'object'
+    ? {
+        slug: typeof product.category.slug === 'string' ? product.category.slug : '',
+        name: typeof product.category.name === 'string' ? product.category.name : '',
+      }
+    : null;
+
+  return {
+    ...product,
+    category,
+    applications: normalizeApplications(product?.applications),
+  } as Product;
+}
 
 type RelatedProduct = {
   id: string;
@@ -93,7 +123,12 @@ export async function generateMetadata({ params }: Props) {
     return { title: 'Product Not Found | Global Speaker Parts' };
   }
 
-  const cat = product.category as unknown as { slug: string; name: string };
+  const normalizedProduct = normalizeProduct(product);
+  const cat = normalizedProduct.category;
+
+  if (!cat) {
+    return { title: 'Product Not Found | Global Speaker Parts' };
+  }
 
   return {
     title: `${product.name} — ${cat.name} | Global Speaker Parts`,
@@ -125,8 +160,10 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const p = product as unknown as Product;
+  const p = normalizeProduct(product);
   const cat = p.category;
+
+  if (!cat) notFound();
 
   // Validate category slug matches
   if (cat.slug !== categorySlug) notFound();
@@ -183,6 +220,15 @@ export default async function ProductPage({ params }: Props) {
     variants.length > 0 && variants[0].specs
       ? Object.entries(variants[0].specs).map(([k, v]) => [k, String(v)])
       : [];
+
+  /* ── Starting Price ────────────────────────────────────────────── */
+  const startingPrice = (() => {
+    if (variants.length > 0) {
+      const prices = variants.map(v => parseFloat(v.price as any)).filter(pr => !isNaN(pr));
+      if (prices.length > 0) return `$${Math.min(...prices).toFixed(2)}`;
+    }
+    return "Quote on request";
+  })();
 
   /* ── WhatsApp URL ──────────────────────────────────────────────── */
   const whatsappNumber = '919829062390';
@@ -246,24 +292,41 @@ export default async function ProductPage({ params }: Props) {
 
           {/* ── Hero Area ──────────────────────────────────────────── */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-14">
-            {/* Left — Text */}
-            <div className="flex flex-col justify-center space-y-5 order-2 lg:order-1">
+            {/* Left — Image */}
+            <div className="order-1">
+              {heroImage ? (
+                <div className="aspect-square overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
+                  <img
+                    src={heroImage}
+                    alt={p.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="aspect-square rounded-lg border-2 border-black bg-[#F7F7F8] flex items-center justify-center">
+                  <Package className="h-16 w-16 text-[#EAEAEA]" />
+                </div>
+              )}
+            </div>
+
+            {/* Right — Text */}
+            <div className="flex flex-col justify-center space-y-5 order-2">
               <div className="flex items-center gap-3">
                 <Link
                   href={`/${cat.slug}`}
-                  className="inline-flex items-center gap-1 px-3 py-1 text-[10px] uppercase tracking-wider font-bold border border-[#EAEAEA] rounded-full text-[#5C5C63] hover:border-[#0F0F10] hover:text-[#0F0F10] transition-colors"
+                  className="inline-flex items-center gap-1 px-3 py-1 text-[10px] uppercase tracking-wider font-bold border border-black rounded-full text-[#5C5C63] hover:bg-black hover:text-white transition-colors"
                 >
                   {cat.name}
                 </Link>
                 {p.is_featured && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] uppercase tracking-wider font-bold bg-accent-cyan text-white rounded-full">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] uppercase tracking-wider font-bold bg-black text-white rounded-full">
                     <Zap size={10} />
                     Featured
                   </span>
                 )}
               </div>
 
-              <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F0F10] leading-tight tracking-tight">
+              <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F0F10] leading-tight tracking-tight uppercase">
                 {p.name}
               </h1>
 
@@ -273,42 +336,33 @@ export default async function ProductPage({ params }: Props) {
                 </p>
               )}
 
+              {/* Price Badge */}
+              <div className="flex items-center gap-4 pt-1">
+                <div className="inline-flex items-center gap-2 px-4 py-2 border border-black rounded-lg bg-white">
+                  <span className="text-xs text-[#5C5C63] uppercase tracking-wider font-medium">Starting At</span>
+                  <span className="font-display font-black text-lg text-[#0F0F10]">{startingPrice}</span>
+                </div>
+              </div>
+
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 pt-2">
                 <a
                   href="#inquiry"
-                  className="btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-wider bg-black text-white rounded-lg border border-black hover:bg-white hover:text-black transition-colors"
                 >
-                  <MessageCircle size={16} />
+                  <MessageCircle size={14} />
                   Request Quote
                 </a>
                 <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-wider bg-white text-black rounded-lg border border-black hover:bg-slate-50 transition-colors"
                 >
-                  <Phone size={16} />
-                  WhatsApp
+                  <MessageCircle size={14} className="text-[#25D366]" />
+                  Contact Us on WhatsApp
                 </a>
               </div>
-            </div>
-
-            {/* Right — Image */}
-            <div className="order-1 lg:order-2">
-              {heroImage ? (
-                <div className="aspect-[4/3] overflow-hidden rounded-premium border border-[#EAEAEA] bg-[#F7F7F8]">
-                  <img
-                    src={heroImage}
-                    alt={p.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-[4/3] rounded-premium border border-[#EAEAEA] bg-[#F7F7F8] flex items-center justify-center">
-                  <Package className="h-16 w-16 text-[#EAEAEA]" />
-                </div>
-              )}
             </div>
           </section>
 
@@ -328,9 +382,9 @@ export default async function ProductPage({ params }: Props) {
                 {variants.map((v) => (
                   <div
                     key={v.id}
-                    className="border border-[#EAEAEA] rounded-premium p-5 space-y-3 hover:shadow-sm transition-shadow"
+                    className="border-2 border-black rounded-lg p-5 space-y-3 hover:shadow-md transition-shadow bg-white"
                   >
-                    <h3 className="font-display font-bold text-base text-[#0F0F10]">
+                    <h3 className="font-display font-bold text-base text-[#0F0F10] uppercase tracking-tight">
                       {v.name}
                     </h3>
 
@@ -351,7 +405,7 @@ export default async function ProductPage({ params }: Props) {
                     )}
 
                     {/* Price & Stock */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA]">
+                    <div className="flex items-center justify-between pt-2 border-t border-black">
                       {v.price ? (
                         <span className="font-numbers font-bold text-[#0F0F10]">
                           ${v.price.toFixed(2)}
@@ -361,10 +415,10 @@ export default async function ProductPage({ params }: Props) {
                       )}
                       {v.stock !== null && (
                         <span
-                          className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${
+                          className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${
                             v.stock > 0
-                              ? 'bg-green-50 text-green-700 border border-green-200'
-                              : 'bg-red-50 text-red-600 border border-red-200'
+                              ? 'bg-green-50 text-green-700 border-green-700'
+                              : 'bg-red-50 text-red-600 border-red-600'
                           }`}
                         >
                           {v.stock > 0 ? 'In Stock' : 'Out of Stock'}
@@ -382,7 +436,7 @@ export default async function ProductPage({ params }: Props) {
                           {v.part_numbers.map((pn) => (
                             <span
                               key={pn.id || pn.code}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F7F7F8] border border-[#EAEAEA] rounded text-[10px] font-mono text-[#0F0F10]"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F7F7F8] border border-black rounded text-[10px] font-mono text-[#0F0F10]"
                             >
                               <Tag size={9} className="text-[#5C5C63]" />
                               {pn.code}
@@ -401,7 +455,7 @@ export default async function ProductPage({ params }: Props) {
           {firstSpecs.length > 0 && (
             <section className="mb-14">
               <SectionHeading>Technical Specifications</SectionHeading>
-              <div className="border border-[#EAEAEA] rounded-premium overflow-hidden">
+              <div className="border-2 border-black rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <tbody>
                     {firstSpecs.map(([key, value], idx) => (
@@ -409,7 +463,7 @@ export default async function ProductPage({ params }: Props) {
                         key={key}
                         className={idx % 2 === 0 ? 'bg-[#F7F7F8]' : 'bg-white'}
                       >
-                        <td className="px-5 py-3 text-[#5C5C63] font-medium uppercase text-[10px] tracking-wider w-1/3 border-r border-[#EAEAEA]">
+                        <td className="px-5 py-3 text-[#5C5C63] font-medium uppercase text-[10px] tracking-wider w-1/3 border-r border-black">
                           {key}
                         </td>
                         <td className="px-5 py-3 text-[#0F0F10] font-mono text-xs">
@@ -427,7 +481,7 @@ export default async function ProductPage({ params }: Props) {
           {p.long_desc && (
             <section className="mb-14">
               <SectionHeading>Product Details</SectionHeading>
-              <div className="prose prose-sm max-w-none text-[#4A4A4F] leading-relaxed space-y-4">
+              <div className="prose prose-sm max-w-none text-[#4A4A4F] leading-relaxed space-y-4 border-2 border-black rounded-lg p-6 bg-white">
                 {p.long_desc.split('\n').filter(Boolean).map((para, idx) => (
                   <p key={idx}>{para}</p>
                 ))}
@@ -443,9 +497,9 @@ export default async function ProductPage({ params }: Props) {
                 {p.applications.map((app, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0F0F10] bg-[#F7F7F8] border border-[#EAEAEA] rounded-full"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0F0F10] bg-white border border-black rounded-full"
                   >
-                    <Zap size={11} className="text-accent-cyan" />
+                    <Zap size={11} className="text-[#0F0F10]" />
                     {app}
                   </span>
                 ))}
@@ -464,9 +518,9 @@ export default async function ProductPage({ params }: Props) {
                     href={dl.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-3 p-4 border border-[#EAEAEA] rounded-premium hover:shadow-sm hover:border-[#0F0F10] transition-all"
+                    className="group flex items-center gap-3 p-4 border-2 border-black rounded-lg hover:shadow-md hover:bg-slate-50 transition-all bg-white"
                   >
-                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-[#F7F7F8] flex items-center justify-center group-hover:bg-[#0F0F10] transition-colors">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center group-hover:bg-black transition-colors">
                       {dl.type === 'datasheet' ? (
                         <FileText size={18} className="text-[#5C5C63] group-hover:text-white transition-colors" />
                       ) : (
@@ -481,7 +535,7 @@ export default async function ProductPage({ params }: Props) {
                         {dl.type}
                       </p>
                     </div>
-                    <ArrowRight size={14} className="ml-auto text-[#EAEAEA] group-hover:text-[#0F0F10] transition-colors" />
+                    <ArrowRight size={14} className="ml-auto text-[#0F0F10] group-hover:translate-x-0.5 transition-transform" />
                   </a>
                 ))}
               </div>
@@ -496,9 +550,9 @@ export default async function ProductPage({ params }: Props) {
                 {faqs.map((faq) => (
                   <div
                     key={faq.id}
-                    className="border border-[#EAEAEA] rounded-premium p-5"
+                    className="border-2 border-black rounded-lg p-5 bg-white"
                   >
-                    <h3 className="font-display font-bold text-sm text-[#0F0F10] mb-2">
+                    <h3 className="font-display font-bold text-sm text-[#0F0F10] mb-2 uppercase tracking-tight">
                       {faq.question}
                     </h3>
                     <div
@@ -520,9 +574,9 @@ export default async function ProductPage({ params }: Props) {
                   <Link
                     key={rp.id}
                     href={`/${cat.slug}/${rp.slug}`}
-                    className="group border border-[#EAEAEA] rounded-premium overflow-hidden hover:shadow-md transition-all"
+                    className="group border-2 border-black rounded-lg overflow-hidden hover:shadow-md transition-all bg-white"
                   >
-                    <div className="aspect-square overflow-hidden bg-[#F7F7F8]">
+                    <div className="aspect-square overflow-hidden bg-[#F7F7F8] border-b border-black">
                       {rp.featured_image ? (
                         <img
                           src={rp.featured_image}
@@ -536,7 +590,7 @@ export default async function ProductPage({ params }: Props) {
                       )}
                     </div>
                     <div className="p-3">
-                      <h3 className="font-display font-bold text-sm text-[#0F0F10] group-hover:text-accent-cyan transition-colors line-clamp-2">
+                      <h3 className="font-display font-bold text-sm text-[#0F0F10] group-hover:text-accent-cyan transition-colors line-clamp-2 uppercase tracking-tight">
                         {rp.name}
                       </h3>
                       {rp.short_desc && (
@@ -552,9 +606,9 @@ export default async function ProductPage({ params }: Props) {
           {/* ── Inquiry CTA ───────────────────────────────────────── */}
           <section
             id="inquiry"
-            className="mb-14 bg-[#0F0F10] rounded-premium p-8 sm:p-12 text-center"
+            className="mb-14 border-2 border-black rounded-lg p-8 sm:p-12 text-center bg-[#0F0F10]"
           >
-            <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white mb-3">
+            <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white mb-3 uppercase tracking-tight">
               Request a Quote
             </h2>
             <p className="text-sm text-[#A0A0A5] mb-6 max-w-md mx-auto">
@@ -565,16 +619,16 @@ export default async function ProductPage({ params }: Props) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#0F0F10] font-semibold rounded-premium text-sm hover:bg-[#F7F7F8] transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#0F0F10] font-bold rounded-lg text-[10px] uppercase tracking-wider border-2 border-white hover:bg-[#F7F7F8] transition-colors"
               >
-                <Phone size={16} />
+                <MessageCircle size={14} className="text-[#25D366]" />
                 WhatsApp Us
               </a>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-[#5C5C63] text-white font-semibold rounded-premium text-sm hover:bg-white/10 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 border-2 border-white text-white font-bold rounded-lg text-[10px] uppercase tracking-wider hover:bg-white/10 transition-colors"
               >
-                <MessageCircle size={16} />
+                <Phone size={14} />
                 Contact Form
               </Link>
             </div>
@@ -592,10 +646,10 @@ export default async function ProductPage({ params }: Props) {
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <h2 className="font-display text-lg font-extrabold text-[#0F0F10] tracking-tight">
+      <h2 className="font-display text-lg font-extrabold text-[#0F0F10] tracking-tight uppercase">
         {children}
       </h2>
-      <div className="flex-1 h-px bg-[#EAEAEA]" />
+      <div className="flex-1 h-px bg-black" />
     </div>
   );
 }
