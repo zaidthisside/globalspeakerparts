@@ -221,6 +221,21 @@ export default function Home() {
       </div>
 
 
+      {/* Bookshelf Speaker Showcase Banner */}
+      <section className="w-full bg-white pt-6 pb-2">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] lg:aspect-[28/9] rounded-premium overflow-hidden border-2 border-black shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/hero-bookshelf-speaker.png" 
+              alt="Premium High-Fidelity Bookshelf Speaker" 
+              className="absolute inset-0 w-full h-full object-cover object-center"
+            />
+          </div>
+        </div>
+      </section>
+
+
       {/* 1.5 B2B Product Range Collage Section */}
       <section className="w-full py-5 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
