@@ -186,7 +186,7 @@ body {
 
 /* Smooth transition for navbar logo height on scroll */
 .navbar-logo {
-  height: 36px;
+  height: 52px;   /* Mobile: logo is big — nav items are hidden, more space available */
   width: auto;
   object-fit: contain;
   transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-in-out;
@@ -194,29 +194,29 @@ body {
 
 @media (min-width: 640px) {
   .navbar-logo {
-    height: 44px;
+    height: 56px;   /* sm: tablet-range, still mobile layout */
   }
 }
 
 @media (min-width: 1280px) {
   .navbar-logo {
-    height: 48px;
+    height: 48px;   /* xl desktop: shares space with nav items, slightly smaller */
   }
 }
 
 /* Scrolled state logo height overrides */
 .scrolled .navbar-logo {
-  height: 26px;
+  height: 38px;   /* Mobile scrolled */
 }
 
 @media (min-width: 640px) {
   .scrolled .navbar-logo {
-    height: 30px;
+    height: 44px;   /* sm scrolled */
   }
 }
 
 @media (min-width: 1280px) {
   .scrolled .navbar-logo {
-    height: 34px;
+    height: 34px;   /* xl desktop scrolled */
   }
 }
