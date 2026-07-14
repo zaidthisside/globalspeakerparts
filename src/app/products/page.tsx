@@ -2,12 +2,11 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Filter, Info, X, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send, ChevronLeft, ChevronRight } from "lucide-react";
-import InquiryForm from "@/components/InquiryForm";
+import { Search, Filter, Info, ShieldCheck, Tag, Box, Trash2, ShoppingBag, CheckCircle, ArrowLeft, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
 
 // Real Unsplash photo URLs for B2B industrial speaker components
-const productImages: Record<string, string> = {
+export const productImages: Record<string, string> = {
   cones: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80", 
   coils: "https://images.unsplash.com/photo-1618976186466-b3a5cfc7df57?auto=format&fit=crop&w=600&q=80", 
   spiders: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80", 
@@ -25,7 +24,7 @@ const productImages: Record<string, string> = {
 };
 
 // Realistic B2B speaker parts catalog data with variants and starting wholesale pricing
-const productsData = [
+export const productsData: ProductItem[] = [
   {
     id: "cones-carbon",
     name: "Carbon Fiber Composite Woofer Cones",
@@ -270,7 +269,7 @@ const allCategories = [
   "Complete Speaker Components"
 ];
 
-interface ProductItem {
+export interface ProductItem {
   id: string;
   name: string;
   category: string;
@@ -289,19 +288,23 @@ interface ProductItem {
   compliance?: string;
 }
 
+export function getProductSlug(product: Pick<ProductItem, "name">) {
+  return product.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") || "product";
+}
+
 function ProductCard({ 
   prod, 
-  onSelect, 
-  onSelectSample, 
   getWhatsAppUrl, 
   productImages 
 }: { 
   prod: ProductItem; 
-  onSelect: (p: ProductItem) => void; 
-  onSelectSample: (p: ProductItem) => void; 
   getWhatsAppUrl: (name: string) => string; 
   productImages: Record<string, string>;
 }) {
+  const router = useRouter();
   const [mediaIdx, setMediaIdx] = useState(0);
   const { convertPrice } = useCurrency();
 
@@ -327,9 +330,19 @@ function ProductCard({
     setMediaIdx(prev => (prev - 1 + mediaItems.length) % mediaItems.length);
   };
 
+  const categorySlug = prod.category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  const productSlug = getProductSlug(prod);
+
+  const handleNavigate = (mode?: "sample") => {
+    router.push(mode === "sample" ? `/${categorySlug}/${productSlug}?mode=sample` : `/${categorySlug}/${productSlug}`);
+  };
+
   return (
     <div 
-      onClick={() => onSelect(prod)}
+      onClick={() => handleNavigate()}
       className="bg-white border-2 border-black p-2.5 sm:p-3 rounded-premium cursor-pointer flex flex-col justify-between shadow-sm hover:translate-y-[-2px] transition-all w-full"
     >
       <div>
@@ -423,7 +436,10 @@ function ProductCard({
         {/* B2B Action Buttons */}
         <div className="mt-3 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
           <button
-            onClick={() => onSelectSample(prod)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNavigate("sample");
+            }}
             className="w-full bg-[#0F0F10] text-white hover:bg-accent-cyan transition-colors text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider text-center cursor-pointer border border-[#0F0F10] hover:border-accent-cyan shadow-sm flex items-center justify-center gap-1"
           >
             <span>Buy Sample Now</span>
@@ -469,16 +485,6 @@ function ProductsCatalogSection() {
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
-  const [modalMediaIdx, setModalMediaIdx] = useState(0);
-  const [isSampleMode, setIsSampleMode] = useState(false);
-
-  const handleSelectProduct = (prod: ProductItem | null, sampleMode = false) => {
-    setSelectedProduct(prod);
-    setModalMediaIdx(0);
-    setIsSampleMode(sampleMode);
-  };
-
   const [customProducts, setCustomProducts] = useState<ProductItem[]>([]);
   const [whatsappNumberCleaned, setWhatsappNumberCleaned] = useState("919214361550");
 
@@ -940,8 +946,6 @@ function ProductsCatalogSection() {
                 <ProductCard 
                   key={prod.id} 
                   prod={prod} 
-                  onSelect={(p) => handleSelectProduct(p, false)}
-                  onSelectSample={(p) => handleSelectProduct(p, true)}
                   getWhatsAppUrl={getWhatsAppUrl}
                   productImages={productImages}
                 />
@@ -952,184 +956,6 @@ function ProductsCatalogSection() {
 
       </div>
 
-      {/* Modal Detail Overlay */}
-      {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/40 backdrop-blur-xs animate-fade-in font-sans">
-          <div className="glass-panel-solid w-full max-w-5xl rounded-premium overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col border-2 border-black">
-            
-            {/* Modal Header */}
-            <div className="p-5 bg-transparent border-b-2 border-black flex items-center justify-between">
-              <div>
-                <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">{selectedProduct.category}</span>
-                <h3 className="font-display text-base font-extrabold text-[#0F0F10] leading-tight">{selectedProduct.name}</h3>
-              </div>
-              <button
-                onClick={() => handleSelectProduct(null)}
-                className="p-2 rounded-lg bg-[#F7F7F8] border-2 border-black hover:bg-[#E8E8EA] text-slate-500 hover:text-accent-cyan transition-colors cursor-pointer"
-                aria-label="Close details"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="overflow-y-auto flex-1 p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 scrollbar-thin">
-              
-              {/* Product Specifications (Col 7) */}
-              <div className="lg:col-span-7 space-y-6">
-                
-                {/* Large Product Image in Modal */}
-                {(() => {
-                  const modalMediaUrls = selectedProduct.mediaUrls 
-                    ? selectedProduct.mediaUrls.split(",").map((url: string) => url.trim()).filter(Boolean)
-                    : [];
-                  const modalMediaItems = selectedProduct.mediaList && selectedProduct.mediaList.length > 0
-                    ? selectedProduct.mediaList
-                    : (modalMediaUrls.length > 0 
-                        ? modalMediaUrls 
-                        : [productImages[selectedProduct.imageKey] || "https://images.unsplash.com/photo-158109226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"]);
-
-                  const modalActiveUrl = modalMediaItems[modalMediaIdx] || modalMediaItems[0];
-                  const isModalVideo = modalActiveUrl?.startsWith("data:video/") || modalActiveUrl?.endsWith(".mp4") || modalActiveUrl?.endsWith(".webm") || modalActiveUrl?.endsWith(".ogg") || modalActiveUrl?.includes("youtube.com") || modalActiveUrl?.includes("vimeo.com");
-
-                  return (
-                    <div className="w-full aspect-square rounded-premium overflow-hidden border-2 border-black relative group">
-                      {isModalVideo ? (
-                        <video 
-                          src={modalActiveUrl} 
-                          controls 
-                          className="w-full h-full object-cover" 
-                          muted 
-                          loop 
-                          playsInline
-                          autoPlay={true}
-                        />
-                      ) : (
-                        <img
-                          src={modalActiveUrl}
-                          alt={selectedProduct.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                      
-                      {/* Arrows navigation for modal */}
-                      {modalMediaItems.length > 1 && (
-                        <>
-                          <button 
-                            onClick={() => setModalMediaIdx(prev => (prev - 1 + modalMediaItems.length) % modalMediaItems.length)}
-                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 border border-[#EAEAEA] text-[#0F0F10] hover:bg-[#0EA5E9] hover:text-white transition-all flex items-center justify-center font-bold text-sm shadow-md cursor-pointer z-20"
-                            aria-label="Previous slide"
-                          >
-                            <ChevronLeft className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => setModalMediaIdx(prev => (prev + 1) % modalMediaItems.length)}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 border border-[#EAEAEA] text-[#0F0F10] hover:bg-[#0EA5E9] hover:text-white transition-all flex items-center justify-center font-bold text-sm shadow-md cursor-pointer z-20"
-                            aria-label="Next slide"
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
-                          
-                          {/* Dots indicator for modal */}
-                          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#0F0F10]/50 px-2.5 py-1 rounded-full z-20">
-                            {modalMediaItems.map((_: string, i: number) => (
-                              <span 
-                                key={i} 
-                                className={`w-1.5 h-1.5 rounded-full transition-all ${
-                                  i === modalMediaIdx ? "bg-[#0EA5E9] scale-125" : "bg-white"
-                                }`} 
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
-
-                      <div className="absolute top-2 right-2 bg-white text-[8px] font-mono text-slate-500 px-2 py-0.5 rounded border border-[#EAEAEA] z-20">
-                        {isModalVideo ? "PRODUCT VIDEO DEMO" : "PRODUCT CATALOG IMAGE"}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider">Acoustic & Mechanical Profile</h4>
-                  <p className="text-xs text-[#4A4A4F] leading-relaxed font-light font-sans">{selectedProduct.desc}</p>
-                </div>
-
-                {/* Specs Table */}
-                <div className="border-2 border-black rounded-premium overflow-hidden">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-[#F7F7F8] text-[#0F0F10] font-bold border-b-2 border-black">
-                      <tr>
-                        <th className="px-4 py-3">Specification Parameter</th>
-                        <th className="px-4 py-3">OEM Compliance Value</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-black text-[#0F0F10]">
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Product Variants / Sizing</td>
-                        <td className="px-4 py-3 font-bold text-[#0F0F10]">{selectedProduct.variants}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">B2B Starting Price</td>
-                        <td className="px-4 py-3 font-bold text-[#0F0F10] font-numbers text-sm">{convertPrice(selectedProduct.startingPrice)}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Minimum Order Volume (MOQ)</td>
-                        <td className="px-4 py-3 font-semibold text-[#0F0F10]">{selectedProduct.moq}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Composition / Materials</td>
-                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.materials}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Dimensional Ranges</td>
-                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.dimensions}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Operating Temperature Limits</td>
-                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.tempLimit}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Acoustic / Compliance Tuning</td>
-                        <td className="px-4 py-3 font-light font-sans">{selectedProduct.frequencyRange}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Manufacturing Tolerances</td>
-                        <td className="px-4 py-3 text-[#0F0F10] font-semibold">{selectedProduct.tolerances}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 font-medium text-slate-400">Compliance Directives</td>
-                        <td className="px-4 py-3 flex items-center gap-1.5 font-light font-sans text-accent-cyan font-semibold">
-                          <ShieldCheck className="w-4 h-4 text-accent-cyan shrink-0" />
-                          <span>{selectedProduct.compliance}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="flex gap-4 p-4 rounded-premium bg-[#F7F7F8] border-2 border-black text-xs text-slate-500 leading-relaxed font-light">
-                  <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                  <span>
-                    GLOBAL SPEAKER PARTS supports customization of any sizing, stiffness index, adhesive chemical compositions, and electrical impedance to integrate into your production assembly lines.
-                  </span>
-                </div>
-              </div>
-
-              {/* B2B RFQ Form (Col 5) */}
-              <div className="lg:col-span-5">
-                <InquiryForm 
-                  defaultCategory={selectedProduct.category} 
-                  initialSampleMode={isSampleMode} 
-                  product={selectedProduct} 
-                />
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
