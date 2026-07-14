@@ -173,7 +173,7 @@ export default function Navbar() {
           </div>
 
           {/* Center Block: Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 font-sans text-[10px] xl:text-[11.5px] 2xl:text-[13px] font-semibold uppercase tracking-wider overflow-hidden">
+          <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 font-sans text-[10px] xl:text-[11.5px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
             {navigationItems.map((item) => {
               const isHovered = hoveredMenu === item.name;
               const isActive = pathname.startsWith(item.href);
