@@ -151,14 +151,14 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-white border-b border-slate-200 ${
-        scrolled ? "py-2 shadow-sm" : "py-4"
+        scrolled ? "py-2 shadow-sm scrolled" : "py-4"
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between">
           
           {/* Left Block: Brand Logo (Top left) - using exact uploaded image */}
-          <div className="flex items-center justify-start flex-1 lg:flex-initial lg:w-[320px] shrink-0 z-10">
+          <div className="flex items-center justify-start flex-1 lg:flex-initial lg:w-[220px] xl:w-[260px] 2xl:w-[300px] shrink-0 z-10">
             <Link href="/" className="flex items-center group">
               <Image 
                 src="/logo-horizontal.jpg"
@@ -166,15 +166,13 @@ export default function Navbar() {
                 width={275}
                 height={90}
                 priority
-                className={`transition-all duration-500 ease-in-out ${
-                  scrolled ? "h-8 sm:h-9 xl:h-10" : "h-11 sm:h-14 xl:h-15"
-                } w-auto object-contain hover:opacity-90 transition-opacity`} 
+                className="navbar-logo hover:opacity-90 transition-opacity" 
               />
             </Link>
           </div>
 
           {/* Center Block: Desktop Navigation Menu (Centered symmetrically in header) */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 space-x-2.5 xl:space-x-4 2xl:space-x-6 font-sans text-[11px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
+          <nav className="hidden lg:flex items-center justify-center flex-1 space-x-1.5 xl:space-x-3.5 2xl:space-x-6 font-sans text-[10px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
             {navigationItems.map((item) => {
               const isHovered = hoveredMenu === item.name;
               const isActive = pathname.startsWith(item.href);
@@ -188,7 +186,7 @@ export default function Navbar() {
                 >
                   <Link 
                     href={item.href}
-                    className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan ${
+                    className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan whitespace-nowrap ${
                       isActive ? "text-[#000000] font-bold" : "text-slate-800"
                      }`}
                   >
@@ -226,7 +224,7 @@ export default function Navbar() {
           </nav>
 
           {/* Right Block: Actions & Mobile Hamburger */}
-          <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 lg:flex-initial lg:w-[320px] shrink-0 z-10">
+          <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 lg:flex-initial lg:w-[240px] xl:w-[280px] 2xl:w-[300px] shrink-0 z-10 whitespace-nowrap">
             {/* Search Icon */}
             <Link 
               href="/products"
@@ -269,8 +267,8 @@ export default function Navbar() {
             </div>
 
             {/* Quote button (desktop/tablet) */}
-            <Link href="/contact?rfq=true" className="hidden sm:block">
-              <button className="bg-black text-white border border-black px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wider hover:bg-slate-800 transition-all uppercase cursor-pointer">
+            <Link href="/contact?rfq=true" className="hidden sm:block shrink-0">
+              <button className="bg-black text-white border border-black px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wider hover:bg-slate-800 transition-all uppercase cursor-pointer whitespace-nowrap">
                 Request Quote
               </button>
             </Link>

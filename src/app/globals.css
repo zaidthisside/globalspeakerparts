@@ -183,3 +183,40 @@ body {
     linear-gradient(to right, #EAEAEA 1px, transparent 1px),
     linear-gradient(to bottom, #EAEAEA 1px, transparent 1px);
 }
+
+/* Smooth transition for navbar logo height on scroll */
+.navbar-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-in-out;
+}
+
+@media (min-width: 640px) {
+  .navbar-logo {
+    height: 56px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .navbar-logo {
+    height: 60px;
+  }
+}
+
+/* Scrolled state logo height overrides */
+.scrolled .navbar-logo {
+  height: 32px;
+}
+
+@media (min-width: 640px) {
+  .scrolled .navbar-logo {
+    height: 36px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .scrolled .navbar-logo {
+    height: 40px;
+  }
+}
