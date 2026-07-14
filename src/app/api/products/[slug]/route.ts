@@ -1,146 +1,137 @@
-import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse, NextRequest } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 
-type Product = {
-  id: string;
-  category_id: string;
-  name: string;
-  slug: string;
-  short_desc: string | null;
-  long_desc: string | null;
-  featured_image: string | null;
-  is_hidden: boolean;
-  is_featured: boolean;
-  seo_meta: any;
-  created_at: string;
-  updated_at: string;
-};
-
-type Variant = {
-  id: string;
-  product_id: string;
-  name: string;
-  specs: any;
-  stock: number | null;
-  price: number | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
-type PartNumber = {
-  id: string;
-  variant_id: string;
-  code: string;
-  created_at: string;
-};
-
-type Image = {
-  id: string;
-  product_id: string;
-  url: string;
-  alt_text: string | null;
-  order_index: number;
-};
-
-type Download = {
-  id: string;
-  product_id: string;
-  type: string;
-  url: string;
-  title: string | null;
-};
-
-type FAQ = {
-  id: string;
-  product_id: string;
-  question: string;
-  answer: string;
-  order_index: number;
-};
-
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
-  const { slug } = params;
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
   try {
-    // 1️⃣ Fetch the product itself
-    const { data: productData, error: productError } = await supabase
-      .from("products")
-      .select("*, category:categories!inner(slug, name)")
-      .eq("slug", slug)
+    const { slug } = await context.params;
+
+    // Fetch product with category info
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*, categories(slug, name)')
+      .eq('slug', slug)
       .single();
 
-    if (productError || !productData) {
-      console.error("Product not found error:", productError);
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    if (error || !product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    const product = productData as Product & { category: { slug: string; name: string } };
+    // Fetch variants with part_numbers, ordered by sort_order
+    const { data: variants } = await supabase
+      .from('variants')
+      .select('*, part_numbers(*)')
+      .eq('product_id', product.id)
+      .order('sort_order', { ascending: true });
 
-    // 2️⃣ Variants
-    const { data: variantsData, error: variantsError } = await supabase
-      .from("variants")
-      .select("*, part_numbers!inner(*)")
-      .eq("product_id", product.id);
+    // Fetch images ordered by order_index
+    const { data: images } = await supabase
+      .from('product_images')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('order_index', { ascending: true });
 
-    if (variantsError) {
-      console.error("Variants fetch error:", variantsError);
+    // Fetch downloads
+    const { data: downloads } = await supabase
+      .from('downloads')
+      .select('*')
+      .eq('product_id', product.id);
+
+    // Fetch FAQs ordered by order_index
+    const { data: faqs } = await supabase
+      .from('faqs')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('order_index', { ascending: true });
+
+    // Fetch related products
+    const { data: relatedLinks } = await supabase
+      .from('related_products')
+      .select('related_product_id')
+      .eq('product_id', product.id);
+
+    let relatedProducts: Record<string, unknown>[] = [];
+    if (relatedLinks && relatedLinks.length > 0) {
+      const relatedIds = relatedLinks.map((r) => r.related_product_id);
+      const { data: related } = await supabase
+        .from('products')
+        .select('slug, name, featured_image, short_desc')
+        .in('id', relatedIds);
+      relatedProducts = related || [];
     }
 
-    const variants = (variantsData || []) as (Variant & { part_numbers: PartNumber[] })[];
+    // Reshape category info
+    const { categories, ...productData } = product;
 
-    // 3️⃣ Images (gallery)
-    const { data: imagesData, error: imagesError } = await supabase
-      .from("product_images")
-      .select("url, alt_text, order_index")
-      .eq("product_id", product.id)
-      .order("order_index", { ascending: true });
-    if (imagesError) console.error("Images fetch error:", imagesError);
-    const images = (imagesData || []) as Image[];
+    return NextResponse.json(
+      {
+        ...productData,
+        category: categories ?? null,
+        variants: variants || [],
+        images: images || [],
+        downloads: downloads || [],
+        faqs: faqs || [],
+        related_products: relatedProducts,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
-    // 4️⃣ Downloads
-    const { data: downloadsData, error: downloadsError } = await supabase
-      .from("downloads")
-      .select("type, url, title")
-      .eq("product_id", product.id);
-    if (downloadsError) console.error("Downloads fetch error:", downloadsError);
-    const downloads = (downloadsData || []) as Download[];
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await context.params;
+    const body = await request.json();
 
-    // 5️⃣ FAQs
-    const { data: faqsData, error: faqsError } = await supabase
-      .from("faqs")
-      .select("question, answer, order_index")
-      .eq("product_id", product.id)
-      .order("order_index", { ascending: true });
-    if (faqsError) console.error("FAQs fetch error:", faqsError);
-    const faqs = (faqsData || []) as FAQ[];
+    const { data, error } = await supabase
+      .from('products')
+      .update(body)
+      .eq('slug', slug)
+      .select()
+      .single();
 
-    // 6️⃣ Related products (simple list of slugs & names)
-    const { data: relatedData, error: relatedError } = await supabase
-      .from("related_products")
-      .select("related_product_id")
-      .eq("product_id", product.id);
-    let relatedProducts: { slug: string; name: string }[] = [];
-    if (!relatedError && relatedData && relatedData.length > 0) {
-      const relatedIds = relatedData.map((r: any) => r.related_product_id);
-      const { data: relProds, error: relProdsErr } = await supabase
-        .from("products")
-        .select("slug, name")
-        .in("id", relatedIds);
-      if (!relProdsErr && relProds) relatedProducts = relProds as any;
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const payload = {
-      product,
-      variants,
-      images,
-      downloads,
-      faqs,
-      relatedProducts,
-    };
+    if (!data) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
 
-    return NextResponse.json(payload, { headers: { "Cache-Control": "s-maxage=300" } });
-  } catch (e) {
-    console.error("Unexpected error in product GET:", e);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    return NextResponse.json(data, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await context.params;
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('slug', slug);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: 'Product deleted' }, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

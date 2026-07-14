@@ -1,6 +1,303 @@
 import { createClient } from "@supabase/supabase-js";
+import { localDb } from "./dbFallback";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://qvjcheciijcwafiqaigx.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_aswir1JOSTt4rvIYevngGg_qttBBNZx";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const realSupabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Global flag to use local JSON database fallback when tables are missing in Supabase
+let useLocalFallback = false;
+
+// Check if categories table exists on load
+realSupabase.from('categories').select('id', { count: 'exact', head: true }).then(({ error }) => {
+  if (error && error.code === 'PGRST205') {
+    console.log("Supabase categories table not found. Enabling local JSON database fallback.");
+    useLocalFallback = true;
+  }
+});
+
+// A lightweight mock Postgrest query builder that operates on local JSON database
+class MockQueryBuilder {
+  private tableName: string;
+  private filters: Array<{ type: string; col?: string; val?: any }> = [];
+  private orderCol: string | null = null;
+  private orderAsc = true;
+  private isSingle = false;
+  private action: 'select' | 'insert' | 'update' | 'delete' = 'select';
+  private actionData: any = null;
+
+  constructor(tableName: string) {
+    this.tableName = tableName;
+  }
+
+  select(columns?: string) {
+    this.action = 'select';
+    return this;
+  }
+
+  insert(data: any) {
+    this.action = 'insert';
+    this.actionData = data;
+    return this;
+  }
+
+  update(data: any) {
+    this.action = 'update';
+    this.actionData = data;
+    return this;
+  }
+
+  delete() {
+    this.action = 'delete';
+    return this;
+  }
+
+  eq(col: string, val: any) {
+    this.filters.push({ type: 'eq', col, val });
+    return this;
+  }
+
+  in(col: string, val: any[]) {
+    this.filters.push({ type: 'in', col, val });
+    return this;
+  }
+
+  order(col: string, options?: { ascending?: boolean }) {
+    this.orderCol = col;
+    this.orderAsc = options?.ascending !== false;
+    return this;
+  }
+
+  single() {
+    this.isSingle = true;
+    return this;
+  }
+
+  // To support thenable interface for async/await
+  async then(onfulfilled?: (value: any) => any, onrejected?: (reason: any) => any) {
+    try {
+      const result = await this.execute();
+      if (onfulfilled) return onfulfilled(result);
+      return result;
+    } catch (err) {
+      if (onrejected) return onrejected(err);
+      throw err;
+    }
+  }
+
+  async execute(): Promise<{ data: any; error: any; count?: number }> {
+    try {
+      const table = this.tableName;
+      const data = localDb as any;
+
+      if (this.action === 'select') {
+        let list: any[] = [];
+        
+        // Fetch base table list
+        if (table === 'categories') {
+          list = localDb.categories.list();
+        } else if (table === 'products') {
+          list = localDb.products.list();
+        } else if (table === 'variants') {
+          const prodFilter = this.filters.find(f => f.col === 'product_id');
+          if (prodFilter) {
+            list = localDb.variants.listByProduct(prodFilter.val);
+          } else {
+            const db = require('./dbFallback').readDB();
+            list = db.variants;
+          }
+        } else if (table === 'part_numbers') {
+          const db = require('./dbFallback').readDB();
+          list = db.part_numbers;
+        } else if (table === 'product_images') {
+          const prodFilter = this.filters.find(f => f.col === 'product_id');
+          if (prodFilter) {
+            list = localDb.images.listByProduct(prodFilter.val);
+          } else {
+            const db = require('./dbFallback').readDB();
+            list = db.product_images;
+          }
+        } else if (table === 'downloads') {
+          const prodFilter = this.filters.find(f => f.col === 'product_id');
+          if (prodFilter) {
+            list = localDb.downloads.listByProduct(prodFilter.val);
+          } else {
+            const db = require('./dbFallback').readDB();
+            list = db.downloads;
+          }
+        } else if (table === 'faqs') {
+          const prodFilter = this.filters.find(f => f.col === 'product_id');
+          if (prodFilter) {
+            list = localDb.faqs.listByProduct(prodFilter.val);
+          } else {
+            const db = require('./dbFallback').readDB();
+            list = db.faqs;
+          }
+        } else if (table === 'related_products') {
+          const db = require('./dbFallback').readDB();
+          list = db.related_products;
+        } else if (table === 'custom_products') {
+          // Keep compatibility for custom_products if queried
+          const db = require('./dbFallback').readDB();
+          list = db.products.map((p: Record<string, unknown>) => ({
+            id: p.id,
+            data: p,
+            created_at: p.created_at
+          }));
+        }
+
+        // Apply filters
+        for (const filter of this.filters) {
+          if (filter.type === 'eq') {
+            list = list.filter(item => item[filter.col!] === filter.val);
+          } else if (filter.type === 'in') {
+            const vals = filter.val as any[];
+            list = list.filter(item => vals.includes(item[filter.col!]));
+          }
+        }
+
+        // Apply ordering
+        if (this.orderCol) {
+          const col = this.orderCol;
+          const asc = this.orderAsc;
+          list.sort((a, b) => {
+            const valA = a[col];
+            const valB = b[col];
+            if (valA == null) return 1;
+            if (valB == null) return -1;
+            if (typeof valA === 'number' && typeof valB === 'number') {
+              return asc ? valA - valB : valB - valA;
+            }
+            return asc
+              ? String(valA).localeCompare(String(valB))
+              : String(valB).localeCompare(String(valA));
+          });
+        }
+
+        if (this.isSingle) {
+          return { data: list[0] || null, error: list[0] ? null : { message: 'Row not found' } };
+        }
+
+        return { data: list, error: null, count: list.length };
+      }
+
+      if (this.action === 'insert') {
+        let inserted: any = null;
+        if (table === 'categories') {
+          inserted = localDb.categories.insert(this.actionData);
+        } else if (table === 'products') {
+          inserted = localDb.products.insert(this.actionData);
+        } else if (table === 'variants') {
+          inserted = localDb.variants.insert(this.actionData);
+        } else if (table === 'part_numbers') {
+          inserted = localDb.partNumbers.insert(this.actionData);
+        } else if (table === 'product_images') {
+          inserted = localDb.images.insert(this.actionData);
+        } else if (table === 'downloads') {
+          inserted = localDb.downloads.insert(this.actionData);
+        } else if (table === 'faqs') {
+          inserted = localDb.faqs.insert(this.actionData);
+        }
+
+        return { data: inserted, error: null };
+      }
+
+      if (this.action === 'update') {
+        const slugFilter = this.filters.find(f => f.col === 'slug');
+        const idFilter = this.filters.find(f => f.col === 'id');
+        let updated: any = null;
+
+        if (table === 'categories' && slugFilter) {
+          updated = localDb.categories.update(slugFilter.val, this.actionData);
+        } else if (table === 'products' && slugFilter) {
+          updated = localDb.products.update(slugFilter.val, this.actionData);
+        } else if (table === 'variants' && idFilter) {
+          updated = localDb.variants.update(idFilter.val, this.actionData);
+        } else if (table === 'product_images' && idFilter) {
+          updated = localDb.images.update(idFilter.val, this.actionData);
+        } else if (table === 'faqs' && idFilter) {
+          updated = localDb.faqs.update(idFilter.val, this.actionData);
+        }
+
+        return { data: updated, error: null };
+      }
+
+      if (this.action === 'delete') {
+        const slugFilter = this.filters.find(f => f.col === 'slug');
+        const idFilter = this.filters.find(f => f.col === 'id');
+        let success = false;
+
+        if (table === 'categories' && slugFilter) {
+          success = localDb.categories.delete(slugFilter.val);
+        } else if (table === 'products' && slugFilter) {
+          success = localDb.products.delete(slugFilter.val);
+        } else if (table === 'variants' && idFilter) {
+          success = localDb.variants.delete(idFilter.val);
+        } else if (table === 'part_numbers' && idFilter) {
+          success = localDb.partNumbers.delete(idFilter.val);
+        } else if (table === 'product_images' && idFilter) {
+          success = localDb.images.delete(idFilter.val);
+        } else if (table === 'downloads' && idFilter) {
+          success = localDb.downloads.delete(idFilter.val);
+        } else if (table === 'faqs' && idFilter) {
+          success = localDb.faqs.delete(idFilter.val);
+        }
+
+        return { data: success, error: success ? null : { message: 'Delete failed' } };
+      }
+
+      return { data: null, error: { message: 'Method not implemented' } };
+    } catch (err: any) {
+      return { data: null, error: { message: err.message || 'Error executing query' } };
+    }
+  }
+}
+
+// Proxied supabase client that automatically switches to local fallback when query fails with table-not-found
+export const supabase = new Proxy(realSupabase, {
+  get(target, prop) {
+    if (prop === 'from') {
+      return (tableName: string) => {
+        if (useLocalFallback) {
+          return new MockQueryBuilder(tableName);
+        }
+        
+        // Return a wrapped query builder that switches to fallback on missing table error
+        const realBuilder = target.from(tableName);
+        return new Proxy(realBuilder, {
+          get(bTarget, bProp) {
+            const value = (bTarget as any)[bProp];
+            if (typeof value === 'function') {
+              return (...args: any[]) => {
+                const result = value.apply(bTarget, args);
+                
+                // If it is a final promise-returning operation (thenable), wrap it
+                if (result && typeof result.then === 'function') {
+                  const originalThen = result.then;
+                  result.then = function(onfulfilled: any, onrejected: any) {
+                    return originalThen.call(result, async (val: any) => {
+                      if (val && val.error && val.error.code === 'PGRST205') {
+                        console.warn(`Missing table '${tableName}' in Supabase database. Switching to local fallbacks.`);
+                        useLocalFallback = true;
+                        const mockBuilder = new MockQueryBuilder(tableName);
+                        // Re-apply properties/filters if possible, or just re-run query on mock builder
+                        // Since this is a fallback, a clean rerun of the query is best
+                        const mockResult = await mockBuilder.select().execute();
+                        return onfulfilled(mockResult);
+                      }
+                      return onfulfilled(val);
+                    }, onrejected);
+                  };
+                }
+                return result;
+              };
+            }
+            return value;
+          }
+        });
+      };
+    }
+    return (target as any)[prop];
+  }
+});

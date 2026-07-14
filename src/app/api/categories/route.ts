@@ -1,36 +1,67 @@
-import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse, NextRequest } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image_url?: string;
-  seo_meta?: {
-    title?: string;
-    description?: string;
-    keywords?: string[];
-    og_image?: string;
-  };
-};
-
-// GET /api/categories – list all visible categories
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("id, name, slug, description, image_url, seo_meta")
-      .order("name", { ascending: true });
+    const { data: categories, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
 
     if (error) {
-      console.error("Supabase categories GET error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data as Category[], { headers: { "Cache-Control": "s-maxage=300" } });
-  } catch (e) {
-    console.error("GET categories unexpected error:", e);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    // Fetch product counts for each category (non-hidden products only)
+    const categoriesWithCounts = await Promise.all(
+      (categories || []).map(async (category) => {
+        const { count, error: countError } = await supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('category_id', category.id)
+          .eq('is_hidden', false);
+
+        return {
+          ...category,
+          product_count: countError ? 0 : (count ?? 0),
+        };
+      })
+    );
+
+    return NextResponse.json(categoriesWithCounts, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, slug, description, image_url, seo_meta, sort_order, is_hidden } = body;
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({
+        name,
+        slug,
+        description,
+        image_url,
+        seo_meta,
+        sort_order: sort_order ?? 0,
+        is_hidden: is_hidden ?? false,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

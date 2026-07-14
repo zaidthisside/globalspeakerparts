@@ -1,57 +1,92 @@
-import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse, NextRequest } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  image_url: string | null;
-  seo_meta: any;
-};
-
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  short_desc: string | null;
-  featured_image: string | null;
-  is_hidden: boolean;
-};
-
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
-  const { slug } = params;
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
   try {
-    // Fetch category
-    const { data: catData, error: catError } = await supabase
-      .from("categories")
-      .select("id, name, slug, description, image_url, seo_meta")
-      .eq("slug", slug)
+    const { slug } = await context.params;
+
+    const { data: category, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
       .single();
 
-    if (catError || !catData) {
-      console.error("Category fetch error:", catError);
-      return NextResponse.json({ error: "Category not found" }, { status: 404 });
+    if (error || !category) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
-    const category = catData as Category;
+    // Fetch non-hidden products for this category
+    const { data: products, error: productsError } = await supabase
+      .from('products')
+      .select('id, name, slug, short_desc, featured_image, is_featured, sort_order')
+      .eq('category_id', category.id)
+      .eq('is_hidden', false)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
 
-    // Fetch products belonging to the category
-    const { data: prodData, error: prodError } = await supabase
-      .from("products")
-      .select("id, name, slug, short_desc, featured_image, is_hidden")
-      .eq("category_id", category.id)
-      .order("name", { ascending: true });
-
-    if (prodError) {
-      console.error("Products fetch error:", prodError);
+    if (productsError) {
+      return NextResponse.json({ error: productsError.message }, { status: 500 });
     }
 
-    const products = (prodData || []) as Product[];
+    return NextResponse.json({ ...category, products: products || [] }, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
-    return NextResponse.json({ category, products }, { headers: { "Cache-Control": "s-maxage=300" } });
-  } catch (e) {
-    console.error("Unexpected error in category GET:", e);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await context.params;
+    const body = await request.json();
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update(body)
+      .eq('slug', slug)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (!data) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await context.params;
+
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('slug', slug);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: 'Category deleted' }, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
