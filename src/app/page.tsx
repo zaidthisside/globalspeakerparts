@@ -224,12 +224,12 @@ export default function Home() {
       {/* Bookshelf Speaker Showcase Banner */}
       <section className="w-full bg-white pt-6 pb-2">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] lg:aspect-[28/9] rounded-premium overflow-hidden border-2 border-black shadow-sm">
+          <div className="w-full rounded-premium overflow-hidden border-2 border-black shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/hero-bookshelf-speaker.png" 
               alt="Premium High-Fidelity Bookshelf Speaker" 
-              className="absolute inset-0 w-full h-full object-cover object-center"
+              className="w-full h-auto block"
             />
           </div>
         </div>
