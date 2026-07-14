@@ -161,14 +161,27 @@ export default function Navbar() {
           {/* Left Block: Brand Logo */}
           <div className="flex items-center shrink-0 z-10 pr-4 xl:pr-8">
             <Link href="/" className="flex items-center group">
+
+              {/* Mobile logo — explicit large size, hidden on desktop */}
+              <Image 
+                src="/logo-horizontal.jpg"
+                alt="Global Speaker Parts"
+                width={240}
+                height={78}
+                priority
+                className="block lg:hidden hover:opacity-90 transition-opacity" 
+              />
+
+              {/* Desktop logo — CSS-driven smooth scroll transition */}
               <Image 
                 src="/logo-horizontal.jpg"
                 alt="Global Speaker Parts"
                 width={275}
                 height={90}
                 priority
-                className="navbar-logo hover:opacity-90 transition-opacity" 
+                className="hidden lg:block navbar-logo hover:opacity-90 transition-opacity" 
               />
+
             </Link>
           </div>
 
