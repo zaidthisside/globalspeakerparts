@@ -158,18 +158,20 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           
           {/* Left Block: Brand Logo (Top left) - using exact uploaded image */}
-          <Link href="/" className="flex items-center group shrink-0 z-10">
-            <Image 
-              src="/logo-horizontal.jpg"
-              alt="Global Speaker Parts"
-              width={220}
-              height={72}
-              priority
-              className={`transition-all duration-500 ease-in-out ${
-                scrolled ? "h-6.5 sm:h-7.5 xl:h-8" : "h-9 sm:h-11 xl:h-12"
-              } w-auto object-contain hover:opacity-90 transition-opacity`} 
-            />
-          </Link>
+          <div className="flex items-center justify-start flex-1 lg:flex-initial lg:w-[320px] shrink-0 z-10">
+            <Link href="/" className="flex items-center group">
+              <Image 
+                src="/logo-horizontal.jpg"
+                alt="Global Speaker Parts"
+                width={275}
+                height={90}
+                priority
+                className={`transition-all duration-500 ease-in-out ${
+                  scrolled ? "h-8 sm:h-9 xl:h-10" : "h-11 sm:h-14 xl:h-15"
+                } w-auto object-contain hover:opacity-90 transition-opacity`} 
+              />
+            </Link>
+          </div>
 
           {/* Center Block: Desktop Navigation Menu (Centered symmetrically in header) */}
           <nav className="hidden lg:flex items-center justify-center flex-1 space-x-2.5 xl:space-x-4 2xl:space-x-6 font-sans text-[11px] xl:text-[12px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
@@ -224,7 +226,7 @@ export default function Navbar() {
           </nav>
 
           {/* Right Block: Actions & Mobile Hamburger */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 z-10">
+          <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 lg:flex-initial lg:w-[320px] shrink-0 z-10">
             {/* Search Icon */}
             <Link 
               href="/products"
