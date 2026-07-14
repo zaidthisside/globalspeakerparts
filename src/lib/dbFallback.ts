@@ -221,10 +221,12 @@ export const localDb = {
     insert: (prod: any) => {
       const db = readDB();
       const newProd = {
-        id: generateUUID(),
+        id: prod.id || generateUUID(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        ...prod
+        ...prod,
+        applications: prod.applications ?? null,
+        tags: Array.isArray(prod.tags) ? prod.tags : (prod.tags ? [prod.tags] : []),
       };
       db.products.push(newProd);
       writeDB(db);

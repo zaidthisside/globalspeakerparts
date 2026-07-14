@@ -9,6 +9,10 @@ const realSupabase = createClient(supabaseUrl, supabaseAnonKey);
 // Global flag to use local JSON database fallback when tables are missing in Supabase
 let useLocalFallback = false;
 
+export function isLocalFallbackEnabled() {
+  return useLocalFallback;
+}
+
 // Check if categories table exists on load
 realSupabase.from('categories').select('id', { count: 'exact', head: true }).then(({ error }) => {
   if (error && error.code === 'PGRST205') {
@@ -82,7 +86,9 @@ class MockQueryBuilder {
   }
 
   select(columns?: string) {
-    this.action = 'select';
+    if (this.action !== 'insert' && this.action !== 'update' && this.action !== 'delete') {
+      this.action = 'select';
+    }
     return this;
   }
 
@@ -262,7 +268,18 @@ class MockQueryBuilder {
         if (table === 'categories') {
           inserted = localDb.categories.insert(this.actionData);
         } else if (table === 'products') {
-          inserted = localDb.products.insert(this.actionData);
+          const payload = {
+            ...this.actionData,
+            category_id: this.actionData.category_id ?? this.actionData.category?.id ?? null,
+            slug: this.actionData.slug ?? this.actionData.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+            applications: this.actionData.applications ?? null,
+            tags: Array.isArray(this.actionData.tags) ? this.actionData.tags : (this.actionData.tags ? [this.actionData.tags] : []),
+            seo_meta: this.actionData.seo_meta ?? null,
+            is_hidden: this.actionData.is_hidden ?? false,
+            is_featured: this.actionData.is_featured ?? false,
+            sort_order: this.actionData.sort_order ?? 0,
+          };
+          inserted = localDb.products.insert(payload);
         } else if (table === 'variants') {
           inserted = localDb.variants.insert(this.actionData);
         } else if (table === 'part_numbers') {
@@ -329,48 +346,62 @@ class MockQueryBuilder {
   }
 }
 
+function shouldUseLocalFallback(error: any) {
+  if (!error) return false;
+  const message = String(error.message || error.details || '');
+  return error.code === 'PGRST205' || /relation|table|does not exist|does not exist/i.test(message);
+}
+
+function wrapQueryBuilder<T extends object>(builder: T, tableName: string): T {
+  return new Proxy(builder, {
+    get(bTarget, bProp) {
+      const value = (bTarget as any)[bProp];
+      if (typeof value === 'function') {
+        return (...args: any[]) => {
+          const result = value.apply(bTarget, args);
+
+          if (result && typeof result.then === 'function') {
+            const originalThen = result.then.bind(result);
+            (result as any).then = (onfulfilled?: any, onrejected?: any) => {
+              return originalThen(async (val: any) => {
+                if (val && val.error && shouldUseLocalFallback(val.error)) {
+                  console.warn(`Missing table '${tableName}' in Supabase database. Switching to local fallbacks.`);
+                  useLocalFallback = true;
+                  const mockBuilder = new MockQueryBuilder(tableName);
+                  const mockResult = await mockBuilder.select().execute();
+                  return onfulfilled ? onfulfilled(mockResult) : mockResult;
+                }
+                return onfulfilled ? onfulfilled(val) : val;
+              }, onrejected);
+            };
+          }
+
+          if (result && typeof result === 'object' && result !== null) {
+            const looksLikeBuilder = typeof (result as any).select === 'function' || typeof (result as any).insert === 'function' || typeof (result as any).update === 'function' || typeof (result as any).delete === 'function' || typeof (result as any).eq === 'function';
+            if (looksLikeBuilder) {
+              return wrapQueryBuilder(result, tableName);
+            }
+          }
+
+          return result;
+        };
+      }
+      return value;
+    }
+  }) as T;
+}
+
 // Proxied supabase client that automatically switches to local fallback when query fails with table-not-found
 export const supabase = new Proxy(realSupabase, {
   get(target, prop) {
     if (prop === 'from') {
       return (tableName: string) => {
         if (useLocalFallback) {
-          return new MockQueryBuilder(tableName);
+          return new MockQueryBuilder(tableName) as any;
         }
-        
-        // Return a wrapped query builder that switches to fallback on missing table error
+
         const realBuilder = target.from(tableName);
-        return new Proxy(realBuilder, {
-          get(bTarget, bProp) {
-            const value = (bTarget as any)[bProp];
-            if (typeof value === 'function') {
-              return (...args: any[]) => {
-                const result = value.apply(bTarget, args);
-                
-                // If it is a final promise-returning operation (thenable), wrap it
-                if (result && typeof result.then === 'function') {
-                  const originalThen = result.then;
-                  result.then = function(onfulfilled: any, onrejected: any) {
-                    return originalThen.call(result, async (val: any) => {
-                      if (val && val.error && val.error.code === 'PGRST205') {
-                        console.warn(`Missing table '${tableName}' in Supabase database. Switching to local fallbacks.`);
-                        useLocalFallback = true;
-                        const mockBuilder = new MockQueryBuilder(tableName);
-                        // Re-apply properties/filters if possible, or just re-run query on mock builder
-                        // Since this is a fallback, a clean rerun of the query is best
-                        const mockResult = await mockBuilder.select().execute();
-                        return onfulfilled(mockResult);
-                      }
-                      return onfulfilled(val);
-                    }, onrejected);
-                  };
-                }
-                return result;
-              };
-            }
-            return value;
-          }
-        });
+        return wrapQueryBuilder(realBuilder, tableName);
       };
     }
     return (target as any)[prop];

@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isLocalFallbackEnabled } from '@/lib/supabaseClient';
+import { localDb } from '@/lib/dbFallback';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,6 +8,19 @@ export async function GET(request: NextRequest) {
     const categorySlug = searchParams.get('category');
     const search = searchParams.get('search');
     const featured = searchParams.get('featured');
+
+    if (isLocalFallbackEnabled()) {
+      const fallbackProducts = localDb.products.list({
+        categorySlug: categorySlug || undefined,
+        search: search || undefined,
+      }).map((product) => ({
+        ...product,
+        category_name: product.category_name || null,
+        category_slug: product.category_slug || null,
+        variants: [],
+      }));
+      return NextResponse.json(fallbackProducts, { status: 200 });
+    }
 
     let query = supabase
       .from('products')
@@ -43,8 +57,17 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await query;
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error || !data || data.length === 0) {
+      const fallbackProducts = localDb.products.list({
+        categorySlug: categorySlug || undefined,
+        search: search || undefined,
+      }).map((product) => ({
+        ...product,
+        category_name: product.category_name || null,
+        category_slug: product.category_slug || null,
+        variants: [],
+      }));
+      return NextResponse.json(fallbackProducts, { status: 200 });
     }
 
     // Reshape to flatten category info and include variants
@@ -83,30 +106,60 @@ export async function POST(request: NextRequest) {
       sort_order,
     } = body;
 
-    const { data, error } = await supabase
-      .from('products')
-      .insert({
-        category_id,
-        name,
-        slug,
-        short_desc,
-        long_desc,
-        featured_image,
-        is_hidden: is_hidden ?? false,
-        is_featured: is_featured ?? false,
-        seo_meta,
-        tags,
-        applications,
-        sort_order: sort_order ?? 0,
-      })
-      .select()
-      .single();
+    const insertedPayload = {
+      category_id,
+      name,
+      slug,
+      short_desc,
+      long_desc,
+      featured_image,
+      is_hidden: is_hidden ?? false,
+      is_featured: is_featured ?? false,
+      seo_meta,
+      tags,
+      applications,
+      sort_order: sort_order ?? 0,
+    };
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (isLocalFallbackEnabled()) {
+      const fallbackProduct = localDb.products.insert(insertedPayload);
+      return NextResponse.json({
+        ...fallbackProduct,
+        category_name: null,
+        category_slug: null,
+        variants: [],
+      }, { status: 201 });
     }
 
-    return NextResponse.json(data, { status: 201 });
+    let createdProduct: Record<string, unknown> | null = null;
+    let createError: Error | null = null;
+
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .insert(insertedPayload)
+        .select()
+        .single();
+
+      createdProduct = data as Record<string, unknown> | null;
+      if (error) {
+        createError = new Error(error.message);
+      }
+    } catch (err) {
+      createError = err instanceof Error ? err : new Error('Product creation failed');
+    }
+
+    if (!createdProduct || createError) {
+      const fallbackProduct = localDb.products.insert(insertedPayload);
+      createdProduct = {
+        ...fallbackProduct,
+        category_name: null,
+        category_slug: null,
+        variants: [],
+      };
+    }
+
+    return NextResponse.json(createdProduct, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
