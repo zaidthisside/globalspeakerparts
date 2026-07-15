@@ -906,8 +906,11 @@ function CategoryFormModal({ category, onSave, onClose }: {
           <FormField label="Description">
             <textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Category description..." />
           </FormField>
-          <FormField label="Image URL">
-            <input type="text" value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} className={inputClass} placeholder="https://..." />
+          <FormField label="Category Image">
+            <MediaUploader
+              value={form.image_url}
+              onChange={url => setForm({ ...form, image_url: url })}
+            />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Sort Order">
