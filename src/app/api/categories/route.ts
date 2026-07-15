@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isLocalFallbackEnabled } from '@/lib/supabaseClient';
+import { localDb } from '@/lib/dbFallback';
 
 export async function GET() {
   try {
@@ -41,25 +42,45 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, slug, description, image_url, seo_meta, sort_order, is_hidden } = body;
 
-    const { data, error } = await supabase
-      .from('categories')
-      .insert({
-        name,
-        slug,
-        description,
-        image_url,
-        seo_meta,
-        sort_order: sort_order ?? 0,
-        is_hidden: is_hidden ?? false,
-      })
-      .select()
-      .single();
+    const insertedPayload = {
+      name,
+      slug,
+      description,
+      image_url,
+      seo_meta,
+      sort_order: sort_order ?? 0,
+      is_hidden: is_hidden ?? false,
+    };
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (isLocalFallbackEnabled()) {
+      const fallbackCategory = localDb.categories.insert(insertedPayload);
+      return NextResponse.json(fallbackCategory, { status: 201 });
     }
 
-    return NextResponse.json(data, { status: 201 });
+    let createdCategory: Record<string, unknown> | null = null;
+    let createError: Error | null = null;
+
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert(insertedPayload)
+        .select()
+        .single();
+
+      createdCategory = data as Record<string, unknown> | null;
+      if (error) {
+        createError = new Error(error.message);
+      }
+    } catch (err) {
+      createError = err instanceof Error ? err : new Error('Category creation failed');
+    }
+
+    if (!createdCategory || createError) {
+      const fallbackCategory = localDb.categories.insert(insertedPayload);
+      createdCategory = fallbackCategory as Record<string, unknown>;
+    }
+
+    return NextResponse.json(createdCategory, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });

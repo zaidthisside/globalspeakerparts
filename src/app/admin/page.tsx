@@ -207,23 +207,24 @@ export default function AdminPage() {
   // ─── Category CRUD ───────────────────────────────────────────────
   const saveCat = async (cat: Partial<Category>) => {
     try {
-      if (editingCat?.id) {
-        await fetch(`/api/categories/${editingCat.slug}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cat)
-        });
-      } else {
-        await fetch("/api/categories", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cat)
-        });
+      const url = editingCat?.id ? `/api/categories/${editingCat.slug}` : "/api/categories";
+      const method = editingCat?.id ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cat)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to save category");
       }
       setShowCatForm(false);
       setEditingCat(null);
       fetchCategories();
-    } catch (err) { console.error("Error saving category", err); }
+    } catch (err) {
+      console.error("Error saving category", err);
+      alert(err instanceof Error ? err.message : "Unable to save category");
+    }
   };
 
   const deleteCat = async (slug: string) => {
@@ -246,23 +247,24 @@ export default function AdminPage() {
   // ─── Product CRUD ────────────────────────────────────────────────
   const saveProd = async (prod: Partial<Product>) => {
     try {
-      if (editingProd?.id) {
-        await fetch(`/api/products/${editingProd.slug}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(prod)
-        });
-      } else {
-        await fetch("/api/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(prod)
-        });
+      const url = editingProd?.id ? `/api/products/${editingProd.slug}` : "/api/products";
+      const method = editingProd?.id ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(prod)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to save product");
       }
       setShowProdForm(false);
       setEditingProd(null);
       fetchProducts();
-    } catch (err) { console.error("Error saving product", err); }
+    } catch (err) {
+      console.error("Error saving product", err);
+      alert(err instanceof Error ? err.message : "Unable to save product");
+    }
   };
 
   const deleteProd = async (slug: string) => {
