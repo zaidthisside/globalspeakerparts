@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import ProductGallery from '@/components/ProductGallery';
+import PriceValue from '@/components/PriceValue';
 import {
   ArrowRight,
   Download,
@@ -338,10 +339,7 @@ export default async function ProductPage({ params }: Props) {
 
               {/* Price Badge */}
               <div className="flex items-center gap-4 pt-1">
-                <div className="inline-flex items-center gap-2 px-4 py-2 border border-black rounded-lg bg-white">
-                  <span className="text-xs text-[#5C5C63] uppercase tracking-wider font-medium">Starting At</span>
-                  <span className="font-display font-black text-lg text-[#0F0F10]">{startingPrice}</span>
-                </div>
+                <PriceValue amount={startingPrice} />
               </div>
 
               {/* CTA Buttons */}
@@ -408,7 +406,7 @@ export default async function ProductPage({ params }: Props) {
                     <div className="flex items-center justify-between pt-2 border-t border-black">
                       {v.price ? (
                         <span className="font-numbers font-bold text-[#0F0F10]">
-                          ${v.price.toFixed(2)}
+                          <PriceValue amount={v.price} />
                         </span>
                       ) : (
                         <span className="text-xs text-[#5C5C63]">Quote on request</span>
