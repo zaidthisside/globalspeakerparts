@@ -173,9 +173,9 @@ export const localDb = {
 
   // Products Table
   products: {
-    list: (filters?: { categorySlug?: string; search?: string; featured?: boolean }) => {
+    list: (filters?: { categorySlug?: string; search?: string; featured?: boolean; includeHidden?: boolean }) => {
       const db = readDB();
-      let list = db.products.filter(p => !p.is_hidden);
+      let list = filters?.includeHidden ? db.products : db.products.filter(p => !p.is_hidden);
 
       if (filters?.categorySlug) {
         const cat = db.categories.find(c => c.slug === filters.categorySlug);

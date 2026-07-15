@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isLocalFallbackEnabled } from '@/lib/supabaseClient';
+import { localDb } from '@/lib/dbFallback';
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +8,21 @@ export async function GET(
 ) {
   try {
     const { slug } = await context.params;
+
+    if (isLocalFallbackEnabled()) {
+      const fallbackProduct = localDb.products.getBySlug(slug);
+      if (!fallbackProduct) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        ...fallbackProduct,
+        variants: [],
+        images: [],
+        downloads: [],
+        faqs: [],
+        related_products: [],
+      }, { status: 200 });
+    }
 
     // Fetch product with category info
     const { data: product, error } = await supabase
@@ -16,7 +32,18 @@ export async function GET(
       .single();
 
     if (error || !product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      const fallbackProduct = localDb.products.getBySlug(slug);
+      if (!fallbackProduct) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        ...fallbackProduct,
+        variants: [],
+        images: [],
+        downloads: [],
+        faqs: [],
+        related_products: [],
+      }, { status: 200 });
     }
 
     // Fetch variants with part_numbers, ordered by sort_order

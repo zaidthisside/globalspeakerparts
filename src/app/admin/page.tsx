@@ -187,7 +187,7 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     setProdLoading(true);
     try {
-      let url = "/api/products?t=" + Date.now();
+      let url = "/api/products?t=" + Date.now() + "&includeHidden=true";
       if (prodCategoryFilter) url += "&category=" + prodCategoryFilter;
       if (prodSearch) url += "&search=" + encodeURIComponent(prodSearch);
       const res = await fetch(url);

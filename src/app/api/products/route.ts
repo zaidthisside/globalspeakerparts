@@ -8,11 +8,13 @@ export async function GET(request: NextRequest) {
     const categorySlug = searchParams.get('category');
     const search = searchParams.get('search');
     const featured = searchParams.get('featured');
+    const includeHidden = searchParams.get('includeHidden') === 'true' || searchParams.get('includeHidden') === '1';
 
     if (isLocalFallbackEnabled()) {
       const fallbackProducts = localDb.products.list({
         categorySlug: categorySlug || undefined,
         search: search || undefined,
+        includeHidden,
       }).map((product) => ({
         ...product,
         category_name: product.category_name || null,
@@ -25,9 +27,12 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('products')
       .select('*, categories(name, slug), variants(*)')
-      .eq('is_hidden', false)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true });
+
+    if (!includeHidden) {
+      query = query.eq('is_hidden', false);
+    }
 
     // Filter by category slug
     if (categorySlug) {
