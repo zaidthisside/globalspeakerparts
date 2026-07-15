@@ -939,39 +939,224 @@ function CategoryFormModal({ category, onSave, onClose }: {
 // ═══════════════════════════════════════════════════════════════════
 // PRODUCT FORM MODAL
 // ═══════════════════════════════════════════════════════════════════
+
+// Media uploader sub-component
+function MediaUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = { current: null as HTMLInputElement | null };
+
+  const ACCEPTED = "image/*,video/*,.glb,.gltf,.obj,.fbx,.stl,.step,.stp";
+
+  const upload = async (file: File) => {
+    setUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("files", file);
+      const res = await fetch("/api/uploads", { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Upload failed");
+      onChange(json.files[0].url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) upload(file);
+  };
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) upload(file);
+  };
+
+  const isImage = value && /\.(jpe?g|png|gif|webp|svg|avif)$/i.test(value);
+  const isVideo = value && /\.(mp4|mov|webm|ogg|avi)$/i.test(value);
+  const is3D = value && /\.(glb|gltf|obj|fbx|stl|step|stp)$/i.test(value);
+
+  return (
+    <div className="space-y-2">
+      {/* Drop zone */}
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current?.click()}
+        className={`relative border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all ${
+          dragging ? "border-[#0F0F10] bg-[#F7F7F8]" : "border-[#D6D6D8] hover:border-[#0F0F10] hover:bg-[#FAFAFA]"
+        }`}
+      >
+        <input
+          ref={(el) => { inputRef.current = el; }}
+          type="file"
+          accept={ACCEPTED}
+          className="hidden"
+          onChange={handleFile}
+        />
+        {uploading ? (
+          <div className="flex flex-col items-center gap-2 text-[#6B6B6F]">
+            <div className="w-5 h-5 border-2 border-[#0F0F10] border-t-transparent rounded-full animate-spin" />
+            <span className="text-[10px] font-medium">Uploading…</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-1.5 text-[#6B6B6F]">
+            <Upload className="w-5 h-5" />
+            <p className="text-[10px] font-semibold text-[#0F0F10]">Drop file here or click to browse</p>
+            <p className="text-[9px]">Images · Videos · 3D Models (.glb .gltf .obj .fbx .stl)</p>
+          </div>
+        )}
+      </div>
+
+      {/* URL fallback */}
+      <div className="flex items-center gap-1.5">
+        <div className="h-px flex-1 bg-[#EAEAEA]" />
+        <span className="text-[9px] text-[#9B9BA0] font-medium uppercase tracking-wider">or paste URL</span>
+        <div className="h-px flex-1 bg-[#EAEAEA]" />
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className={inputClass + " w-full"}
+        placeholder="https://..."
+      />
+
+      {/* Preview */}
+      {value && (
+        <div className="relative rounded-lg overflow-hidden border border-[#EAEAEA] bg-[#F7F7F8]">
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-1.5 right-1.5 z-10 bg-white border border-[#D6D6D8] rounded-full p-0.5 hover:bg-red-50 hover:border-red-300 transition-colors"
+          >
+            <X className="w-3 h-3 text-[#6B6B6F]" />
+          </button>
+          {isImage && <img src={value} alt="Preview" className="w-full max-h-40 object-contain" />}
+          {isVideo && <video src={value} controls className="w-full max-h-40" />}
+          {is3D && (
+            <div className="flex items-center gap-2 p-3 text-[10px] text-[#6B6B6F]">
+              <Layers className="w-4 h-4" />
+              <span className="font-medium">3D Model: {value.split('/').pop()}</span>
+            </div>
+          )}
+          {!isImage && !isVideo && !is3D && (
+            <div className="flex items-center gap-2 p-3 text-[10px] text-[#6B6B6F]">
+              <ImageIcon className="w-4 h-4" />
+              <span className="truncate">{value}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-[10px] text-red-600 font-medium">{error}</p>}
+    </div>
+  );
+}
+
+// Key-value spec builder sub-component
+function SpecBuilder({
+  specs,
+  onChange,
+}: {
+  specs: Array<{ key: string; value: string }>;
+  onChange: (specs: Array<{ key: string; value: string }>) => void;
+}) {
+  const add = () => onChange([...specs, { key: "", value: "" }]);
+  const remove = (i: number) => onChange(specs.filter((_, idx) => idx !== i));
+  const update = (i: number, field: "key" | "value", val: string) => {
+    const next = specs.map((s, idx) => idx === i ? { ...s, [field]: val } : s);
+    onChange(next);
+  };
+
+  return (
+    <div className="space-y-2">
+      {specs.length === 0 && (
+        <p className="text-[10px] text-[#9B9BA0] italic">No specs yet — click &quot;Add Row&quot; to start.</p>
+      )}
+      {specs.map((spec, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Spec name (e.g. Material)"
+            value={spec.key}
+            onChange={e => update(i, "key", e.target.value)}
+            className={inputClass + " flex-1 min-w-0"}
+          />
+          <span className="text-[#9B9BA0] text-xs shrink-0">:</span>
+          <input
+            type="text"
+            placeholder="Value (e.g. Copper)"
+            value={spec.value}
+            onChange={e => update(i, "value", e.target.value)}
+            className={inputClass + " flex-1 min-w-0"}
+          />
+          <button
+            type="button"
+            onClick={() => remove(i)}
+            className="shrink-0 p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-[#9B9BA0] transition-colors border border-transparent hover:border-red-200"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={add}
+        className="flex items-center gap-1.5 text-[10px] font-semibold text-[#0F0F10] border border-dashed border-[#D6D6D8] rounded-lg px-3 py-2 hover:border-[#0F0F10] hover:bg-[#F7F7F8] transition-all w-full justify-center cursor-pointer"
+      >
+        <Plus className="w-3 h-3" /> Add Row
+      </button>
+    </div>
+  );
+}
+
 function ProductFormModal({ product, categories, onSave, onClose }: {
   product: Product | null;
   categories: Category[];
   onSave: (prod: Partial<Product>) => void;
   onClose: () => void;
 }) {
+  // Convert existing specs object → array of {key,value} rows for the builder
+  const specsToRows = (specs: Record<string, string> | null | undefined) =>
+    specs ? Object.entries(specs).map(([key, value]) => ({ key, value })) : [];
+
   const [form, setForm] = useState({
     name: product?.name || "",
     slug: product?.slug || "",
     category_id: product?.category_id || (categories[0]?.id || ""),
     short_desc: product?.short_desc || "",
-    long_desc: product?.long_desc || "",
     featured_image: product?.featured_image || "",
     is_hidden: product?.is_hidden ?? false,
     is_featured: product?.is_featured ?? false,
     applications: product?.applications || "",
     tags: (product?.tags || []).join(", "),
     price: product?.price?.toString() || "",
-    technical_specs: product?.technical_specs ? JSON.stringify(product.technical_specs, null, 2) : "{\n  \"Material\": \"\",\n  \"Dimensions\": \"\"\n}",
     sort_order: product?.sort_order ?? 0,
     seo_meta: {
       title: product?.seo_meta?.title || "",
       description: product?.seo_meta?.description || "",
-    }
+    },
   });
+
+  const [specRows, setSpecRows] = useState<Array<{ key: string; value: string }>>(
+    specsToRows(product?.technical_specs)
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    let technicalSpecs: Record<string, string> = {};
-    try {
-      technicalSpecs = JSON.parse(form.technical_specs);
-    } catch {
-      technicalSpecs = {};
+    // Convert spec rows → plain object, ignoring rows with empty keys
+    const technical_specs: Record<string, string> = {};
+    for (const { key, value } of specRows) {
+      const k = key.trim();
+      if (k) technical_specs[k] = value;
     }
 
     onSave({
@@ -979,14 +1164,14 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       slug: form.slug || generateSlug(form.name),
       category_id: form.category_id,
       short_desc: form.short_desc || null,
-      long_desc: form.long_desc || null,
+      long_desc: null,
       featured_image: form.featured_image || null,
       is_hidden: form.is_hidden,
       is_featured: form.is_featured,
       applications: form.applications || null,
       tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
       price: form.price ? parseFloat(form.price) : null,
-      technical_specs: technicalSpecs,
+      technical_specs: Object.keys(technical_specs).length ? technical_specs : null,
       sort_order: form.sort_order,
       seo_meta: form.seo_meta.title || form.seo_meta.description ? form.seo_meta : null,
     });
@@ -996,70 +1181,166 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F10]/50 backdrop-blur-sm">
       <div className="bg-white border border-[#D6D6D8] w-full max-w-2xl rounded-premium shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center border-b border-[#EAEAEA] pb-4 mb-4">
-          <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">{product ? "Edit Product" : "New Product"}</h3>
-          <button onClick={onClose} className="p-1 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-[#0F0F10] cursor-pointer"><X className="w-5 h-5" /></button>
+          <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">
+            {product ? "Edit Product" : "New Product"}
+          </h3>
+          <button onClick={onClose} className="p-1 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-[#0F0F10] cursor-pointer">
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+
+        <form onSubmit={handleSubmit} className="space-y-5 text-xs">
+          {/* ── Name & Category ── */}
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Product Name" required>
-              <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value, slug: product ? form.slug : generateSlug(e.target.value) })} className={inputClass} placeholder="e.g. 82.5 mm Speaker Voice Coil" />
+              <input
+                type="text" required
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value, slug: product ? form.slug : generateSlug(e.target.value) })}
+                className={inputClass}
+                placeholder="e.g. 82.5 mm Speaker Voice Coil"
+              />
             </FormField>
             <FormField label="Category" required>
-              <select value={form.category_id} onChange={e => setForm({ ...form, category_id: e.target.value })} className={`${inputClass} cursor-pointer`}>
+              <select
+                value={form.category_id}
+                onChange={e => setForm({ ...form, category_id: e.target.value })}
+                className={`${inputClass} cursor-pointer`}
+              >
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </FormField>
           </div>
-          <FormField label="Slug">
-            <input type="text" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} className={inputClass} placeholder="auto-generated" />
+
+          {/* ── Slug ── */}
+          <FormField label="URL Slug">
+            <input
+              type="text"
+              value={form.slug}
+              onChange={e => setForm({ ...form, slug: e.target.value })}
+              className={inputClass}
+              placeholder="auto-generated from name"
+            />
           </FormField>
+
+          {/* ── Short Description ── */}
           <FormField label="Short Description">
-            <textarea rows={2} value={form.short_desc} onChange={e => setForm({ ...form, short_desc: e.target.value })} className={`${inputClass} resize-none`} />
+            <textarea
+              rows={2}
+              value={form.short_desc}
+              onChange={e => setForm({ ...form, short_desc: e.target.value })}
+              className={`${inputClass} resize-none w-full`}
+              placeholder="Brief one-line product summary…"
+            />
           </FormField>
-          <FormField label="Long Description">
-            <textarea rows={4} value={form.long_desc} onChange={e => setForm({ ...form, long_desc: e.target.value })} className={`${inputClass} resize-none`} />
+
+          {/* ── Media Upload ── */}
+          <FormField label="Featured Media">
+            <MediaUploader
+              value={form.featured_image}
+              onChange={url => setForm({ ...form, featured_image: url })}
+            />
           </FormField>
-          <FormField label="Featured Image URL">
-            <input type="text" value={form.featured_image} onChange={e => setForm({ ...form, featured_image: e.target.value })} className={inputClass} placeholder="https://..." />
+
+          {/* ── Price ── */}
+          <FormField label="Price (optional — leave blank if on request)">
+            <input
+              type="number" step="0.01"
+              value={form.price}
+              onChange={e => setForm({ ...form, price: e.target.value })}
+              className={inputClass}
+              placeholder="0.00"
+            />
           </FormField>
-          <FormField label="Price">
-            <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} className={inputClass} placeholder="0.00" />
-          </FormField>
-          <FormField label="Technical Specifications (JSON)">
-            <textarea rows={4} value={form.technical_specs} onChange={e => setForm({ ...form, technical_specs: e.target.value })} className={`${inputClass} font-mono resize-none`} placeholder='{"Material":"Copper","Dimensions":"82.5 mm"}' />
-          </FormField>
+
+          {/* ── Technical Specifications ── */}
+          <div>
+            <p className="text-[10px] font-semibold text-[#0F0F10] uppercase tracking-wider mb-2">
+              Technical Specifications
+            </p>
+            <div className="border border-[#EAEAEA] rounded-lg p-3 bg-[#FAFAFA]">
+              <SpecBuilder specs={specRows} onChange={setSpecRows} />
+            </div>
+          </div>
+
+          {/* ── Applications ── */}
           <FormField label="Applications">
-            <textarea rows={2} value={form.applications} onChange={e => setForm({ ...form, applications: e.target.value })} className={`${inputClass} resize-none`} placeholder="Home audio, automotive, PA systems..." />
+            <textarea
+              rows={2}
+              value={form.applications}
+              onChange={e => setForm({ ...form, applications: e.target.value })}
+              className={`${inputClass} resize-none w-full`}
+              placeholder="Home audio, automotive, PA systems…"
+            />
           </FormField>
+
+          {/* ── Tags ── */}
           <FormField label="Tags (comma-separated)">
-            <input type="text" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} className={inputClass} placeholder="voice coil, copper, CCAW" />
+            <input
+              type="text"
+              value={form.tags}
+              onChange={e => setForm({ ...form, tags: e.target.value })}
+              className={inputClass}
+              placeholder="voice coil, copper, CCAW"
+            />
           </FormField>
+
+          {/* ── Sort / Visibility / Featured ── */}
           <div className="grid grid-cols-3 gap-4">
             <FormField label="Sort Order">
-              <input type="number" value={form.sort_order} onChange={e => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} className={inputClass} />
+              <input
+                type="number"
+                value={form.sort_order}
+                onChange={e => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+                className={inputClass}
+              />
             </FormField>
             <FormField label="Visibility">
-              <select value={form.is_hidden ? "hidden" : "visible"} onChange={e => setForm({ ...form, is_hidden: e.target.value === "hidden" })} className={`${inputClass} cursor-pointer`}>
+              <select
+                value={form.is_hidden ? "hidden" : "visible"}
+                onChange={e => setForm({ ...form, is_hidden: e.target.value === "hidden" })}
+                className={`${inputClass} cursor-pointer`}
+              >
                 <option value="visible">Visible</option>
                 <option value="hidden">Hidden</option>
               </select>
             </FormField>
             <FormField label="Featured">
-              <select value={form.is_featured ? "yes" : "no"} onChange={e => setForm({ ...form, is_featured: e.target.value === "yes" })} className={`${inputClass} cursor-pointer`}>
+              <select
+                value={form.is_featured ? "yes" : "no"}
+                onChange={e => setForm({ ...form, is_featured: e.target.value === "yes" })}
+                className={`${inputClass} cursor-pointer`}
+              >
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
               </select>
             </FormField>
           </div>
+
+          {/* ── SEO ── */}
           <FormField label="SEO Title">
-            <input type="text" value={form.seo_meta.title} onChange={e => setForm({ ...form, seo_meta: { ...form.seo_meta, title: e.target.value } })} className={inputClass} />
+            <input
+              type="text"
+              value={form.seo_meta.title}
+              onChange={e => setForm({ ...form, seo_meta: { ...form.seo_meta, title: e.target.value } })}
+              className={inputClass}
+            />
           </FormField>
           <FormField label="SEO Description">
-            <textarea rows={2} value={form.seo_meta.description} onChange={e => setForm({ ...form, seo_meta: { ...form.seo_meta, description: e.target.value } })} className={`${inputClass} resize-none`} />
+            <textarea
+              rows={2}
+              value={form.seo_meta.description}
+              onChange={e => setForm({ ...form, seo_meta: { ...form.seo_meta, description: e.target.value } })}
+              className={`${inputClass} resize-none w-full`}
+            />
           </FormField>
-          <div className="flex justify-end gap-3 border-t border-[#EAEAEA] pt-4 mt-4">
+
+          {/* ── Actions ── */}
+          <div className="flex justify-end gap-3 border-t border-[#EAEAEA] pt-4 mt-2">
             <button type="button" onClick={onClose} className={btnSecondary}>CANCEL</button>
-            <button type="submit" className={btnPrimary}><Save className="w-3.5 h-3.5" /> {product ? "UPDATE" : "CREATE"}</button>
+            <button type="submit" className={btnPrimary}>
+              <Save className="w-3.5 h-3.5" /> {product ? "UPDATE" : "CREATE"}
+            </button>
           </div>
         </form>
       </div>
