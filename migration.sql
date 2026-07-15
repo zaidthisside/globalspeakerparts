@@ -1,7 +1,8 @@
--- Complete SQL Migration Script for Global Speaker Parts Category -> Product -> Variant Schema
--- Run this in your Supabase SQL Editor (Dashboard -> SQL Editor -> New Query)
+-- Complete SQL Migration Script for Global Speaker Parts
+-- Run this entire script in your Supabase SQL Editor
+-- Dashboard → SQL Editor → New Query → Paste → Run
 
--- 1. Create Categories Table
+-- ─── 1. Create Categories Table ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -15,7 +16,8 @@ CREATE TABLE IF NOT EXISTS categories (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 2. Create Products Table
+-- ─── 2. Create Products Table ─────────────────────────────────────────────────
+-- NOTE: price and technical_specs are NOT here — they belong to the variants table
 CREATE TABLE IF NOT EXISTS products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
@@ -34,7 +36,8 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. Create Variants Table
+-- ─── 3. Create Variants Table ─────────────────────────────────────────────────
+-- price and specs (technical_specs) live here
 CREATE TABLE IF NOT EXISTS variants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -48,7 +51,7 @@ CREATE TABLE IF NOT EXISTS variants (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 4. Create Part Numbers Table
+-- ─── 4. Create Part Numbers Table ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS part_numbers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   variant_id UUID NOT NULL REFERENCES variants(id) ON DELETE CASCADE,
@@ -56,7 +59,7 @@ CREATE TABLE IF NOT EXISTS part_numbers (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 5. Create Product Images Gallery Table
+-- ─── 5. Create Product Images Gallery Table ──────────────────────────────────
 CREATE TABLE IF NOT EXISTS product_images (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -66,17 +69,17 @@ CREATE TABLE IF NOT EXISTS product_images (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 6. Create Downloads Table
+-- ─── 6. Create Downloads Table ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS downloads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-  type TEXT NOT NULL, -- e.g. 'datasheet', 'catalogue', 'drawing'
+  type TEXT NOT NULL,
   url TEXT NOT NULL,
   title TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 7. Create FAQs Table
+-- ─── 7. Create FAQs Table ─────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS faqs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -86,7 +89,7 @@ CREATE TABLE IF NOT EXISTS faqs (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 8. Create Related Products Table (Many-to-Many self reference)
+-- ─── 8. Create Related Products Table ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS related_products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -94,12 +97,35 @@ CREATE TABLE IF NOT EXISTS related_products (
   UNIQUE(product_id, related_product_id)
 );
 
--- Enable Row Level Security (optional, disable if you want public access or configure policies)
--- ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE products ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE variants ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE part_numbers ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE downloads ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE related_products ENABLE ROW LEVEL SECURITY;
+-- ─── 9. Enable RLS and Add Permissive Policies ────────────────────────────────
+-- IMPORTANT: Run these even if you ran the CREATE TABLE block above.
+-- Without these policies, Supabase blocks ALL reads and writes via the anon key.
+
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE variants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE part_numbers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE downloads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE related_products ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if re-running to avoid duplicate errors
+DROP POLICY IF EXISTS "Allow all" ON categories;
+DROP POLICY IF EXISTS "Allow all" ON products;
+DROP POLICY IF EXISTS "Allow all" ON variants;
+DROP POLICY IF EXISTS "Allow all" ON part_numbers;
+DROP POLICY IF EXISTS "Allow all" ON product_images;
+DROP POLICY IF EXISTS "Allow all" ON downloads;
+DROP POLICY IF EXISTS "Allow all" ON faqs;
+DROP POLICY IF EXISTS "Allow all" ON related_products;
+
+-- Create permissive policies (public B2B catalog, no auth required)
+CREATE POLICY "Allow all" ON categories FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON variants FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON part_numbers FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON product_images FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON downloads FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON faqs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON related_products FOR ALL USING (true) WITH CHECK (true);

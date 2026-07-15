@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { supabase, isLocalFallbackEnabled } from '@/lib/supabaseClient';
-import { localDb } from '@/lib/dbFallback';
+import { supabase } from '@/lib/supabaseClient';
 
+// ─── GET /api/categories ─────────────────────────────────────────────────────
 export async function GET() {
   try {
     const { data: categories, error } = await supabase
@@ -11,6 +11,7 @@ export async function GET() {
       .order('name', { ascending: true });
 
     if (error) {
+      console.error('[GET /api/categories] Supabase error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -33,56 +34,49 @@ export async function GET() {
     return NextResponse.json(categoriesWithCounts, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
+    console.error('[GET /api/categories] Unexpected error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
+// ─── POST /api/categories ────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, slug, description, image_url, seo_meta, sort_order, is_hidden } = body;
 
-    const insertedPayload = {
-      name,
-      slug,
-      description,
-      image_url,
-      seo_meta,
-      sort_order: sort_order ?? 0,
-      is_hidden: is_hidden ?? false,
+    // Only include columns that exist in the categories table
+    const insertPayload = {
+      name: body.name,
+      slug: body.slug || body.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      description: body.description ?? null,
+      image_url: body.image_url ?? null,
+      seo_meta: body.seo_meta ?? null,
+      sort_order: body.sort_order ?? 0,
+      is_hidden: body.is_hidden ?? false,
     };
 
-    if (isLocalFallbackEnabled()) {
-      const fallbackCategory = localDb.categories.insert(insertedPayload);
-      return NextResponse.json(fallbackCategory, { status: 201 });
+    const { data, error } = await supabase
+      .from('categories')
+      .insert(insertPayload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[POST /api/categories] Supabase error:', error);
+      return NextResponse.json(
+        { error: error.message, details: error.details, code: error.code },
+        { status: 500 }
+      );
     }
 
-    let createdCategory: Record<string, unknown> | null = null;
-    let createError: Error | null = null;
-
-    try {
-      const { data, error } = await supabase
-        .from('categories')
-        .insert(insertedPayload)
-        .select()
-        .single();
-
-      createdCategory = data as Record<string, unknown> | null;
-      if (error) {
-        createError = new Error(error.message);
-      }
-    } catch (err) {
-      createError = err instanceof Error ? err : new Error('Category creation failed');
+    if (!data) {
+      return NextResponse.json({ error: 'Category was not created.' }, { status: 500 });
     }
 
-    if (!createdCategory || createError) {
-      const fallbackCategory = localDb.categories.insert(insertedPayload);
-      createdCategory = fallbackCategory as Record<string, unknown>;
-    }
-
-    return NextResponse.json(createdCategory, { status: 201 });
+    return NextResponse.json(data, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
+    console.error('[POST /api/categories] Unexpected error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
