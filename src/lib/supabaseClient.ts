@@ -8,18 +8,34 @@ const realSupabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Global flag to use local JSON database fallback when tables are missing in Supabase
 let useLocalFallback = false;
+let fallbackChecked = false;
+let checkPromise: Promise<void> | null = null;
+
+export async function ensureDbFallbackChecked() {
+  if (fallbackChecked) return;
+  if (!checkPromise) {
+    checkPromise = Promise.resolve(
+      realSupabase
+        .from('categories')
+        .select('id', { count: 'exact', head: true })
+        .then(({ error }) => {
+          if (error && (error.code === 'PGRST205' || /relation|table|does not exist/i.test(error.message || ''))) {
+            console.log("Supabase categories table not found. Enabling local JSON database fallback.");
+            useLocalFallback = true;
+          }
+          fallbackChecked = true;
+        })
+    );
+  }
+  await checkPromise;
+}
 
 export function isLocalFallbackEnabled() {
   return useLocalFallback;
 }
 
-// Check if categories table exists on load
-realSupabase.from('categories').select('id', { count: 'exact', head: true }).then(({ error }) => {
-  if (error && error.code === 'PGRST205') {
-    console.log("Supabase categories table not found. Enabling local JSON database fallback.");
-    useLocalFallback = true;
-  }
-});
+// Start checking in background immediately on load
+ensureDbFallbackChecked();
 
 function normalizeStringArray(value: unknown): string[] {
   if (Array.isArray(value)) {
@@ -346,62 +362,75 @@ class MockQueryBuilder {
   }
 }
 
-function shouldUseLocalFallback(error: any) {
-  if (!error) return false;
-  const message = String(error.message || error.details || '');
-  return error.code === 'PGRST205' || /relation|table|does not exist|does not exist/i.test(message);
-}
+class SmartQueryBuilder {
+  private tableName: string;
+  private calls: Array<{ method: string; args: any[] }> = [];
 
-function wrapQueryBuilder<T extends object>(builder: T, tableName: string): T {
-  return new Proxy(builder, {
-    get(bTarget, bProp) {
-      const value = (bTarget as any)[bProp];
-      if (typeof value === 'function') {
-        return (...args: any[]) => {
-          const result = value.apply(bTarget, args);
+  constructor(tableName: string) {
+    this.tableName = tableName;
+  }
 
-          if (result && typeof result.then === 'function') {
-            const originalThen = result.then.bind(result);
-            (result as any).then = (onfulfilled?: any, onrejected?: any) => {
-              return originalThen(async (val: any) => {
-                if (val && val.error && shouldUseLocalFallback(val.error)) {
-                  console.warn(`Missing table '${tableName}' in Supabase database. Switching to local fallbacks.`);
-                  useLocalFallback = true;
-                  const mockBuilder = new MockQueryBuilder(tableName);
-                  const mockResult = await mockBuilder.select().execute();
-                  return onfulfilled ? onfulfilled(mockResult) : mockResult;
-                }
-                return onfulfilled ? onfulfilled(val) : val;
-              }, onrejected);
-            };
-          }
+  private addCall(method: string, args: any[]) {
+    this.calls.push({ method, args });
+    return this;
+  }
 
-          if (result && typeof result === 'object' && result !== null) {
-            const looksLikeBuilder = typeof (result as any).select === 'function' || typeof (result as any).insert === 'function' || typeof (result as any).update === 'function' || typeof (result as any).delete === 'function' || typeof (result as any).eq === 'function';
-            if (looksLikeBuilder) {
-              return wrapQueryBuilder(result, tableName);
-            }
-          }
-
-          return result;
-        };
-      }
-      return value;
+  async then(onfulfilled?: (value: any) => any, onrejected?: (reason: any) => any) {
+    try {
+      const result = await this.execute();
+      if (onfulfilled) return onfulfilled(result);
+      return result;
+    } catch (err) {
+      if (onrejected) return onrejected(err);
+      throw err;
     }
-  }) as T;
+  }
+
+  async execute() {
+    await ensureDbFallbackChecked();
+
+    if (useLocalFallback) {
+      const mockBuilder = new MockQueryBuilder(this.tableName);
+      for (const call of this.calls) {
+        if (typeof (mockBuilder as any)[call.method] === 'function') {
+          (mockBuilder as any)[call.method](...call.args);
+        } else {
+          console.warn(`MockQueryBuilder does not support method '${call.method}'`);
+        }
+      }
+      return await mockBuilder.execute();
+    } else {
+      let realBuilder = realSupabase.from(this.tableName);
+      for (const call of this.calls) {
+        if (typeof (realBuilder as any)[call.method] === 'function') {
+          realBuilder = (realBuilder as any)[call.method](...call.args);
+        } else {
+          console.warn(`realSupabase builder does not support method '${call.method}'`);
+        }
+      }
+      return await realBuilder;
+    }
+  }
 }
 
-// Proxied supabase client that automatically switches to local fallback when query fails with table-not-found
+// Proxied supabase client that dynamically routes calls through SmartQueryBuilder
 export const supabase = new Proxy(realSupabase, {
   get(target, prop) {
     if (prop === 'from') {
       return (tableName: string) => {
-        if (useLocalFallback) {
-          return new MockQueryBuilder(tableName) as any;
-        }
-
-        const realBuilder = target.from(tableName);
-        return wrapQueryBuilder(realBuilder, tableName);
+        // Return a proxy that intercepts and records all chained methods
+        const builder = new SmartQueryBuilder(tableName);
+        return new Proxy(builder, {
+          get(qTarget, qProp) {
+            if (qProp === 'then' || qProp === 'execute' || qProp === 'tableName' || qProp === 'calls' || qProp === 'addCall') {
+              return (qTarget as any)[qProp];
+            }
+            return (...args: any[]) => {
+              qTarget['addCall'](String(qProp), args);
+              return new Proxy(qTarget, this);
+            };
+          }
+        }) as any;
       };
     }
     return (target as any)[prop];

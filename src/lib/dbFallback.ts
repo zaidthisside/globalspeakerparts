@@ -40,50 +40,9 @@ const INITIAL_DB = {
       updated_at: new Date().toISOString()
     }
   ],
-  products: [
-    {
-      id: "prod-1",
-      category_id: "cat-2",
-      name: "Carbon Fiber Composite Woofer Cones",
-      slug: "carbon-fiber-composite-woofer-cones",
-      short_desc: "Rigid composite speaker cones pressed for high-power woofers and high-fidelity automotive mid-bass drivers.",
-      long_desc: "Rigid composite speaker cones pressed for high-power woofers and high-fidelity automotive mid-bass drivers. Features precision air-dried pulp matrix, polyurethane coatings, and high durability under extreme loads.",
-      featured_image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80",
-      is_hidden: false,
-      is_featured: true,
-      seo_meta: null,
-      tags: ["cones", "carbon fiber"],
-      applications: "Automotive audio, high-power subwoofers",
-      sort_order: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ],
-  variants: [
-    {
-      id: "var-1",
-      product_id: "prod-1",
-      name: "5.25 Inch Standard",
-      specs: {
-        "Diameter": '5.25"',
-        "Material": "Carbon Fiber",
-        "Edge": "Rubber"
-      },
-      stock: 1000,
-      price: 1.80,
-      is_active: true,
-      sort_order: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ],
-  part_numbers: [
-    {
-      id: "pn-1",
-      variant_id: "var-1",
-      code: "CF-525-R"
-    }
-  ],
+  products: [],
+  variants: [],
+  part_numbers: [],
   product_images: [],
   downloads: [],
   faqs: [],

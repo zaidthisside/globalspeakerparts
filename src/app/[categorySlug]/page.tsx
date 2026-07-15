@@ -24,7 +24,7 @@ interface Category {
   slug: string;
   description: string | null;
   image_url: string | null;
-  is_hidden?: boolean;
+  is_hidden: boolean;
 }
 
 interface Variant {
