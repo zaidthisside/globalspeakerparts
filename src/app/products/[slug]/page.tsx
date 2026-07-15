@@ -8,6 +8,25 @@ import InquiryForm from "@/components/InquiryForm";
 import { useCurrency } from "@/context/CurrencyContext";
 import { productsData, productImages, type ProductItem, getProductSlug } from "@/app/products/page";
 
+interface ProductApiRecord {
+  id: string;
+  name: string;
+  slug: string;
+  short_desc: string | null;
+  long_desc: string | null;
+  featured_image: string | null;
+  category?: { name: string; slug: string } | null;
+  category_name?: string | null;
+  category_slug?: string | null;
+  price?: number | null;
+  technical_specs?: Record<string, string> | null;
+  media_urls?: string[] | null;
+  variants?: Array<{ id: string; name: string; specs: Record<string, string>; stock: number | null; price: number | null; part_numbers?: Array<{ code: string }> }>;
+  images?: Array<{ url: string; alt_text?: string | null }>;
+  downloads?: Array<{ title?: string | null; type?: string | null; url: string }>;
+  faqs?: Array<{ question: string; answer: string }>;
+}
+
 const fallbackFaqs = [
   {
     question: "Can this component be customized for OEM tooling?",
@@ -31,6 +50,7 @@ function ProductDetailsPage() {
   const initialSampleMode = searchParams.get("mode") === "sample";
 
   const [customProducts, setCustomProducts] = useState<ProductItem[]>([]);
+  const [adminProduct, setAdminProduct] = useState<ProductApiRecord | null>(null);
   const [activeMediaIdx, setActiveMediaIdx] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,13 +65,26 @@ function ProductDetailsPage() {
         }
       } catch (err) {
         console.error("Error loading custom products", err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchCustomProducts();
-  }, []);
+    const fetchAdminProduct = async () => {
+      if (!slug) return;
+      try {
+        const res = await fetch(`/api/products/${slug}?t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && !data.error) {
+            setAdminProduct(data);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading admin product", err);
+      }
+    };
+
+    Promise.all([fetchCustomProducts(), fetchAdminProduct()]).finally(() => setIsLoading(false));
+  }, [slug]);
 
   const combinedProducts = useMemo<ProductItem[]>(() => {
     return [...productsData, ...customProducts];
@@ -59,8 +92,31 @@ function ProductDetailsPage() {
 
   const product = useMemo<ProductItem | null>(() => {
     if (!slug) return null;
-    return combinedProducts.find((item) => getProductSlug(item) === slug) || null;
-  }, [combinedProducts, slug]);
+    const fromStatic = combinedProducts.find((item) => getProductSlug(item) === slug) || null;
+    if (adminProduct) {
+      return {
+        id: adminProduct.id,
+        name: adminProduct.name,
+        category: adminProduct.category?.name || adminProduct.category_name || "Speaker Component",
+        imageKey: adminProduct.featured_image || "",
+        desc: adminProduct.long_desc || adminProduct.short_desc || "",
+        materials: adminProduct.technical_specs?.Material || "",
+        dimensions: adminProduct.technical_specs?.Dimensions || adminProduct.technical_specs?.Diameter || "",
+        tempLimit: adminProduct.technical_specs?.["Temperature Rating"] || "",
+        frequencyRange: adminProduct.technical_specs?.Impedance || "",
+        tolerances: adminProduct.technical_specs?.Tolerance || "",
+        startingPrice: adminProduct.price ? `$${adminProduct.price.toFixed(2)}` : "$1.80",
+        moq: adminProduct.technical_specs?.MOQ || "1,000 units",
+        variants: adminProduct.variants?.map((item) => item.name).join(", ") || "Standard",
+        mediaUrls: adminProduct.media_urls?.join(",") || adminProduct.images?.map((image) => image.url).join(",") || undefined,
+        mediaList: (adminProduct.media_urls && adminProduct.media_urls.length > 0 ? adminProduct.media_urls : adminProduct.images?.map((image) => image.url) || []).filter(Boolean),
+        compliance: adminProduct.technical_specs?.Compliance || "RoHS compliant",
+        faqs: adminProduct.faqs,
+        variantProfiles: adminProduct.variants?.map((variant) => ({ label: variant.name, specs: variant.specs })) || [],
+      } as ProductItem & { faqs?: Array<{ question: string; answer: string }>; variantProfiles?: Array<{ label: string; specs?: Record<string, string> }> };
+    }
+    return fromStatic;
+  }, [combinedProducts, slug, adminProduct]);
 
   useEffect(() => {
     setActiveMediaIdx(0);
@@ -82,6 +138,7 @@ function ProductDetailsPage() {
   const mediaItems = mediaUrls;
   const activeMediaUrl = mediaItems[activeMediaIdx] || mediaItems[0];
   const isVideo = activeMediaUrl?.startsWith("data:video/") || activeMediaUrl?.endsWith(".mp4") || activeMediaUrl?.endsWith(".webm") || activeMediaUrl?.endsWith(".ogg") || activeMediaUrl?.includes("youtube.com") || activeMediaUrl?.includes("vimeo.com");
+  const is3DModel = (url: string) => /\.(glb|gltf|obj|stl)$/i.test(url);
 
   const variantOptions = useMemo(() => {
     if (!product) return [];
@@ -89,7 +146,7 @@ function ProductDetailsPage() {
       return (product as ProductItem & { variantProfiles?: Array<{ label: string; specs?: Record<string, string> }> }).variantProfiles!.map((item) => item.label);
     }
 
-    const parsed = product.variants
+    const parsed = (product.variants || "")
       .split(/[•,]/)
       .map((entry) => entry.trim())
       .filter(Boolean);
@@ -108,21 +165,21 @@ function ProductDetailsPage() {
   const specRows = useMemo(() => {
     if (!product) return [];
     const base = [
-      { label: "Size", value: product.dimensions },
-      { label: "Material", value: product.materials },
-      { label: "Former", value: activeVariantSpecs.Former || activeVariantSpecs.Material || "OEM Formed" },
-      { label: "Impedance", value: activeVariantSpecs.Impedance || product.frequencyRange },
-      { label: "Power Rating", value: activeVariantSpecs["Power Rating"] || activeVariantSpecs.Power || "Custom rated" },
-      { label: "Temperature Rating", value: product.tempLimit },
-      { label: "Voice Coil Height", value: activeVariantSpecs["Voice Coil Height"] || activeVariantSpecs.Height || "Custom" },
-      { label: "Outer Diameter", value: activeVariantSpecs["Outer Diameter"] || activeVariantSpecs.OD || "Custom" },
-      { label: "Inner Diameter", value: activeVariantSpecs["Inner Diameter"] || activeVariantSpecs.ID || "Custom" },
-      { label: "Weight", value: activeVariantSpecs.Weight || "Custom" },
-      { label: "Colour", value: activeVariantSpecs.Colour || activeVariantSpecs.Color || "Black / Custom" },
-      { label: "Application", value: activeVariantSpecs.Application || product.desc }
+      { label: "Size", value: product.dimensions || adminProduct?.technical_specs?.Dimensions || adminProduct?.technical_specs?.Diameter || "" },
+      { label: "Material", value: product.materials || adminProduct?.technical_specs?.Material || "" },
+      { label: "Former", value: activeVariantSpecs.Former || activeVariantSpecs.Material || adminProduct?.technical_specs?.Former || "OEM Formed" },
+      { label: "Impedance", value: activeVariantSpecs.Impedance || product.frequencyRange || adminProduct?.technical_specs?.Impedance || "" },
+      { label: "Power Rating", value: activeVariantSpecs["Power Rating"] || activeVariantSpecs.Power || adminProduct?.technical_specs?.["Power Rating"] || adminProduct?.technical_specs?.Power || "Custom rated" },
+      { label: "Temperature Rating", value: product.tempLimit || adminProduct?.technical_specs?.["Temperature Rating"] || "" },
+      { label: "Voice Coil Height", value: activeVariantSpecs["Voice Coil Height"] || activeVariantSpecs.Height || adminProduct?.technical_specs?.["Voice Coil Height"] || adminProduct?.technical_specs?.Height || "Custom" },
+      { label: "Outer Diameter", value: activeVariantSpecs["Outer Diameter"] || activeVariantSpecs.OD || adminProduct?.technical_specs?.["Outer Diameter"] || adminProduct?.technical_specs?.OD || "Custom" },
+      { label: "Inner Diameter", value: activeVariantSpecs["Inner Diameter"] || activeVariantSpecs.ID || adminProduct?.technical_specs?.["Inner Diameter"] || adminProduct?.technical_specs?.ID || "Custom" },
+      { label: "Weight", value: activeVariantSpecs.Weight || adminProduct?.technical_specs?.Weight || "Custom" },
+      { label: "Colour", value: activeVariantSpecs.Colour || activeVariantSpecs.Color || adminProduct?.technical_specs?.Colour || adminProduct?.technical_specs?.Color || "Black / Custom" },
+      { label: "Application", value: activeVariantSpecs.Application || product.desc || adminProduct?.long_desc || adminProduct?.short_desc || "" }
     ];
-    return base;
-  }, [activeVariantSpecs, product]);
+    return base.filter((row) => Boolean(row.value));
+  }, [activeVariantSpecs, product, adminProduct]);
 
   const relatedProducts = useMemo(() => {
     if (!product) return [];
@@ -131,12 +188,15 @@ function ProductDetailsPage() {
 
   const downloads = useMemo(() => {
     if (!product) return [];
+    if (adminProduct?.downloads && adminProduct.downloads.length > 0) {
+      return adminProduct.downloads.map((item) => ({ label: item.title || item.type || "Download", href: item.url }));
+    }
     return [
       { label: "Catalogue", href: "/" },
       { label: "Datasheet", href: "/" },
       { label: "Installation Guide", href: "/" }
     ];
-  }, [product]);
+  }, [product, adminProduct]);
 
   const faqs = useMemo(() => {
     if (!product) return fallbackFaqs;
@@ -365,13 +425,17 @@ function ProductDetailsPage() {
               <Info className="h-4 w-4 text-[#0F0F10]" />
               <h2 className="font-display text-lg font-extrabold text-[#0F0F10]">Technical Specifications</h2>
             </div>
-            <div className="mt-5 space-y-3">
-              {specRows.map((row) => (
-                <div key={row.label} className="flex items-start justify-between gap-4 border-b border-[#F0F0F2] py-3 text-sm">
-                  <span className="text-[#5C5C63] uppercase tracking-wider text-[10px] font-medium">{row.label}</span>
-                  <span className="text-right font-semibold text-[#0F0F10]">{row.value}</span>
-                </div>
-              ))}
+            <div className="mt-5 overflow-x-auto">
+              <table className="min-w-full border-collapse text-sm">
+                <tbody>
+                  {specRows.map((row) => (
+                    <tr key={row.label} className="border-b border-[#F0F0F2]">
+                      <td className="py-3 pr-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5C5C63]">{row.label}</td>
+                      <td className="py-3 text-right font-semibold text-[#0F0F10]">{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -414,6 +478,14 @@ function ProductDetailsPage() {
                   <div key={`${item}-${index}`} className="overflow-hidden rounded-lg border border-black bg-[#F7F7F8]">
                     {item.startsWith("data:video/") || item.endsWith(".mp4") || item.endsWith(".webm") || item.endsWith(".ogg") || item.includes("youtube.com") || item.includes("vimeo.com") ? (
                       <video src={item} className="h-40 w-full object-cover" muted loop playsInline />
+                    ) : is3DModel(item) ? (
+                      <div className="flex h-40 flex-col items-center justify-center gap-2 bg-slate-100 p-4 text-center">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#5C5C63]">3D Model</span>
+                        <p className="text-sm font-semibold text-[#0F0F10]">{product.name}</p>
+                        <a href={item} target="_blank" rel="noreferrer" className="rounded-full border border-black px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0F0F10] hover:bg-black hover:text-white">
+                          Open file
+                        </a>
+                      </div>
                     ) : (
                       <img src={item} alt={`${product.name} gallery ${index + 1}`} className="h-40 w-full object-cover" />
                     )}

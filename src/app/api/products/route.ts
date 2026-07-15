@@ -103,6 +103,9 @@ export async function POST(request: NextRequest) {
       seo_meta,
       tags,
       applications,
+      price,
+      technical_specs,
+      media_urls,
       sort_order,
     } = body;
 
@@ -118,6 +121,9 @@ export async function POST(request: NextRequest) {
       seo_meta,
       tags,
       applications,
+      price: price ?? null,
+      technical_specs: technical_specs ?? null,
+      media_urls: media_urls ?? null,
       sort_order: sort_order ?? 0,
     };
 

@@ -33,6 +33,9 @@ interface Product {
   seo_meta: Record<string, string> | null;
   tags: string[] | null;
   applications: string | null;
+  price: number | null;
+  technical_specs: Record<string, string> | null;
+  media_urls: string[] | null;
   sort_order: number;
   category?: { name: string; slug: string };
 }
@@ -133,6 +136,7 @@ export default function AdminPage() {
   const [detailImages, setDetailImages] = useState<ProductImage[]>([]);
   const [detailDownloads, setDetailDownloads] = useState<DownloadItem[]>([]);
   const [detailFaqs, setDetailFaqs] = useState<FAQ[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Inquiries
   const [inquiries, setInquiries] = useState<Record<string, string>[]>([]);
@@ -378,6 +382,26 @@ export default function AdminPage() {
       });
       if (detailProduct) loadProductDetail(detailProduct.slug);
     } catch (err) { console.error("Error adding image", err); }
+  };
+
+  const handleMediaUpload = async (productId: string, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach((file) => formData.append("files", file));
+      const uploadRes = await fetch("/api/uploads", { method: "POST", body: formData });
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadData.error || "Upload failed");
+      for (const file of uploadData.files || []) {
+        await addImage(productId, file.url, file.name);
+      }
+    } catch (err) {
+      console.error("Error uploading media", err);
+      alert("Media upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const deleteImage = async (id: string) => {
@@ -743,6 +767,8 @@ export default function AdminPage() {
               categories={categories}
               onBack={() => setDetailProduct(null)}
               onSaveProduct={async (data) => { await saveProd(data); if (detailProduct) loadProductDetail(detailProduct.slug); }}
+              onUploadMedia={handleMediaUpload}
+              isUploading={isUploading}
               onSaveVariant={saveVariant}
               onDeleteVariant={deleteVariant}
               onAddPartNumber={addPartNumber}
@@ -928,6 +954,8 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
     is_featured: product?.is_featured ?? false,
     applications: product?.applications || "",
     tags: (product?.tags || []).join(", "),
+    price: product?.price?.toString() || "",
+    technical_specs: product?.technical_specs ? JSON.stringify(product.technical_specs, null, 2) : "{\n  \"Material\": \"\",\n  \"Dimensions\": \"\"\n}",
     sort_order: product?.sort_order ?? 0,
     seo_meta: {
       title: product?.seo_meta?.title || "",
@@ -937,6 +965,13 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    let technicalSpecs: Record<string, string> = {};
+    try {
+      technicalSpecs = JSON.parse(form.technical_specs);
+    } catch {
+      technicalSpecs = {};
+    }
+
     onSave({
       name: form.name,
       slug: form.slug || generateSlug(form.name),
@@ -948,6 +983,8 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       is_featured: form.is_featured,
       applications: form.applications || null,
       tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      price: form.price ? parseFloat(form.price) : null,
+      technical_specs: technicalSpecs,
       sort_order: form.sort_order,
       seo_meta: form.seo_meta.title || form.seo_meta.description ? form.seo_meta : null,
     });
@@ -982,6 +1019,12 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
           </FormField>
           <FormField label="Featured Image URL">
             <input type="text" value={form.featured_image} onChange={e => setForm({ ...form, featured_image: e.target.value })} className={inputClass} placeholder="https://..." />
+          </FormField>
+          <FormField label="Price">
+            <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} className={inputClass} placeholder="0.00" />
+          </FormField>
+          <FormField label="Technical Specifications (JSON)">
+            <textarea rows={4} value={form.technical_specs} onChange={e => setForm({ ...form, technical_specs: e.target.value })} className={`${inputClass} font-mono resize-none`} placeholder='{"Material":"Copper","Dimensions":"82.5 mm"}' />
           </FormField>
           <FormField label="Applications">
             <textarea rows={2} value={form.applications} onChange={e => setForm({ ...form, applications: e.target.value })} className={`${inputClass} resize-none`} placeholder="Home audio, automotive, PA systems..." />
@@ -1025,7 +1068,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
 // ═══════════════════════════════════════════════════════════════════
 // PRODUCT DETAIL EDITOR (Variants, Images, Downloads, FAQs)
 // ═══════════════════════════════════════════════════════════════════
-function ProductDetailEditor({ product, variants, images, downloads, faqs, categories, onBack, onSaveProduct, onSaveVariant, onDeleteVariant, onAddPartNumber, onDeletePartNumber, onAddImage, onDeleteImage, onAddDownload, onDeleteDownload, onAddFaq, onDeleteFaq }: {
+function ProductDetailEditor({ product, variants, images, downloads, faqs, categories, onBack, onSaveProduct, onSaveVariant, onDeleteVariant, onAddPartNumber, onDeletePartNumber, onAddImage, onDeleteImage, onAddDownload, onDeleteDownload, onAddFaq, onDeleteFaq, onUploadMedia, isUploading }: {
   product: Product;
   variants: Variant[];
   images: ProductImage[];
@@ -1044,6 +1087,8 @@ function ProductDetailEditor({ product, variants, images, downloads, faqs, categ
   onDeleteDownload: (id: string) => Promise<void>;
   onAddFaq: (productId: string, question: string, answer: string) => Promise<void>;
   onDeleteFaq: (id: string) => Promise<void>;
+  onUploadMedia: (productId: string, files: FileList | null) => Promise<void>;
+  isUploading: boolean;
 }) {
   const [activeSection, setActiveSection] = useState<"variants" | "images" | "downloads" | "faqs">("variants");
 
@@ -1237,10 +1282,14 @@ function ProductDetailEditor({ product, variants, images, downloads, faqs, categ
       {activeSection === "images" && (
         <div className="bg-white border border-[#EAEAEA] rounded-premium p-6 space-y-6">
           <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider border-b border-[#EAEAEA] pb-4">Gallery Images ({images.length})</h3>
-          <div className="flex gap-3">
-            <input type="text" value={imageUrl} onChange={e => setImageUrl(e.target.value)} className={`${inputClass} flex-1`} placeholder="Image URL..." />
+          <div className="flex gap-3 flex-wrap">
+            <input type="text" value={imageUrl} onChange={e => setImageUrl(e.target.value)} className={`${inputClass} flex-1 min-w-[220px]`} placeholder="Image URL..." />
             <input type="text" value={imageAlt} onChange={e => setImageAlt(e.target.value)} className={`${inputClass} w-[180px]`} placeholder="Alt text..." />
-            <button onClick={() => { if (imageUrl) { onAddImage(product.id, imageUrl, imageAlt); setImageUrl(""); setImageAlt(""); } }} className={btnPrimary}><Plus className="w-3.5 h-3.5" /> Add</button>
+            <button onClick={() => { if (imageUrl) { onAddImage(product.id, imageUrl, imageAlt); setImageUrl(""); setImageAlt(""); } }} className={btnPrimary}><Plus className="w-3.5 h-3.5" /> Add URL</button>
+            <label className={`${btnSecondary} cursor-pointer`}>
+              <Upload className="w-3.5 h-3.5" /> {isUploading ? "Uploading..." : "Upload Media"}
+              <input type="file" multiple accept="image/*,video/*,.glb,.gltf,.obj,.stl" className="hidden" onChange={(e) => onUploadMedia(product.id, e.target.files)} />
+            </label>
           </div>
           {images.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-8">No gallery images. Add image URLs above.</p>
