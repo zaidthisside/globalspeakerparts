@@ -312,9 +312,9 @@ export default function CategoryPage() {
                   key={product.id}
                   className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                 >
-                  {/* Product Image - shorter height with padding */}
-                  <div className="p-2 bg-[#F7F7F8] border-b border-black">
-                    <div className="relative w-full h-24 md:h-48 rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
+                  {/* Product Image - SQUARE with padding */}
+                  <div className="p-1.5 bg-[#F7F7F8] border-b border-black">
+                    <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
                       {product.featured_image ? (
                         <img
                           src={product.featured_image}
@@ -324,15 +324,11 @@ export default function CategoryPage() {
                       ) : (
                         <Package className="h-12 w-12 text-[#EAEAEA]" />
                       )}
-                      {/* CAD Badge */}
-                      <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-xs border border-black px-2 py-0.5 rounded text-[8px] font-mono font-bold text-black uppercase tracking-wider shadow-xs select-none">
-                        CAD: READY
-                      </div>
                     </div>
                   </div>
 
                   {/* Content Body */}
-                  <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div className="p-2.5 flex-1 flex flex-col justify-between">
                     <div className="space-y-1.5">
                       <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
                         {product.category_name || category.name}
@@ -350,7 +346,7 @@ export default function CategoryPage() {
                     </div>
 
                     {/* Specs */}
-                    <div className="mt-5 pt-3.5 border-t border-[#EAEAEA]/80 space-y-2">
+                    <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
                       <div className="flex items-center justify-between text-xs font-sans">
                         <span className="text-slate-500 font-light flex items-center gap-1.5">
                           <TagIcon
@@ -384,7 +380,7 @@ export default function CategoryPage() {
                   </div>
 
                   {/* Action Buttons - Stacked */}
-                  <div className="flex flex-col border-t border-black p-2 bg-white gap-2">
+                  <div className="flex flex-col border-t border-black p-1.5 bg-white gap-1.5">
                     <button
                       onClick={() => handleAddToInquiry(product)}
                       className={`inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black transition-all uppercase cursor-pointer select-none ${
