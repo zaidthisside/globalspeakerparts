@@ -262,6 +262,10 @@ export default function AdminPage() {
       setShowProdForm(false);
       setEditingProd(null);
       fetchProducts();
+      if (detailProduct && (editingProd?.id === detailProduct.id || prod.id === detailProduct.id)) {
+        const nextSlug = prod.slug || detailProduct.slug;
+        loadProductDetail(nextSlug);
+      }
     } catch (err) {
       console.error("Error saving product", err);
       alert(err instanceof Error ? err.message : "Unable to save product");
@@ -316,7 +320,7 @@ export default function AdminPage() {
     try {
       const res = await fetch(`/api/products/${slug}?t=${Date.now()}`);
       const data = await res.json();
-      setDetailProduct(data.product);
+      setDetailProduct(data);
       setDetailVariants(data.variants || []);
       setDetailImages(data.images || []);
       setDetailDownloads(data.downloads || []);
@@ -740,6 +744,7 @@ export default function AdminPage() {
                             </td>
                             <td className="px-4 py-3.5">
                               <div className="flex items-center gap-1 justify-end">
+                                <button onClick={() => { setEditingProd(prod); setShowProdForm(true); }} className="p-1.5 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-accent-cyan cursor-pointer" title="Edit Product Info"><Settings className="w-3.5 h-3.5" /></button>
                                 <button onClick={() => loadProductDetail(prod.slug)} className="p-1.5 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-accent-cyan cursor-pointer" title="Edit Details"><Edit className="w-3.5 h-3.5" /></button>
                                 <button onClick={() => toggleProdFeatured(prod)} className="p-1.5 rounded hover:bg-amber-50 text-slate-400 hover:text-amber-500 cursor-pointer" title={prod.is_featured ? "Unfeature" : "Feature"}><Star className={`w-3.5 h-3.5 ${prod.is_featured ? 'fill-amber-400 text-amber-400' : ''}`} /></button>
                                 <button onClick={() => toggleProdVisibility(prod)} className="p-1.5 rounded hover:bg-[#F7F7F8] text-slate-400 hover:text-[#0F0F10] cursor-pointer" title={prod.is_hidden ? "Show" : "Hide"}>{prod.is_hidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}</button>
@@ -770,6 +775,10 @@ export default function AdminPage() {
               categories={categories}
               onBack={() => setDetailProduct(null)}
               onSaveProduct={async (data) => { await saveProd(data); if (detailProduct) loadProductDetail(detailProduct.slug); }}
+              onEditProduct={(prod) => {
+                setEditingProd(prod);
+                setShowProdForm(true);
+              }}
               onUploadMedia={handleMediaUpload}
               isUploading={isUploading}
               onSaveVariant={saveVariant}
@@ -1142,8 +1151,8 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
     is_featured: product?.is_featured ?? false,
     applications: product?.applications || "",
     tags: (product?.tags || []).join(", "),
-    price: product?.price?.toString() || "",
-    moq: (product as any)?.moq || product?.technical_specs?.MOQ || "",
+    price: product?.price?.toString() || (product as any)?.variants?.[0]?.price?.toString() || "",
+    moq: (product as any)?.moq || product?.technical_specs?.MOQ || (product as any)?.variants?.[0]?.specs?.MOQ || "",
     sort_order: product?.sort_order ?? 0,
     seo_meta: {
       title: product?.seo_meta?.title || "",
@@ -1152,7 +1161,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
   });
 
   const [specRows, setSpecRows] = useState<Array<{ key: string; value: string }>>(
-    specsToRows(product?.technical_specs)
+    specsToRows(product?.technical_specs || (product as any)?.variants?.[0]?.specs)
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1371,7 +1380,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
 // ═══════════════════════════════════════════════════════════════════
 // PRODUCT DETAIL EDITOR (Variants, Images, Downloads, FAQs)
 // ═══════════════════════════════════════════════════════════════════
-function ProductDetailEditor({ product, variants, images, downloads, faqs, categories, onBack, onSaveProduct, onSaveVariant, onDeleteVariant, onAddPartNumber, onDeletePartNumber, onAddImage, onDeleteImage, onAddDownload, onDeleteDownload, onAddFaq, onDeleteFaq, onUploadMedia, isUploading }: {
+function ProductDetailEditor({ product, variants, images, downloads, faqs, categories, onBack, onSaveProduct, onSaveVariant, onDeleteVariant, onAddPartNumber, onDeletePartNumber, onAddImage, onDeleteImage, onAddDownload, onDeleteDownload, onAddFaq, onDeleteFaq, onUploadMedia, isUploading, onEditProduct }: {
   product: Product;
   variants: Variant[];
   images: ProductImage[];
@@ -1392,6 +1401,7 @@ function ProductDetailEditor({ product, variants, images, downloads, faqs, categ
   onDeleteFaq: (id: string) => Promise<void>;
   onUploadMedia: (productId: string, files: FileList | null) => Promise<void>;
   isUploading: boolean;
+  onEditProduct: (prod: Product) => void;
 }) {
   const [activeSection, setActiveSection] = useState<"variants" | "images" | "downloads" | "faqs">("variants");
 
@@ -1455,7 +1465,16 @@ function ProductDetailEditor({ product, variants, images, downloads, faqs, categ
         <div className="flex justify-between items-start">
           <div>
             <p className="text-[9px] font-bold text-[#5C5C63] uppercase tracking-widest">{categories.find(c => c.id === product.category_id)?.name || "Uncategorized"}</p>
-            <h2 className="font-display text-xl font-extrabold text-[#0F0F10]">{product.name}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="font-display text-xl font-extrabold text-[#0F0F10]">{product.name}</h2>
+              <button
+                onClick={() => onEditProduct(product)}
+                className="flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded border border-[#EAEAEA] bg-white text-[#5C5C63] hover:text-[#0F0F10] hover:border-[#0F0F10] cursor-pointer"
+                title="Edit Product Info"
+              >
+                <Edit className="w-3 h-3" /> Edit Info
+              </button>
+            </div>
             <p className="text-[10px] text-slate-400 font-mono">/{product.slug}</p>
           </div>
           {product.featured_image && (
