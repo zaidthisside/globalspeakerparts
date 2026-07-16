@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
       seo_meta: body.seo_meta ?? null,
       tags: Array.isArray(body.tags) ? body.tags : [],
       applications: body.applications ?? null,
+      moq: body.moq ?? null,
       sort_order: body.sort_order ?? 0,
     };
 

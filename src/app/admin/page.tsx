@@ -37,6 +37,7 @@ interface Product {
   technical_specs: Record<string, string> | null;
   media_urls: string[] | null;
   sort_order: number;
+  moq: string | null;
   category?: { name: string; slug: string };
 }
 
@@ -1142,6 +1143,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
     applications: product?.applications || "",
     tags: (product?.tags || []).join(", "),
     price: product?.price?.toString() || "",
+    moq: (product as any)?.moq || product?.technical_specs?.MOQ || "",
     sort_order: product?.sort_order ?? 0,
     seo_meta: {
       title: product?.seo_meta?.title || "",
@@ -1161,6 +1163,9 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       const k = key.trim();
       if (k) technical_specs[k] = value;
     }
+    if (form.moq.trim()) {
+      technical_specs["MOQ"] = form.moq.trim();
+    }
 
     onSave({
       name: form.name,
@@ -1177,6 +1182,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       technical_specs: Object.keys(technical_specs).length ? technical_specs : null,
       sort_order: form.sort_order,
       seo_meta: form.seo_meta.title || form.seo_meta.description ? form.seo_meta : null,
+      moq: form.moq.trim() || null,
     });
   };
 
@@ -1253,6 +1259,17 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
               onChange={e => setForm({ ...form, price: e.target.value })}
               className={inputClass}
               placeholder="0.00"
+            />
+          </FormField>
+
+          {/* ── MOQ ── */}
+          <FormField label="MOQ">
+            <input
+              type="text"
+              value={form.moq}
+              onChange={e => setForm({ ...form, moq: e.target.value })}
+              className={inputClass}
+              placeholder="1,000 units"
             />
           </FormField>
 

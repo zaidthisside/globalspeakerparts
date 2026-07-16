@@ -106,7 +106,7 @@ export async function PUT(
     const productColumns = [
       'category_id', 'name', 'slug', 'short_desc', 'long_desc',
       'featured_image', 'is_hidden', 'is_featured', 'seo_meta',
-      'tags', 'applications', 'sort_order',
+      'tags', 'applications', 'sort_order', 'moq',
     ];
     for (const col of productColumns) {
       if (col in body) {

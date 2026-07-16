@@ -71,6 +71,7 @@ interface Product {
   tags: string[] | null;
   applications: string | null;
   variants?: Variant[];
+  moq?: string | null;
 }
 
 function ProductsCatalog() {
@@ -211,6 +212,7 @@ function ProductsCatalog() {
   };
 
   const getMOQ = (p: Product) => {
+    if (p.moq) return p.moq;
     if (p.variants) {
       for (const v of p.variants) {
         if (v.specs) {
@@ -599,7 +601,7 @@ function ProductsCatalog() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {filteredProducts.map((product) => {
                   const catSlug = product.category_slug || "uncategorized";
                   const startPrice = getStartingPrice(product);
@@ -619,22 +621,22 @@ function ProductsCatalog() {
                       key={product.id}
                       className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                     >
-                      {/* Product Image Wrapper - SQUARE */}
-                      <div className="relative aspect-square overflow-hidden bg-[#F7F7F8] border-b border-black">
-                        {product.featured_image ? (
-                          <img
-                            src={product.featured_image}
-                            alt={product.name}
-                            className="h-full w-full object-cover group-hover:scale-103 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center">
+                      {/* Product Image - SQUARE with border padding */}
+                      <div className="p-2 bg-[#F7F7F8] border-b border-black">
+                        <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
+                          {product.featured_image ? (
+                            <img
+                              src={product.featured_image}
+                              alt={product.name}
+                              className="max-h-full max-w-full object-contain group-hover:scale-103 transition-transform duration-300"
+                            />
+                          ) : (
                             <Package className="h-12 w-12 text-[#EAEAEA]" />
+                          )}
+                          {/* CAD: READY Badging */}
+                          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-xs border border-black px-2 py-0.5 rounded text-[8px] font-mono font-bold text-black uppercase tracking-wider shadow-xs select-none">
+                            CAD: READY
                           </div>
-                        )}
-                        {/* CAD: READY Badging */}
-                        <div className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-xs border border-black px-2 py-0.5 rounded text-[8px] font-mono font-bold text-black uppercase tracking-wider shadow-xs select-none">
-                          CAD: READY
                         </div>
                       </div>
 

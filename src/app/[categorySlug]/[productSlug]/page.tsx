@@ -66,6 +66,7 @@ type Product = {
   tags: string[] | null;
   applications: string[] | null;
   category: { slug: string; name: string } | null;
+  moq: string | null;
 };
 
 function normalizeApplications(value: unknown): string[] {
@@ -95,6 +96,7 @@ function normalizeProduct(product: any): Product {
     ...product,
     category,
     applications: normalizeApplications(product?.applications),
+    moq: product?.moq || null,
   } as Product;
 }
 
@@ -337,9 +339,31 @@ export default async function ProductPage({ params }: Props) {
                 </p>
               )}
 
-              {/* Price Badge */}
-              <div className="flex items-center gap-4 pt-1">
-                <PriceValue amount={startingPrice} />
+              {/* Price & MOQ Badges */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="inline-flex items-center px-4 py-2.5 border-2 border-black rounded-lg bg-black text-white font-extrabold text-xs uppercase tracking-wider">
+                  <PriceValue amount={startingPrice} />
+                </div>
+                {(() => {
+                  const productMOQ = p.moq || (() => {
+                    if (variants) {
+                      for (const v of variants) {
+                        if (v.specs) {
+                          for (const [key, val] of Object.entries(v.specs)) {
+                            if (key.toLowerCase().includes("moq")) return String(val);
+                          }
+                        }
+                      }
+                    }
+                    return "1,000 units";
+                  })();
+                  return (
+                    <div className="inline-flex items-center gap-1.5 px-4 py-2.5 border-2 border-black rounded-lg bg-white text-black font-extrabold text-xs uppercase tracking-wider">
+                      <Package size={13} className="text-[#5C5C63]" />
+                      MOQ: {productMOQ}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* CTA Buttons */}

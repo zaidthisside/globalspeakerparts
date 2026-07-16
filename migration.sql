@@ -31,10 +31,14 @@ CREATE TABLE IF NOT EXISTS products (
   seo_meta JSONB,
   tags TEXT[] DEFAULT '{}',
   applications TEXT,
+  moq TEXT,
   sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Ensure moq column exists in products table for existing databases
+ALTER TABLE products ADD COLUMN IF NOT EXISTS moq TEXT;
 
 -- ─── 3. Create Variants Table ─────────────────────────────────────────────────
 -- price and specs (technical_specs) live here

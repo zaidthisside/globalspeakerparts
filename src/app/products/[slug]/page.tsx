@@ -19,6 +19,7 @@ interface ProductApiRecord {
   category_name?: string | null;
   category_slug?: string | null;
   price?: number | null;
+  moq?: string | null;
   technical_specs?: Record<string, string> | null;
   media_urls?: string[] | null;
   variants?: Array<{ id: string; name: string; specs: Record<string, string>; stock: number | null; price: number | null; part_numbers?: Array<{ code: string }> }>;
@@ -106,7 +107,7 @@ function ProductDetailsPage() {
         frequencyRange: adminProduct.technical_specs?.Impedance || "",
         tolerances: adminProduct.technical_specs?.Tolerance || "",
         startingPrice: adminProduct.price ? `$${adminProduct.price.toFixed(2)}` : "$1.80",
-        moq: adminProduct.technical_specs?.MOQ || "1,000 units",
+        moq: adminProduct.moq || adminProduct.technical_specs?.MOQ || "1,000 units",
         variants: adminProduct.variants?.map((item) => item.name).join(", ") || "Standard",
         mediaUrls: adminProduct.media_urls?.join(",") || adminProduct.images?.map((image) => image.url).join(",") || undefined,
         mediaList: (adminProduct.media_urls && adminProduct.media_urls.length > 0 ? adminProduct.media_urls : adminProduct.images?.map((image) => image.url) || []).filter(Boolean),
