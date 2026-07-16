@@ -601,7 +601,7 @@ function ProductsCatalog() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
                 {filteredProducts.map((product) => {
                   const catSlug = product.category_slug || "uncategorized";
                   const startPrice = getStartingPrice(product);
@@ -662,30 +662,30 @@ function ProductsCatalog() {
                         {/* Specs Section */}
                         <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
                           {/* Price */}
-                          <div className="flex items-center justify-between text-xs font-sans">
-                            <span className="text-slate-500 font-light flex items-center gap-1.5">
-                              <TagIcon size={12} className="text-slate-400 shrink-0" />
+                          <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                            <span className="text-slate-500 font-light flex items-center gap-1">
+                              <TagIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
                               Starting Price:
                             </span>
-                            <span className="font-bold text-[#0f0f10] text-[13px]">
+                            <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
                               {convertPrice(startPrice)} / unit
                             </span>
                           </div>
 
                           {/* MOQ */}
-                          <div className="flex items-center justify-between text-xs font-sans">
-                            <span className="text-slate-500 font-light flex items-center gap-1.5">
-                              <BoxIcon size={12} className="text-slate-400 shrink-0" />
+                          <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                            <span className="text-slate-500 font-light flex items-center gap-1">
+                              <BoxIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
                               MOQ:
                             </span>
-                            <span className="font-bold text-[#0f0f10]">
+                            <span className="font-bold text-[#0f0f10] text-[11px] sm:text-xs">
                               {moqVal}
                             </span>
                           </div>
 
                           {/* Dimensions & Edges Line */}
                           {specsStr && (
-                            <p className="text-[10px] text-slate-500 italic leading-snug pt-1">
+                            <p className="text-[8.5px] sm:text-[10px] text-slate-500 italic leading-snug pt-1">
                               {specsStr}
                             </p>
                           )}
