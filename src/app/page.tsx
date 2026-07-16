@@ -26,13 +26,6 @@ const homeCategories = [
   { name: "Magnets", href: "/products?cat=magnets", image: "/magnet.jpg" }
 ];
 
-const collections = [
-  { name: "Speaker Cones", href: "/products?cat=cones", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=400&q=80" },
-  { name: "Voice Coils", href: "/products?cat=coils", image: "https://images.unsplash.com/photo-1618976186466-b3a5cfc7df57?auto=format&fit=crop&w=400&q=80" },
-  { name: "Spiders (Dampers)", href: "/products?cat=spiders", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=400&q=80" },
-  { name: "Magnets & Spares", href: "/products?cat=magnets", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80" },
-  { name: "Speaker Frames", href: "/products?cat=frames", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80" }
-];
 
 const testimonials = [
   { text: "Excellent precision components. Their custom tooling turnaround is the fastest in the B2B industry. Speaker cones are delivered in vacuum moisture-proof bags which keeps the carbon fiber dry.", author: "Dr. Marcus Vance (Bose Corp)" },
@@ -510,57 +503,6 @@ export default function Home() {
             </div>
 
           </div>
-        </div>
-      </section>
-
-      {/* 5. Browse by Collection (Kagzi Layout Clone) */}
-      <section className="w-full py-5 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-[1px] bg-[#0F0F10]" />
-                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">OUR PORTFOLIO</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl text-[#0F0F10] font-display font-extrabold">
-                Browse by <span className="text-[#5C5C63]">Collection</span>
-              </h2>
-            </div>
-            
-            <Link href="/products">
-              <button className="btn-primary px-6 py-2.5 text-xs font-semibold tracking-wider flex items-center gap-1.5 cursor-pointer uppercase">
-                <span>View All Collections</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8">
-            {collections.map((col, idx) => (
-              <Link 
-                key={idx}
-                href={col.href}
-                className="flex flex-col group cursor-pointer"
-              >
-                <div className="w-full aspect-square bg-[#F7F7F8] mb-4 overflow-hidden rounded-lg border border-black flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src={col.image} 
-                    alt={col.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#0F0F10] group-hover:text-[#5C5C63] transition-colors">
-                  {col.name}
-                </h3>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 group-hover:text-[#0F0F10] transition-colors">
-                  Explore Collection →
-                </div>
-              </Link>
-            ))}
-          </div>
-
         </div>
       </section>
 
