@@ -339,7 +339,7 @@ export default function CategoryPage() {
                         </h2>
                       </Link>
                       {product.short_desc && (
-                        <p className="text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
+                        <p className="hidden sm:block text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
                           {product.short_desc}
                         </p>
                       )}
