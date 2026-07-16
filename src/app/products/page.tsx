@@ -621,9 +621,9 @@ function ProductsCatalog() {
                       key={product.id}
                       className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                     >
-                      {/* Product Image - SQUARE with border padding */}
+                      {/* Product Image - shorter height with border padding */}
                       <div className="p-2 bg-[#F7F7F8] border-b border-black">
-                        <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
+                        <div className="relative w-full h-24 md:h-48 rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
                           {product.featured_image ? (
                             <img
                               src={product.featured_image}
@@ -696,26 +696,12 @@ function ProductsCatalog() {
                         </div>
                       </div>
 
-                      {/* Bottom Specs Bar */}
-                      <div className="px-4 py-2 border-t border-black bg-slate-50/50 flex items-center justify-between select-none">
-                        <span className="text-[9px] text-slate-500 uppercase tracking-tight font-sans">
-                          {toleranceVal}
-                        </span>
-                        <Link
-                          href={`/${catSlug}/${product.slug}`}
-                          className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-extrabold text-[#0F0F10] hover:text-accent-cyan transition-colors"
-                        >
-                          Specs / RFQ
-                          <Info size={11} className="text-[#0F0F10]" />
-                        </Link>
-                      </div>
-
-                      {/* Double B2B Actions Panel */}
-                      <div className="grid grid-cols-2 border-t border-black p-2 bg-white gap-2">
+                      {/* Double B2B Actions Panel - Stacked */}
+                      <div className="flex flex-col border-t border-black p-2 bg-white gap-2">
                         {/* Add to Inquiry */}
                         <button
                           onClick={() => handleAddToInquiry(product)}
-                          className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black transition-all uppercase cursor-pointer select-none ${
+                          className={`inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black transition-all uppercase cursor-pointer select-none ${
                             isJustAdded
                               ? "bg-[#25D366] text-white border-[#25D366]"
                               : "bg-black text-white hover:bg-white hover:text-black"
@@ -730,9 +716,14 @@ function ProductsCatalog() {
                           href={whatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black bg-white text-black hover:bg-slate-50 transition-all uppercase"
+                          className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black bg-white text-black hover:bg-slate-50 transition-all uppercase"
                         >
-                          <MessageCircle size={13} className="text-[#25D366]" />
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/whatsapp.png"
+                            alt="WhatsApp"
+                            className="w-3.5 h-3.5 object-contain"
+                          />
                           Contact Us
                         </a>
                       </div>
