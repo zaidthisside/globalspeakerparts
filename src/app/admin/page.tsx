@@ -6,6 +6,8 @@ import {
   Edit, Trash2, Eye, EyeOff, Star, ChevronDown, ChevronUp, Save, Copy, ArrowLeft, Layers, Tag, Settings, Image as ImageIcon, HelpCircle, Download, GripVertical
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import { supabase } from "@/lib/supabaseClient";
+
 
 // ─── Types ───────────────────────────────────────────────────────
 interface Category {
@@ -395,17 +397,29 @@ export default function AdminPage() {
     if (!files || files.length === 0) return;
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      Array.from(files).forEach((file) => formData.append("files", file));
-      const uploadRes = await fetch("/api/uploads", { method: "POST", body: formData });
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok) throw new Error(uploadData.error || "Upload failed");
-      for (const file of uploadData.files || []) {
-        await addImage(productId, file.url, file.name);
+      for (const file of Array.from(files)) {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+        const timestamp = Date.now();
+        const uniqueName = `${timestamp}-${safeName}`;
+
+        const { data, error } = await supabase.storage
+          .from('media')
+          .upload(uniqueName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        const { data: publicUrlData } = supabase.storage
+          .from('media')
+          .getPublicUrl(uniqueName);
+
+        await addImage(productId, publicUrlData.publicUrl, safeName);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error uploading media", err);
-      alert("Media upload failed. Please try again.");
+      alert("Media upload failed: " + (err.message || err));
     } finally {
       setIsUploading(false);
     }
@@ -966,14 +980,26 @@ function MediaUploader({ value, onChange }: { value: string; onChange: (url: str
     setUploading(true);
     setError("");
     try {
-      const fd = new FormData();
-      fd.append("files", file);
-      const res = await fetch("/api/uploads", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Upload failed");
-      onChange(json.files[0].url);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Upload failed");
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+      const timestamp = Date.now();
+      const uniqueName = `${timestamp}-${safeName}`;
+
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(uniqueName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(uniqueName);
+
+      onChange(publicUrlData.publicUrl);
+    } catch (e: any) {
+      setError(e?.message || "Upload failed");
     } finally {
       setUploading(false);
     }
