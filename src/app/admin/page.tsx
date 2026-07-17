@@ -41,6 +41,7 @@ interface Product {
   sort_order: number;
   moq: string | null;
   category?: { name: string; slug: string };
+  gallery?: string[];
 }
 
 interface Variant {
@@ -1184,7 +1185,11 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       title: product?.seo_meta?.title || "",
       description: product?.seo_meta?.description || "",
     },
+    gallery: (product as any)?.product_images?.map((img: any) => img.url) || 
+             (product as any)?.images?.map((img: any) => img.url) || []
   });
+
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
 
   const [specRows, setSpecRows] = useState<Array<{ key: string; value: string }>>(
     specsToRows(product?.technical_specs || (product as any)?.variants?.[0]?.specs)
@@ -1218,6 +1223,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       sort_order: form.sort_order,
       seo_meta: form.seo_meta.title || form.seo_meta.description ? form.seo_meta : null,
       moq: form.moq.trim() || null,
+      gallery: form.gallery,
     });
   };
 
@@ -1284,6 +1290,142 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
               value={form.featured_image}
               onChange={url => setForm({ ...form, featured_image: url })}
             />
+          </FormField>
+
+          {/* ── Gallery Media (Multiple Images/Videos) ── */}
+          <FormField label="Gallery Media (Multiple Images/Videos)">
+            <div className="space-y-3">
+              {/* Dropzone for multiple files */}
+              <div
+                onDragOver={(e) => { e.preventDefault(); }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  const files = Array.from(e.dataTransfer.files);
+                  if (files.length === 0) return;
+                  
+                  setIsGalleryUploading(true);
+                  try {
+                    const urls: string[] = [];
+                    for (const file of files) {
+                      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+                      const timestamp = Date.now();
+                      const uniqueName = `${timestamp}-${safeName}`;
+                      
+                      const { data, error } = await supabase.storage
+                        .from('media')
+                        .upload(uniqueName, file, {
+                          cacheControl: '3600',
+                          upsert: false
+                        });
+                        
+                      if (error) throw error;
+                      
+                      const { data: publicUrlData } = supabase.storage
+                        .from('media')
+                        .getPublicUrl(uniqueName);
+                        
+                      urls.push(publicUrlData.publicUrl);
+                    }
+                    
+                    setForm(prev => ({
+                      ...prev,
+                      gallery: [...prev.gallery, ...urls]
+                    }));
+                  } catch (err: any) {
+                    alert("Gallery upload failed: " + (err.message || err));
+                  } finally {
+                    setIsGalleryUploading(false);
+                  }
+                }}
+                className="border border-dashed border-[#D6D6D8] rounded-premium p-4 flex flex-col items-center justify-center bg-[#F7F7F8] hover:bg-[#EAEAEA]/40 hover:border-[#0F0F10] transition-all cursor-pointer relative"
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.multiple = true;
+                  input.accept = 'image/*,video/*,.glb,.gltf,.obj,.fbx,.stl';
+                  input.onchange = async () => {
+                    if (!input.files || input.files.length === 0) return;
+                    setIsGalleryUploading(true);
+                    try {
+                      const urls: string[] = [];
+                      for (const file of Array.from(input.files)) {
+                        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+                        const timestamp = Date.now();
+                        const uniqueName = `${timestamp}-${safeName}`;
+                        
+                        const { data, error } = await supabase.storage
+                          .from('media')
+                          .upload(uniqueName, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                          });
+                          
+                        if (error) throw error;
+                        
+                        const { data: publicUrlData } = supabase.storage
+                          .from('media')
+                          .getPublicUrl(uniqueName);
+                          
+                        urls.push(publicUrlData.publicUrl);
+                      }
+                      
+                      setForm(prev => ({
+                        ...prev,
+                        gallery: [...prev.gallery, ...urls]
+                      }));
+                    } catch (err: any) {
+                      alert("Gallery upload failed: " + (err.message || err));
+                    } finally {
+                      setIsGalleryUploading(false);
+                    }
+                  };
+                  input.click();
+                }}
+              >
+                <Upload className="w-5 h-5 text-slate-400 mb-1" />
+                <p className="text-[10px] font-bold text-slate-500">
+                  {isGalleryUploading ? "Uploading files..." : "Drag & drop or click to upload multiple media"}
+                </p>
+                <p className="text-[9px] text-slate-400 mt-0.5">Images, Videos (up to 50MB per file)</p>
+              </div>
+
+              {/* Grid of uploaded gallery items */}
+              {form.gallery.length > 0 && (
+                <div className="grid grid-cols-4 gap-2.5 pt-1">
+                  {form.gallery.map((url: string, idx: number) => {
+                    const isVideo = url.startsWith('data:video/') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg') || url.includes('youtube.com') || url.includes('vimeo.com');
+                    return (
+                      <div key={idx} className="relative group aspect-square rounded-lg border border-[#EAEAEA] overflow-hidden bg-[#F7F7F8] flex items-center justify-center p-1">
+                        {isVideo ? (
+                          <video src={url} className="max-h-full max-w-full object-contain" muted playsInline />
+                        ) : (
+                          <img src={url} alt={`Gallery ${idx + 1}`} className="max-h-full max-w-full object-contain" />
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setForm(prev => ({
+                              ...prev,
+                              gallery: prev.gallery.filter((_: string, i: number) => i !== idx)
+                            }));
+                          }}
+                          className="absolute top-1 right-1 w-4.5 h-4.5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-xs"
+                        >
+                          <X className="w-2.5 h-2.5" />
+                        </button>
+                        {isVideo && (
+                          <div className="absolute bottom-1 left-1 bg-black/55 text-[8px] text-white px-1 py-0.5 rounded font-bold uppercase">
+                            Video
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </FormField>
 
           {/* ── Price ── */}

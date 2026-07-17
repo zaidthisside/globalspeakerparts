@@ -167,6 +167,31 @@ export async function PUT(
       }
     }
 
+    // Update product gallery images if provided
+    if ('gallery' in body && Array.isArray(body.gallery)) {
+      // Delete existing gallery images
+      await supabase
+        .from('product_images')
+        .delete()
+        .eq('product_id', updatedProduct.id);
+
+      // Insert new gallery images
+      if (body.gallery.length > 0) {
+        const imagesPayload = body.gallery.map((url: string, index: number) => ({
+          product_id: updatedProduct.id,
+          url,
+          alt_text: '',
+          order_index: index
+        }));
+        const { error: imagesError } = await supabase
+          .from('product_images')
+          .insert(imagesPayload);
+        if (imagesError) {
+          console.warn('[PUT /api/products/[slug]] Gallery images insert warning:', imagesError.message);
+        }
+      }
+    }
+
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';

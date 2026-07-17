@@ -140,6 +140,22 @@ export async function POST(request: NextRequest) {
       console.warn('[POST /api/products] Variant insert warning:', variantError.message);
     }
 
+    // Create product gallery images if provided
+    if (Array.isArray(body.gallery) && body.gallery.length > 0) {
+      const imagesPayload = body.gallery.map((url: string, index: number) => ({
+        product_id: createdProduct.id,
+        url,
+        alt_text: '',
+        order_index: index
+      }));
+      const { error: imagesError } = await supabase
+        .from('product_images')
+        .insert(imagesPayload);
+      if (imagesError) {
+        console.warn('[POST /api/products] Gallery images insert warning:', imagesError.message);
+      }
+    }
+
     return NextResponse.json(createdProduct, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
