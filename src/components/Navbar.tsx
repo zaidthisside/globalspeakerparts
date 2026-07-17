@@ -249,9 +249,12 @@ export default function Navbar() {
             </Link>
 
             {/* Cart Icon */}
-            <Link 
-              href="/products?cart=true"
-              className="relative p-1.5 rounded-full hover:bg-black/5 transition-colors mr-1"
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                window.dispatchEvent(new Event("gsp_open_cart"));
+              }}
+              className="relative p-1.5 rounded-full hover:bg-black/5 transition-colors mr-1 cursor-pointer"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5 text-slate-800 hover:text-black transition-colors" />
@@ -260,7 +263,7 @@ export default function Navbar() {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {/* Currency Selector */}
             <div className="relative flex items-center mr-1">

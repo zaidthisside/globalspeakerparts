@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InquiryCartDrawer from "@/components/InquiryCartDrawer";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white font-sans text-body-slate">
         <CurrencyProvider>
           <Navbar />
+          <InquiryCartDrawer />
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col pt-20 sm:pt-24 xl:pt-28">
             {children}

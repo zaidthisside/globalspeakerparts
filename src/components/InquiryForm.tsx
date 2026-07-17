@@ -37,6 +37,27 @@ export default function InquiryForm({
   const [error, setError] = useState("");
   const [justAddedCart, setJustAddedCart] = useState(false);
   const [sampleModeActive, setSampleModeActive] = useState(false);
+  const [cartItems, setCartItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadCart = () => {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("gsp_enquiry_cart");
+        if (stored) {
+          try {
+            setCartItems(JSON.parse(stored));
+          } catch {
+            setCartItems([]);
+          }
+        } else {
+          setCartItems([]);
+        }
+      }
+    };
+    loadCart();
+    window.addEventListener("gsp_cart_updated", loadCart);
+    return () => window.removeEventListener("gsp_cart_updated", loadCart);
+  }, []);
 
   useEffect(() => {
     const timerSample = setTimeout(() => {
@@ -151,6 +172,11 @@ export default function InquiryForm({
         const existingStr = localStorage.getItem("gsp_inquiries");
         const existing = existingStr ? JSON.parse(existingStr) : [];
         
+        const itemsList = cartItems.map((item: any) => `- ${item.name} (MOQ: ${item.moq}, Category: ${item.category})`).join("\n");
+        const specsText = cartItems.length > 0
+          ? `[INQUIRY CART ITEMS]:\n${itemsList}\n\n[ADDITIONAL DETAILS]:\n${formData.message}`
+          : formData.message || "No specifications description provided.";
+
         const newInquiry = {
           id: `RFQ-${Math.floor(1000 + Math.random() * 9000)}`,
           company: formData.company || "Individual Client",
@@ -158,12 +184,14 @@ export default function InquiryForm({
           email: formData.email,
           category: formData.category,
           quantity: formData.quantity,
-          specs: formData.message || "No specifications description provided.",
+          specs: specsText,
           date: new Date().toISOString().split("T")[0],
           status: "Pending Engineering Review"
         };
         
         localStorage.setItem("gsp_inquiries", JSON.stringify([newInquiry, ...existing]));
+        localStorage.removeItem("gsp_enquiry_cart");
+        window.dispatchEvent(new Event("gsp_cart_updated"));
       }
 
       setSubmitted(true);
@@ -319,6 +347,37 @@ export default function InquiryForm({
             </select>
           </div>
         </div>
+
+        {/* Selected Cart Components List */}
+        {cartItems.length > 0 && (
+          <div className="flex flex-col gap-1.5 p-3.5 border border-black/10 bg-[#F7F7F8] rounded-premium">
+            <span className="font-semibold text-slate-400 uppercase tracking-wider text-[8px] font-sans">
+              Selected Inquiry Components ({cartItems.length})
+            </span>
+            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+              {cartItems.map((item: any) => (
+                <div key={item.name} className="flex justify-between items-center bg-white border border-black/10 rounded px-2.5 py-1.5">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase">{item.name}</span>
+                    <span className="text-[7.5px] uppercase tracking-wider text-slate-500 font-bold">MOQ: {item.moq}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = cartItems.filter((i: any) => i.name !== item.name);
+                      setCartItems(updated);
+                      localStorage.setItem("gsp_enquiry_cart", JSON.stringify(updated));
+                      window.dispatchEvent(new Event("gsp_cart_updated"));
+                    }}
+                    className="text-slate-400 hover:text-red-500 text-[9px] uppercase font-bold tracking-wider"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Volume */}
         <div className="flex flex-col gap-1.5">

@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import ProductGallery from '@/components/ProductGallery';
 import PriceValue from '@/components/PriceValue';
+import ProductPageActions from '@/components/ProductPageActions';
+
 import {
   ArrowRight,
   Download,
@@ -339,51 +341,33 @@ export default async function ProductPage({ params }: Props) {
                 </p>
               )}
 
-              {/* Price & MOQ Badges */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <div className="inline-flex items-center px-4 py-2.5 border-2 border-black rounded-lg bg-black text-white font-extrabold text-xs uppercase tracking-wider">
-                  <PriceValue amount={startingPrice} />
-                </div>
-                {(() => {
-                  const productMOQ = p.moq || (() => {
-                    if (variants) {
-                      for (const v of variants) {
-                        if (v.specs) {
-                          for (const [key, val] of Object.entries(v.specs)) {
-                            if (key.toLowerCase().includes("moq")) return String(val);
+              {/* B2B Interactive Panel */}
+              <div className="pt-2">
+                <ProductPageActions
+                  product={{
+                    id: p.id,
+                    name: p.name,
+                    category: cat.name,
+                    startingPrice: String(startingPrice),
+                    moq: (() => {
+                      const productMOQ = p.moq || (() => {
+                        if (variants) {
+                          for (const v of variants) {
+                            if (v.specs) {
+                              for (const [key, val] of Object.entries(v.specs)) {
+                                if (key.toLowerCase().includes("moq")) return String(val);
+                              }
+                            }
                           }
                         }
-                      }
-                    }
-                    return "1,000 units";
-                  })();
-                  return (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-2.5 border-2 border-black rounded-lg bg-white text-black font-extrabold text-xs uppercase tracking-wider">
-                      <Package size={13} className="text-[#5C5C63]" />
-                      MOQ: {productMOQ}
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-3 pt-2">
-                <a
-                  href="#inquiry"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-wider bg-black text-white rounded-lg border border-black hover:bg-white hover:text-black transition-colors"
-                >
-                  <MessageCircle size={14} />
-                  Request Quote
-                </a>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-wider bg-white text-black rounded-lg border border-black hover:bg-slate-50 transition-colors"
-                >
-                  <MessageCircle size={14} className="text-[#25D366]" />
-                  Contact Us on WhatsApp
-                </a>
+                        return "1,000 units";
+                      })();
+                      return productMOQ;
+                    })(),
+                    variants: variants?.map(v => v.name).join(", ") || 'Standard'
+                  }}
+                  whatsappUrl={whatsappUrl}
+                />
               </div>
             </div>
           </section>

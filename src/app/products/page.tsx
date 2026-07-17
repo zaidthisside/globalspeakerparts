@@ -194,6 +194,7 @@ function ProductsCatalog() {
         const updated = [...cart, itemToAdd];
         localStorage.setItem("gsp_enquiry_cart", JSON.stringify(updated));
         window.dispatchEvent(new Event("gsp_cart_updated"));
+        window.dispatchEvent(new Event("gsp_open_cart"));
       }
 
       setAddedProducts(prev => ({ ...prev, [product.id]: true }));

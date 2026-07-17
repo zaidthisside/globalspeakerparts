@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Box, ChevronLeft, ChevronRight, FileText, Info, MessageCircle, ShieldCheck, ShoppingBag, Sparkles, Tag } from "lucide-react";
 import InquiryForm from "@/components/InquiryForm";
+import ProductPageActions from "@/components/ProductPageActions";
 import { useCurrency } from "@/context/CurrencyContext";
 import { productsData, productImages, type ProductItem, getProductSlug } from "@/app/products/page";
 
@@ -239,28 +240,7 @@ function ProductDetailsPage() {
     : "";
   const whatsappUrl = `https://wa.me/919829062390?text=${whatsappMsg}`;
 
-  const handleAddToInquiry = () => {
-    if (typeof window !== "undefined" && product) {
-      const storedStr = localStorage.getItem("gsp_enquiry_cart");
-      const cart = storedStr ? JSON.parse(storedStr) : [];
-      const exists = cart.some((item: Record<string, string>) => item.name === product.name);
-      if (!exists) {
-        const itemToAdd = {
-          id: product.id,
-          name: product.name,
-          category: product.category,
-          startingPrice: product.startingPrice,
-          moq: product.moq,
-          variants: product.variants,
-          date: new Date().toISOString().split("T")[0]
-        };
-        const updated = [...cart, itemToAdd];
-        localStorage.setItem("gsp_enquiry_cart", JSON.stringify(updated));
-        window.dispatchEvent(new Event("gsp_cart_updated"));
-      }
-    }
-    document.getElementById("inquiry-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+
 
   if (!isLoading && !product) {
     return (
@@ -296,194 +276,143 @@ function ProductDetailsPage() {
           <span className="text-[#0F0F10]">{product.category}</span>
           <span>/</span>
           <span className="text-[#0F0F10]">{product.name}</span>
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.4fr]">
-          {/* Main Section */}
-          <section className="rounded-lg border-2 border-black bg-white p-6 shadow-sm sm:p-8">
-            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-              {/* Product Info */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#5C5C63]">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>{product.category}</span>
-                </div>
-                <h1 className="font-display text-2xl font-extrabold leading-tight text-[#0F0F10] sm:text-3xl uppercase tracking-tight">
-                  {product.name}
-                </h1>
-                <p className="text-sm leading-7 text-[#4A4A4F] font-light">{product.desc}</p>
-
-                <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
-                  <span className="rounded-full border border-black bg-white px-3 py-1">Part Numbers: {product.id}</span>
-                  <span className="rounded-full border border-black bg-white px-3 py-1">Availability: In Stock</span>
-                  <span className="rounded-full border border-black bg-white px-3 py-1">Inquiry Status: Active</span>
-                </div>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button
-                    onClick={() => document.getElementById("inquiry-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                    className="rounded-lg bg-black px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-white hover:text-black border border-black"
-                  >
-                    Request Quote
-                  </button>
-                  <button
-                    onClick={handleAddToInquiry}
-                    className="rounded-lg border border-black bg-white px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F0F10] transition-colors hover:bg-black hover:text-white"
-                  >
-                    Add to Inquiry
-                  </button>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-lg border border-black bg-white px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F0F10] transition-colors hover:bg-slate-50 inline-flex items-center gap-1.5"
-                  >
-                    <MessageCircle size={13} className="text-[#25D366]" />
-                    Contact Us
-                  </a>
-                </div>
-              </div>
-
-              {/* Image & Video Gallery */}
-              <div className="space-y-4">
-                <div className="relative overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
-                  <div className="relative aspect-square md:aspect-[16/10] lg:max-h-[380px]">
-                    <div
-                      ref={scrollRef}
-                      onScroll={handleScroll}
-                      className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none"
-                    >
-                      {mediaItems.map((url, idx) => (
-                        <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center bg-white p-2">
-                          {isVideoUrl(url) ? (
-                            <video
-                              src={url}
-                              className="h-full w-full object-contain"
-                              controls
-                              muted
-                              loop
-                              playsInline
-                              autoPlay
-                            />
-                          ) : (
-                            <img
-                              src={url}
-                              alt={`${product.name} - media ${idx + 1}`}
-                              className="h-full w-full object-contain"
-                            />
-                          )}
-                        </div>
-                      ))}
+        </div>        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 mb-8 bg-white border-2 border-black rounded-lg p-6 sm:p-8">
+          
+          {/* Left Column: Image/Video Gallery */}
+          <div className="space-y-4">
+            <div className="relative overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
+              <div className="relative aspect-square md:aspect-[16/10] lg:max-h-[380px]">
+                <div
+                  ref={scrollRef}
+                  onScroll={handleScroll}
+                  className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none"
+                >
+                  {mediaItems.map((url, idx) => (
+                    <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center bg-white p-2">
+                      {isVideoUrl(url) ? (
+                        <video
+                          src={url}
+                          className="h-full w-full object-contain"
+                          controls
+                          muted
+                          loop
+                          playsInline
+                          autoPlay
+                        />
+                      ) : (
+                        <img
+                          src={url}
+                          alt={`${product.name} - media ${idx + 1}`}
+                          className="h-full w-full object-contain"
+                        />
+                      )}
                     </div>
-
-                    {/* Navigation Arrows */}
-                    {mediaItems.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => scrollToMedia((activeMediaIdx - 1 + mediaItems.length) % mediaItems.length)}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => scrollToMedia((activeMediaIdx + 1) % mediaItems.length)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  <div className="border-t border-black bg-white p-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
-                    Gallery • Zoom • Swipeable
-                  </div>
+                  ))}
                 </div>
 
-                {/* Thumbnails */}
+                {/* Navigation Arrows */}
                 {mediaItems.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {mediaItems.map((url, idx) => (
-                      <button
-                        type="button"
-                        key={idx}
-                        onClick={() => scrollToMedia(idx)}
-                        className={`relative flex-shrink-0 h-14 w-14 overflow-hidden rounded-lg border-2 transition-all duration-200 bg-white ${
-                          idx === activeMediaIdx
-                            ? 'border-black shadow-sm'
-                            : 'border-[#EAEAEA] hover:border-[#5C5C63]'
-                        }`}
-                      >
-                        {isVideoUrl(url) ? (
-                          <div className="h-full w-full relative flex items-center justify-center bg-[#F7F7F8]">
-                            <video src={url} className="h-full w-full object-cover" muted playsInline />
-                            <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                        ) : (
-                          <img
-                            src={url}
-                            alt={`${product.name} thumbnail ${idx + 1}`}
-                            className="h-full w-full object-cover"
-                          />
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => scrollToMedia((activeMediaIdx - 1 + mediaItems.length) % mediaItems.length)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollToMedia((activeMediaIdx + 1) % mediaItems.length)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </>
                 )}
               </div>
-            </div>
-          </section>
-
-          {/* Sidebar */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-lg border-2 border-black bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-black pb-4">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#5C5C63]">Quick Quote</p>
-                  <h2 className="font-display text-lg font-extrabold text-[#0F0F10]">{product.name}</h2>
-                </div>
-                <div className="rounded-full border border-black bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F0F10]">
-                  {convertPrice(product.startingPrice)}
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-3 text-sm text-[#4A4A4F]">
-                <div className="flex items-start gap-2"><Tag className="mt-0.5 h-4 w-4 shrink-0 text-[#0F0F10]" /><span>MOQ: {product.moq}</span></div>
-                <div className="flex items-start gap-2"><Box className="mt-0.5 h-4 w-4 shrink-0 text-[#0F0F10]" /><span>{product.variants}</span></div>
-                <div className="flex items-start gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#0F0F10]" /><span>{product.compliance || "RoHS compliant"}</span></div>
-              </div>
-
-              <div className="mt-5 space-y-2">
-                <button
-                  onClick={() => document.getElementById("inquiry-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  className="w-full rounded-lg bg-black px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-white hover:text-black border border-black"
-                >
-                  Request Quote
-                </button>
-                <button
-                  onClick={handleAddToInquiry}
-                  className="w-full rounded-lg border border-black bg-white px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F0F10] transition-colors hover:bg-black hover:text-white"
-                >
-                  Add to Inquiry
-                </button>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full rounded-lg border border-black bg-white px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0F0F10] transition-colors hover:bg-slate-50 inline-flex items-center justify-center gap-1.5"
-                >
-                  <MessageCircle size={13} className="text-[#25D366]" />
-                  Contact Us
-                </a>
+              <div className="border-t border-black bg-white p-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
+                Gallery • Zoom • Swipeable
               </div>
             </div>
-          </aside>
+
+            {/* Thumbnails */}
+            {mediaItems.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {mediaItems.map((url, idx) => (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => scrollToMedia(idx)}
+                    className={`relative flex-shrink-0 h-14 w-14 overflow-hidden rounded-lg border-2 transition-all duration-200 bg-white ${
+                      idx === activeMediaIdx
+                        ? 'border-black shadow-sm'
+                        : 'border-[#EAEAEA] hover:border-[#5C5C63]'
+                    }`}
+                  >
+                    {isVideoUrl(url) ? (
+                      <div className="h-full w-full relative flex items-center justify-center bg-[#F7F7F8]">
+                        <video src={url} className="h-full w-full object-cover" muted playsInline />
+                        <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={url}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Product Details and B2B interactive actions */}
+          <div className="flex flex-col space-y-5 justify-center">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#5C5C63]">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>{product.category}</span>
+              </div>
+              <h1 className="font-display text-2xl font-extrabold leading-tight text-[#0F0F10] sm:text-3xl uppercase tracking-tight">
+                {product.name}
+              </h1>
+              <p className="text-sm leading-7 text-[#4A4A4F] font-light">{product.desc}</p>
+
+              <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
+                <span className="rounded-full border border-black bg-white px-3 py-1">Part Numbers: {product.id}</span>
+                <span className="rounded-full border border-black bg-white px-3 py-1">Availability: In Stock</span>
+                <span className="rounded-full border border-black bg-white px-3 py-1">Inquiry Status: Active</span>
+              </div>
+            </div>
+
+            {/* B2B Actions Panel */}
+            <div className="pt-2">
+              <ProductPageActions
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  category: product.category,
+                  startingPrice: String(product.startingPrice),
+                  moq: product.moq,
+                  variants: product.variants
+                }}
+                whatsappUrl={whatsappUrl}
+              />
+            </div>
+
+            {/* Compliance Info */}
+            <div className="flex items-center gap-2 text-xs text-[#4A4A4F] font-semibold pt-1">
+              <ShieldCheck className="h-4 w-4 text-[#0F0F10]" />
+              <span>Product compliance standard: {product.compliance || "RoHS compliant"}</span>
+            </div>
+          </div>
+
         </div>
 
         {/* Variants Section */}

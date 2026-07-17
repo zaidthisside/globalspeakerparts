@@ -203,6 +203,7 @@ export default function CategoryPage() {
           JSON.stringify([...cart, itemToAdd])
         );
         window.dispatchEvent(new Event("gsp_cart_updated"));
+        window.dispatchEvent(new Event("gsp_open_cart"));
       }
 
       setAddedProducts((prev) => ({ ...prev, [product.id]: true }));
