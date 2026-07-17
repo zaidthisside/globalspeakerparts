@@ -13,6 +13,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
+import ProductCardGallery from "@/components/ProductCardGallery";
+
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -51,6 +53,7 @@ interface Product {
   applications: string | null;
   variants?: Variant[];
   moq?: string | null;
+  product_images?: Array<{ url: string }> | null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -312,19 +315,9 @@ export default function CategoryPage() {
                   key={product.id}
                   className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                 >
-                  {/* Product Image - SQUARE with padding */}
+                  {/* Product Image Gallery (Swipeable) */}
                   <div className="p-1.5 bg-[#F7F7F8] border-b border-black">
-                    <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
-                      {product.featured_image ? (
-                        <img
-                          src={product.featured_image}
-                          alt={product.name}
-                          className="max-h-full max-w-full object-contain group-hover:scale-103 transition-transform duration-300"
-                        />
-                      ) : (
-                        <Package className="h-12 w-12 text-[#EAEAEA]" />
-                      )}
-                    </div>
+                    <ProductCardGallery product={product} />
                   </div>
 
                   {/* Content Body */}

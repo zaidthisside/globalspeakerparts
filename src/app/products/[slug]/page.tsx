@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { ArrowLeft, Box, ChevronLeft, ChevronRight, FileText, Info, MessageCircle, ShieldCheck, ShoppingBag, Sparkles, Tag } from "lucide-react";
@@ -55,6 +55,35 @@ function ProductDetailsPage() {
   const [activeMediaIdx, setActiveMediaIdx] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const isVideoUrl = (url: string) =>
+    url.startsWith("data:video/") ||
+    url.endsWith(".mp4") ||
+    url.endsWith(".webm") ||
+    url.endsWith(".ogg") ||
+    url.includes("youtube.com") ||
+    url.includes("vimeo.com");
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const width = scrollRef.current.clientWidth;
+    const scrollLeft = scrollRef.current.scrollLeft;
+    if (width > 0) {
+      const index = Math.round(scrollLeft / width);
+      setActiveMediaIdx(index);
+    }
+  };
+
+  const scrollToMedia = (index: number) => {
+    if (!scrollRef.current) return;
+    const width = scrollRef.current.clientWidth;
+    scrollRef.current.scrollTo({
+      left: width * index,
+      behavior: "smooth"
+    });
+    setActiveMediaIdx(index);
+  };
 
   useEffect(() => {
     const fetchCustomProducts = async () => {
@@ -316,34 +345,97 @@ function ProductDetailsPage() {
                 </div>
               </div>
 
-              {/* Image */}
-              <div className="relative overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
-                <div className="relative aspect-square">
-                  {isVideo ? (
-                    <video src={activeMediaUrl} controls muted loop playsInline autoPlay className="h-full w-full object-cover" />
-                  ) : (
-                    <img src={activeMediaUrl} alt={product.name} className="h-full w-full object-cover" />
-                  )}
-                  {mediaItems.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => setActiveMediaIdx((prev) => (prev - 1 + mediaItems.length) % mediaItems.length)}
-                        className="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => setActiveMediaIdx((prev) => (prev + 1) % mediaItems.length)}
-                        className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </>
-                  )}
+              {/* Image & Video Gallery */}
+              <div className="space-y-4">
+                <div className="relative overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
+                  <div className="relative aspect-square">
+                    <div
+                      ref={scrollRef}
+                      onScroll={handleScroll}
+                      className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none"
+                    >
+                      {mediaItems.map((url, idx) => (
+                        <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center bg-white p-2">
+                          {isVideoUrl(url) ? (
+                            <video
+                              src={url}
+                              className="h-full w-full object-contain"
+                              controls
+                              muted
+                              loop
+                              playsInline
+                              autoPlay
+                            />
+                          ) : (
+                            <img
+                              src={url}
+                              alt={`${product.name} - media ${idx + 1}`}
+                              className="h-full w-full object-contain"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Navigation Arrows */}
+                    {mediaItems.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => scrollToMedia((activeMediaIdx - 1 + mediaItems.length) % mediaItems.length)}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollToMedia((activeMediaIdx + 1) % mediaItems.length)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white/90 text-[#0F0F10] shadow-sm cursor-pointer z-10"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <div className="border-t border-black bg-white p-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
+                    Gallery • Zoom • Swipeable
+                  </div>
                 </div>
-                <div className="border-t border-black bg-white p-3 text-xs uppercase tracking-[0.2em] text-[#5C5C63]">
-                  Gallery • Zoom • Lightbox Ready
-                </div>
+
+                {/* Thumbnails */}
+                {mediaItems.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {mediaItems.map((url, idx) => (
+                      <button
+                        type="button"
+                        key={idx}
+                        onClick={() => scrollToMedia(idx)}
+                        className={`relative flex-shrink-0 h-14 w-14 overflow-hidden rounded-lg border-2 transition-all duration-200 bg-white ${
+                          idx === activeMediaIdx
+                            ? 'border-black shadow-sm'
+                            : 'border-[#EAEAEA] hover:border-[#5C5C63]'
+                        }`}
+                      >
+                        {isVideoUrl(url) ? (
+                          <div className="h-full w-full relative flex items-center justify-center bg-[#F7F7F8]">
+                            <video src={url} className="h-full w-full object-cover" muted playsInline />
+                            <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </div>
+                          </div>
+                        ) : (
+                          <img
+                            src={url}
+                            alt={`${product.name} thumbnail ${idx + 1}`}
+                            className="h-full w-full object-cover"
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('products')
-      .select('*, categories(name, slug), variants(*)')
+      .select('*, categories(name, slug), variants(*), product_images(*)')
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true });
 

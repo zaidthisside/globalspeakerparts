@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,9 +12,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No files were provided.' }, { status: 400 });
     }
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadsDir, { recursive: true });
-
     const uploadedFiles: Array<{ name: string; url: string; type: string }> = [];
 
     for (const file of files) {
@@ -21,14 +19,48 @@ export async function POST(request: NextRequest) {
 
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
       const timestamp = Date.now();
-      const filePath = path.join(uploadsDir, `${timestamp}-${safeName}`);
+      const uniqueName = `${timestamp}-${safeName}`;
       const buffer = Buffer.from(await file.arrayBuffer());
-      await writeFile(filePath, buffer);
+      const fileType = file.type || 'application/octet-stream';
+
+      let uploadedUrl = '';
+
+      // 1. Try Supabase Storage first (for production / cloud environments)
+      try {
+        const bucketName = 'media';
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(uniqueName, buffer, {
+            contentType: fileType,
+            duplex: 'half'
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from(bucketName)
+          .getPublicUrl(uniqueName);
+
+        uploadedUrl = publicUrlData.publicUrl;
+      } catch (storageError) {
+        console.warn('Supabase storage upload failed, falling back to local storage:', storageError);
+        
+        // 2. Fallback to local storage (for local development)
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+        await mkdir(uploadsDir, { recursive: true });
+        
+        const filePath = path.join(uploadsDir, uniqueName);
+        await writeFile(filePath, buffer);
+        uploadedUrl = `/uploads/${uniqueName}`;
+      }
 
       uploadedFiles.push({
         name: safeName,
-        url: `/uploads/${path.basename(filePath)}`,
-        type: file.type || 'application/octet-stream',
+        url: uploadedUrl,
+        type: fileType,
       });
     }
 
