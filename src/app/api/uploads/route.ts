@@ -45,8 +45,24 @@ export async function POST(request: NextRequest) {
           .getPublicUrl(uniqueName);
 
         uploadedUrl = publicUrlData.publicUrl;
-      } catch (storageError) {
-        console.warn('Supabase storage upload failed, falling back to local storage:', storageError);
+      } catch (storageError: any) {
+        console.error('Supabase storage upload failed:', storageError);
+        
+        // If we are in production / Vercel serverless, do NOT fall back to local (it will fail anyway)
+        const isServerless = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+        if (isServerless) {
+          let friendlyMessage = `Supabase Storage upload failed: ${storageError?.message || 'Unknown error'}.`;
+          
+          if (storageError?.statusCode === '404' || storageError?.message?.includes('not found') || storageError?.message?.includes('bucket')) {
+            friendlyMessage = "Supabase Storage bucket 'media' was not found. Please log in to your Supabase Console, navigate to Storage, create a new public bucket named 'media', and set its access policies to allow anonymous/public uploads.";
+          } else if (storageError?.statusCode === '403' || storageError?.message?.includes('policy') || storageError?.message?.includes('Permission') || storageError?.message?.includes('row-level security')) {
+            friendlyMessage = "Supabase Storage permission denied. Please go to your Supabase Console, select the 'media' bucket, and add an upload policy allowing public anonymous/public uploads.";
+          }
+          
+          return NextResponse.json({ error: friendlyMessage }, { status: 500 });
+        }
+
+        console.warn('Falling back to local storage (local development)...');
         
         // 2. Fallback to local storage (for local development)
         const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
