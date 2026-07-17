@@ -348,7 +348,7 @@ function ProductDetailsPage() {
               {/* Image & Video Gallery */}
               <div className="space-y-4">
                 <div className="relative overflow-hidden rounded-lg border-2 border-black bg-[#F7F7F8]">
-                  <div className="relative aspect-square">
+                  <div className="relative aspect-square md:aspect-[16/10] lg:max-h-[380px]">
                     <div
                       ref={scrollRef}
                       onScroll={handleScroll}

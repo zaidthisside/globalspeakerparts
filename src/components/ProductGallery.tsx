@@ -51,7 +51,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
   return (
     <div className="space-y-4">
       {/* Main Image/Video Carousel */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-premium border border-[#EAEAEA] bg-[#F7F7F8]">
+      <div className="relative aspect-[4/3] md:aspect-[16/10] lg:max-h-[380px] w-full overflow-hidden rounded-premium border border-[#EAEAEA] bg-[#F7F7F8]">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
