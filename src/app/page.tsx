@@ -14,16 +14,16 @@ const images = {
 };
 
 const homeCategories = [
-  { name: "Voice Coils", href: "/products?cat=coils", image: "/voice-coil.jpg" },
-  { name: "Speaker Cones", href: "/products?cat=cones", image: "/speaker-cone.jpg" },
-  { name: "Speaker Surrounds", href: "/products?cat=surrounds", image: "/speaker-surround.jpg" },
-  { name: "Speaker Spiders", href: "/products?cat=spiders", image: "/speaker-spider.jpg" },
-  { name: "Dust Caps", href: "/products?cat=dustcaps", image: "/dust-cap.jpg" },
-  { name: "Diaphragms", href: "/products?cat=diaphragms", image: "/diaphragm.jpg" },
-  { name: "Speaker Terminals", href: "/products?cat=terminals", image: "/speaker-terminal.jpg" },
-  { name: "Subwoofers", href: "/products?cat=subwoofers", image: "/subwoofer.jpg" },
-  { name: "Speaker Frames", href: "/products?cat=frames", image: "/speaker-frame.jpg" },
-  { name: "Magnets", href: "/products?cat=magnets", image: "/magnet.jpg" }
+  { name: "Voice Coils", href: "/voice-coils", image: "/voice-coil.jpg" },
+  { name: "Speaker Cones", href: "/speaker-cones", image: "/speaker-cone.jpg" },
+  { name: "Speaker Surrounds", href: "/speaker-surrounds", image: "/speaker-surround.jpg" },
+  { name: "Speaker Spiders", href: "/speaker-spiders", image: "/speaker-spider.jpg" },
+  { name: "Dust Caps", href: "/dust-caps", image: "/dust-cap.jpg" },
+  { name: "Diaphragms", href: "/diaphragms", image: "/diaphragm.jpg" },
+  { name: "Speaker Terminals", href: "/speaker-terminals", image: "/speaker-terminal.jpg" },
+  { name: "Subwoofers", href: "/subwoofers", image: "/subwoofer.jpg" },
+  { name: "Speaker Frames", href: "/speaker-frames", image: "/speaker-frame.jpg" },
+  { name: "Magnets", href: "/magnets", image: "/magnet.jpg" }
 ];
 
 
