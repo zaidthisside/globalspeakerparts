@@ -703,9 +703,18 @@ export default function AdminPage() {
                     <h3 className="font-display text-sm font-bold text-[#0F0F10] uppercase tracking-wider">Product Manager</h3>
                     <p className="text-[10px] text-slate-400 font-light">Full CRUD: create, edit, duplicate, hide/show, feature products.</p>
                   </div>
-                  <button onClick={() => { setEditingProd(null); setShowProdForm(true); }} className={btnPrimary}>
-                    <Plus className="w-3.5 h-3.5" /> ADD PRODUCT
-                  </button>
+                  <div className="flex flex-wrap gap-2.5">
+                    <a
+                      href="/gsp_products_template.csv"
+                      download="gsp_products_template.csv"
+                      className="inline-flex items-center justify-center gap-2 border border-black hover:bg-slate-50 text-black px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Download Excel Template
+                    </a>
+                    <button onClick={() => { setEditingProd(null); setShowProdForm(true); }} className={btnPrimary}>
+                      <Plus className="w-3.5 h-3.5" /> ADD PRODUCT
+                    </button>
+                  </div>
                 </div>
 
                 {/* Filters */}
