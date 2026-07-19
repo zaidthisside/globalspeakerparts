@@ -59,7 +59,7 @@ export default function Home() {
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
       {/* Premium Main Hero Banner Section */}
-      <section className="w-full relative h-[350px] sm:h-[480px] lg:h-[620px] flex flex-col overflow-hidden bg-white border-b border-black">
+      <section className="w-full relative h-[350px] sm:h-[480px] lg:h-[620px] flex flex-col overflow-hidden bg-white">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
