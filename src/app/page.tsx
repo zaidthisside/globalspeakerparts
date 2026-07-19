@@ -54,6 +54,13 @@ const faqs = [
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeLegacyImage, setActiveLegacyImage] = useState(0);
+
+  const legacyImages = [
+    { src: "/legacy-1.jpg", alt: "Display shelves filled with rows of speaker paper cones" },
+    { src: "/legacy-2.jpg", alt: "Office entrance and wide showroom display aisles" },
+    { src: "/legacy-3.jpg", alt: "Executive meeting desk and glass display cabinets" }
+  ];
 
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
@@ -398,7 +405,7 @@ export default function Home() {
             <div className="flex flex-col space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-[1px] bg-[#0F0F10]" />
-                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">OUR CORPORATE LEGACY</span>
+                <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">OUR STORY BACKGROUND</span>
               </div>
               
               <h2 className="text-3xl sm:text-4xl text-[#0F0F10] leading-[1.3] font-display font-extrabold">
@@ -429,15 +436,56 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Right graphic image */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="w-full max-w-lg lg:max-w-none rounded-premium overflow-hidden border border-[#EAEAEA] shadow-soft">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={images.factoryLine} 
-                  alt="Industrial Winding Machine Line" 
-                  className="w-full h-[350px] object-cover"
-                />
+            {/* Right graphic image / Premium Swipable Section */}
+            <div className="flex flex-col space-y-4 justify-center lg:justify-end">
+              <div className="relative w-full max-w-lg lg:max-w-none rounded-premium overflow-hidden border border-black shadow-soft bg-white aspect-[4/3] group">
+                <div className="absolute inset-0 flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${activeLegacyImage * 100}%)` }}>
+                  {legacyImages.map((img, idx) => (
+                    <div key={idx} className="w-full h-full flex-shrink-0 relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={img.src} 
+                        alt={img.alt} 
+                        className="w-full h-full object-cover select-none"
+                      />
+                      {/* Caption overlay */}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-5 flex flex-col justify-end text-white">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0EA5E9]">{`View ${idx + 1} of 3`}</span>
+                        <p className="text-xs font-sans font-light mt-1 opacity-90">{img.alt}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Left/Right Click Nav Arrows */}
+                <button 
+                  onClick={() => setActiveLegacyImage((prev) => (prev === 0 ? legacyImages.length - 1 : prev - 1))}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 border border-black hover:bg-black hover:text-white text-black p-2.5 rounded-full z-20 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer"
+                  aria-label="Previous Slide"
+                >
+                  <ArrowRight className="w-4.5 h-4.5 rotate-180" />
+                </button>
+                <button 
+                  onClick={() => setActiveLegacyImage((prev) => (prev === legacyImages.length - 1 ? 0 : prev + 1))}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 border border-black hover:bg-black hover:text-white text-black p-2.5 rounded-full z-20 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer"
+                  aria-label="Next Slide"
+                >
+                  <ArrowRight className="w-4.5 h-4.5" />
+                </button>
+              </div>
+              
+              {/* Dot Indicators */}
+              <div className="flex justify-center gap-2.5">
+                {legacyImages.map((_, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setActiveLegacyImage(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 border border-black cursor-pointer ${
+                      activeLegacyImage === idx ? 'bg-black w-6' : 'bg-black/10'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
               </div>
             </div>
 
