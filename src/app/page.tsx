@@ -65,13 +65,6 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/hero-speaker-new.jpg')" }}
         />
-        
-        {/* Widescreen Brand Heading at the Top of Hero */}
-        <div className="absolute top-6 sm:top-10 lg:top-14 left-0 right-0 z-20 text-center px-4">
-          <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-[0.2em] text-[#0F0F10] drop-shadow-sm">
-            GLOBAL SPEAKER PARTS
-          </h1>
-        </div>
       </section>
 
       {/* Dynamic Brand Hero Hero Banner Section (Inspired by North Speaker Parts) */}
