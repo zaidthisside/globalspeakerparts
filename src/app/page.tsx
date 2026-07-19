@@ -65,22 +65,6 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/hero-speaker-new.jpg')" }}
         />
-        
-        {/* Semi-transparent overlay */}
-        <div className="absolute inset-0 bg-black/5" />
-        
-        {/* Minimal text container overlay */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full h-full relative z-10 flex flex-col justify-end pb-8 sm:pb-12 lg:pb-16 text-left">
-          <div className="bg-white/95 backdrop-blur-md border border-black p-4 sm:p-6 max-w-lg rounded-premium shadow-md space-y-2">
-            <span className="text-[8px] sm:text-[9.5px] font-bold uppercase tracking-widest text-[#0EA5E9]">WHOLESALE MANUFACTURER</span>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold uppercase text-black leading-tight">
-              Premium OEM Components & Assemblies
-            </h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed font-sans font-light">
-              Supplying custom-built voice coils, paper cones, spiders, and surrounds to leading audio brands worldwide.
-            </p>
-          </div>
-        </div>
       </section>
 
       {/* Dynamic Brand Hero Hero Banner Section (Inspired by North Speaker Parts) */}
