@@ -102,7 +102,19 @@ export default function Home() {
         />
         
         {/* Clean, minimal overlay content at the top 40% (white space) */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full relative z-10 flex flex-col justify-start pt-12 sm:pt-16 lg:pt-20 text-left">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full relative z-10 flex flex-col justify-start pt-8 sm:pt-12 lg:pt-14 text-left">
+          
+          {/* All Product Customisations Available Badge (Over Heading) */}
+          <div className="mb-4 self-start">
+            <Link href="/products" className="group inline-block">
+              <div className="bg-black text-white px-5 py-2.5 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
+                <span className="text-xs font-bold uppercase tracking-widest text-center">
+                  ALL PRODUCT CUSTOMISATIONS AVAILABLE
+                </span>
+              </div>
+            </Link>
+          </div>
+
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold uppercase text-black leading-[1.15] max-w-2xl">
             The Foundation of Great Sound
           </h1>
@@ -114,17 +126,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* All Product Customisations Available Banner */}
-      <section className="w-full bg-white py-4 px-4 flex justify-center items-center border-b border-[#EAEAEA]">
-        <Link href="/products" className="group inline-block">
-          <div className="bg-black text-white px-6 py-3 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
-            <span className="text-xs font-bold uppercase tracking-widest text-center">
-              ALL PRODUCT CUSTOMISATIONS AVAILABLE
-            </span>
-          </div>
-        </Link>
       </section>
 
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
