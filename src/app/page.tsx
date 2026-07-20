@@ -84,9 +84,9 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
-      {/* 1. Top Brand Header Section with Clean Top & Bottom Padding */}
-      <section className="w-full bg-white py-6 sm:py-8 lg:py-10 border-b border-[#EAEAEA]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full flex flex-col items-start text-left space-y-3">
+      {/* 1. Top Brand Header Section with Low Padding on Mobile */}
+      <section className="w-full bg-white py-2 sm:py-8 lg:py-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full flex flex-col items-start text-left space-y-2 sm:space-y-3">
           
           {/* Heading */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold uppercase text-black leading-[1.15] max-w-3xl">
@@ -94,8 +94,8 @@ export default function Home() {
           </h1>
           
           {/* Small rectangular B2B trust box */}
-          <div className="self-start pt-1">
-            <div className="inline-block border border-black/10 bg-[#F7F7F8] px-3 py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
+          <div className="self-start">
+            <div className="inline-block border border-black/10 bg-[#F7F7F8] px-3 py-1 sm:py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
               Trusted by Leading Brands
             </div>
           </div>
@@ -112,11 +112,11 @@ export default function Home() {
         />
       </section>
 
-      {/* 3. Dedicated All Product Customisations Available Section (Between both hero images) */}
-      <section className="w-full bg-white py-5 px-4 flex justify-center items-center border-y border-[#EAEAEA]">
+      {/* 3. Dedicated All Product Customisations Available Section (Low Mobile Padding, Extra Large Desktop Button) */}
+      <section className="w-full bg-white py-2 sm:py-6 lg:py-8 px-4 flex justify-center items-center">
         <Link href="/products" className="group inline-block">
-          <div className="bg-black text-white px-6 py-3 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
-            <span className="text-xs font-bold uppercase tracking-widest text-center">
+          <div className="bg-black text-white px-5 sm:px-10 lg:px-12 py-2.5 sm:py-4 lg:py-5 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
+            <span className="text-xs sm:text-base lg:text-lg font-bold uppercase tracking-widest text-center">
               ALL PRODUCT CUSTOMISATIONS AVAILABLE
             </span>
           </div>
@@ -124,7 +124,7 @@ export default function Home() {
       </section>
 
       {/* 4. Dynamic Brand Visual Banner (Speaker Parts Lineup Image) */}
-      <section className="w-full relative h-[260px] sm:h-[450px] lg:h-[560px] flex flex-col overflow-hidden bg-white border-b border-[#EAEAEA]">
+      <section className="w-full relative h-[260px] sm:h-[450px] lg:h-[560px] flex flex-col overflow-hidden bg-white">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
