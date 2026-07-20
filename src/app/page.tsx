@@ -84,29 +84,18 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
-      {/* 1. Mobile-Only Top Brand Header Section with Clean Padding */}
-      <section className="block sm:hidden w-full bg-white py-6 px-4 border-b border-[#EAEAEA]">
-        <div className="w-full flex flex-col items-start text-left space-y-4">
+      {/* 1. Top Brand Header Section with Clean Top & Bottom Padding */}
+      <section className="w-full bg-white py-6 sm:py-8 lg:py-10 border-b border-[#EAEAEA]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full flex flex-col items-start text-left space-y-3">
           
-          {/* All Product Customisations Available Badge */}
-          <div className="self-start">
-            <Link href="/products" className="group inline-block">
-              <div className="bg-black text-white px-5 py-2.5 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
-                <span className="text-xs font-bold uppercase tracking-widest text-center">
-                  ALL PRODUCT CUSTOMISATIONS AVAILABLE
-                </span>
-              </div>
-            </Link>
-          </div>
-
           {/* Heading */}
-          <h1 className="text-3xl font-display font-extrabold uppercase text-black leading-[1.15]">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold uppercase text-black leading-[1.15] max-w-3xl">
             The Foundation of Great Sound
           </h1>
           
           {/* Small rectangular B2B trust box */}
           <div className="self-start pt-1">
-            <div className="inline-block border border-black/10 bg-[#F7F7F8] px-3 py-1.5 rounded text-[8.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
+            <div className="inline-block border border-black/10 bg-[#F7F7F8] px-3 py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
               Trusted by Leading Brands
             </div>
           </div>
@@ -123,39 +112,24 @@ export default function Home() {
         />
       </section>
 
-      {/* 3. Dynamic Brand Visual Banner (Desktop Overlay Only) */}
-      <section className="w-full relative h-[240px] sm:h-[480px] lg:h-[580px] flex flex-col overflow-hidden bg-white border-b border-[#EAEAEA]">
+      {/* 3. Dynamic Brand Visual Banner */}
+      <section className="w-full relative h-[260px] sm:h-[450px] lg:h-[560px] flex flex-col overflow-hidden bg-white border-b border-[#EAEAEA]">
         {/* Background Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/hero-banner.png')" }}
         />
-        
-        {/* Clean, minimal overlay content at the top 40% (Desktop Only) */}
-        <div className="hidden sm:flex max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full relative z-10 flex-col justify-start pt-12 lg:pt-16 text-left">
-          
-          {/* All Product Customisations Available Badge (Over Heading) */}
-          <div className="mb-4 self-start">
-            <Link href="/products" className="group inline-block">
-              <div className="bg-black text-white px-5 py-2.5 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
-                <span className="text-xs font-bold uppercase tracking-widest text-center">
-                  ALL PRODUCT CUSTOMISATIONS AVAILABLE
-                </span>
-              </div>
-            </Link>
-          </div>
+      </section>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold uppercase text-black leading-[1.15] max-w-2xl">
-            The Foundation of Great Sound
-          </h1>
-          
-          {/* Small rectangular B2B trust box */}
-          <div className="mt-2 self-start">
-            <div className="inline-block border border-black/10 bg-white/85 backdrop-blur-xs px-3 py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
-              Trusted by Leading Brands
-            </div>
+      {/* 4. Dedicated All Product Customisations Available Section (Below Hero Banners) */}
+      <section className="w-full bg-white py-5 px-4 flex justify-center items-center border-b border-[#EAEAEA]">
+        <Link href="/products" className="group inline-block">
+          <div className="bg-black text-white px-6 py-3 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
+            <span className="text-xs font-bold uppercase tracking-widest text-center">
+              ALL PRODUCT CUSTOMISATIONS AVAILABLE
+            </span>
           </div>
-        </div>
+        </Link>
       </section>
 
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
