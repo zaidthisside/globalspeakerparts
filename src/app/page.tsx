@@ -115,6 +115,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* All Product Customisations Available Banner */}
+      <section className="w-full bg-white py-4 px-4 flex justify-center items-center border-b border-[#EAEAEA]">
+        <Link href="/products" className="group inline-block">
+          <div className="bg-black text-white px-6 py-3 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
+            <span className="text-xs font-bold uppercase tracking-widest text-center">
+              ALL PRODUCT CUSTOMISATIONS AVAILABLE
+            </span>
+          </div>
+        </Link>
+      </section>
+
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
       <section className="w-full py-5 bg-white relative overflow-hidden">
         {/* Background Illustration Overlay (15% Opacity) */}
