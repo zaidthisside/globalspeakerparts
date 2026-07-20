@@ -103,7 +103,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Premium Main Hero Banner Showcase */}
+      {/* 2. Premium Main Hero Banner Showcase (Wood Cabinet Speakers Image) */}
       <section className="w-full relative h-[280px] sm:h-[480px] lg:h-[620px] flex flex-col overflow-hidden bg-white">
         {/* Background Image Overlay */}
         <div 
@@ -112,17 +112,8 @@ export default function Home() {
         />
       </section>
 
-      {/* 3. Dynamic Brand Visual Banner */}
-      <section className="w-full relative h-[260px] sm:h-[450px] lg:h-[560px] flex flex-col overflow-hidden bg-white border-b border-[#EAEAEA]">
-        {/* Background Image Overlay */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/hero-banner.png')" }}
-        />
-      </section>
-
-      {/* 4. Dedicated All Product Customisations Available Section (Below Hero Banners) */}
-      <section className="w-full bg-white py-5 px-4 flex justify-center items-center border-b border-[#EAEAEA]">
+      {/* 3. Dedicated All Product Customisations Available Section (Between both hero images) */}
+      <section className="w-full bg-white py-5 px-4 flex justify-center items-center border-y border-[#EAEAEA]">
         <Link href="/products" className="group inline-block">
           <div className="bg-black text-white px-6 py-3 rounded-full hover:bg-[#222222] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border border-black group-hover:scale-[1.02]">
             <span className="text-xs font-bold uppercase tracking-widest text-center">
@@ -130,6 +121,15 @@ export default function Home() {
             </span>
           </div>
         </Link>
+      </section>
+
+      {/* 4. Dynamic Brand Visual Banner (Speaker Parts Lineup Image) */}
+      <section className="w-full relative h-[260px] sm:h-[450px] lg:h-[560px] flex flex-col overflow-hidden bg-white border-b border-[#EAEAEA]">
+        {/* Background Image Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/hero-banner.png')" }}
+        />
       </section>
 
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
