@@ -130,6 +130,17 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/hero-banner.png')" }}
         />
+
+        {/* BROWSE ALL PRODUCTS Button Over Image */}
+        <div className="relative z-10 w-full pt-1.5 sm:pt-3 flex justify-center items-center px-4">
+          <Link href="/products" className="group inline-block">
+            <div className="bg-white text-black px-5 sm:px-10 lg:px-12 py-2.5 sm:py-4 lg:py-5 rounded-full hover:bg-[#F7F7F8] transition-all duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer border-2 border-black group-hover:scale-[1.02]">
+              <span className="text-xs sm:text-base lg:text-lg font-bold uppercase tracking-widest text-center">
+                BROWSE ALL PRODUCTS
+              </span>
+            </div>
+          </Link>
+        </div>
       </section>
 
       {/* Category Grid: 5 columns, 2 rows (fits perfectly on mobile & desktop) */}
