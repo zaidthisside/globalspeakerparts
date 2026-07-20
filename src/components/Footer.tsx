@@ -254,7 +254,15 @@ export default function Footer() {
         {/* Copyright bar */}
         <div className="mt-5 pt-5 border-t border-[#2E2E33] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-550 gap-4">
           <p className="font-sans">
-            &copy; {new Date().getFullYear()} GLOBAL SPEAKER PARTS. All rights reserved.
+            &copy; {new Date().getFullYear()} GLOBAL SPEAKER PARTS. All rights reserved. Designed and Crafted by{" "}
+            <a 
+              href="https://wa.me/919214361550" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors font-medium cursor-pointer"
+            >
+              Zaid Islam
+            </a>
           </p>
           <div className="flex gap-5 font-sans">
             <Link href="/privacy" className="hover:text-accent-cyan transition-colors">Privacy Policy</Link>
