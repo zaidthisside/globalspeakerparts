@@ -206,7 +206,7 @@ export default function InquiryForm({
         message: "",
       });
     } catch {
-      setError("An error occurred. Please contact export@globalspeakerparts.com directly.");
+      setError("An error occurred. Please contact globalspeakerparts@gmail.com directly.");
     } finally {
       setIsSubmitting(false);
     }

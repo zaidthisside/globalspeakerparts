@@ -213,14 +213,14 @@ export default function Footer() {
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Phone className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
-                  <a href="tel:+919876543210" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
-                    +91 98765 43210 (Global Sales)
+                  <a href="tel:+919829062390" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
+                    +91 98290 62390 (Global Sales)
                   </a>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Mail className="w-4.5 h-4.5 text-[#A3A3A8] shrink-0" />
-                  <a href="mailto:export@globalspeakerparts.com" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
-                    export@globalspeakerparts.com
+                  <a href="mailto:globalspeakerparts@gmail.com" className="hover:text-accent-cyan transition-colors font-light text-slate-400">
+                    globalspeakerparts@gmail.com
                   </a>
                 </li>
               </ul>

@@ -37,8 +37,8 @@ function ContactDeskSection() {
               <Phone className="w-5 h-5 text-[#5C5C63] shrink-0 mt-0.5" />
               <div>
                 <strong className="text-[#0F0F10] font-bold block mb-1">Global Sales Phone</strong>
-                <a href="tel:+919876543210" className="hover:text-[#0F0F10] transition-colors font-light">
-                  +91 98765 43210 (Mon - Sat, 09:00 - 18:00 IST)
+                <a href="tel:+919829062390" className="hover:text-[#0F0F10] transition-colors font-light">
+                  +91 98290 62390 (Mon - Sat, 09:00 - 18:00 IST)
                 </a>
               </div>
             </li>
@@ -47,8 +47,8 @@ function ContactDeskSection() {
               <Mail className="w-5 h-5 text-[#5C5C63] shrink-0 mt-0.5" />
               <div>
                 <strong className="text-[#0F0F10] font-bold block mb-1">B2B Procurement Email</strong>
-                <a href="mailto:export@globalspeakerparts.com" className="hover:text-[#0F0F10] transition-colors font-light">
-                  export@globalspeakerparts.com
+                <a href="mailto:globalspeakerparts@gmail.com" className="hover:text-[#0F0F10] transition-colors font-light">
+                  globalspeakerparts@gmail.com
                 </a>
               </div>
             </li>
