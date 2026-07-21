@@ -20,7 +20,7 @@ const homeCategories = [
   { name: "Speaker Spiders", href: "/speaker-spiders", image: "/speaker-spider.jpg" },
   { name: "Dust Caps", href: "/dust-caps", image: "/dust-cap.jpg" },
   { name: "Diaphragms", href: "/diaphragms", image: "/diaphragm.jpg" },
-  { name: "Speaker Terminals", href: "/speaker-terminals", image: "/speaker-terminal.jpg" },
+  { name: "Terminals & Lead Wire", href: "/speaker-terminals", image: "/category-terminals-leadwire.jpg" },
   { name: "Subwoofers", href: "/subwoofers", image: "/subwoofer.jpg" },
   { name: "Speaker Frames", href: "/speaker-frames", image: "/speaker-frame.jpg" },
   { name: "Magnets", href: "/magnets", image: "/magnet.jpg" }
