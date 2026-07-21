@@ -20,7 +20,6 @@ const navigationItems = [
       { name: "Speaker Spiders", href: "/speaker-spiders" },
       { name: "Dust Caps", href: "/dust-caps" },
       { name: "Diaphragms", href: "/diaphragms" },
-      { name: "Lead Wires", href: "/lead-wires" },
       { name: "Terminals & Lead Wire", href: "/speaker-terminals" },
       { name: "Subwoofers", href: "/subwoofers" },
     ]
