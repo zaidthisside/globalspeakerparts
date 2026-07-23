@@ -381,6 +381,69 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 1.5 Complete Recone Kit Available Section */}
+      <section className="w-full py-10 bg-white border-t border-slate-100">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            
+            {/* Left Column: Image with bordered frame */}
+            <div className="relative w-full rounded-premium overflow-hidden border border-black lg:border-2 lg:border-black shadow-sm bg-white aspect-[4/3]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/recone-kit-banner.jpg" 
+                alt="Complete Speaker Recone Kit Components Assembly" 
+                className="w-full h-full object-cover object-center select-none"
+              />
+              {/* Decorative label badge */}
+              <div className="absolute top-4 left-4 z-20">
+                <span className="inline-block border border-black bg-white rounded-premium px-3 py-1 font-display text-[9.5px] font-bold text-black uppercase tracking-wider shadow-xs">
+                  All-In-One Assembly
+                </span>
+              </div>
+            </div>
+
+            {/* Right Column: Clean text blocks & CTA */}
+            <div className="flex flex-col space-y-6 text-left">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-[1px] bg-black" />
+                <span className="text-black text-xs font-bold uppercase tracking-widest">Premium B2B Kits</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl text-heading-charcoal leading-[1.25] font-display font-extrabold uppercase">
+                Complete Recone Kits <br />
+                <span className="text-slate-500">Custom Wavelength & Fit</span>
+              </h2>
+              
+              <div className="text-body-slate text-xs sm:text-sm leading-relaxed space-y-4 font-light font-sans">
+                <p>
+                  Restore drivers to original Klippel-verified factory specifications with our custom pre-assembled reconing kits. Each kit is precision-matched for absolute acoustic synergy.
+                </p>
+                <p className="font-bold text-black uppercase tracking-wide text-xs">
+                  Kit Components:
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-slate-600 font-sans">
+                  <li>Pressed Carbon Fiber/Paper Cones (surround pre-attached)</li>
+                  <li>High-Temperature CCAW or Copper-Wound Voice Coils</li>
+                  <li>Phenolic Resin Treated Cotton Spider Centering Dampers</li>
+                  <li>High-Density Dust Caps & Premium Braided Tinsel Lead Wires</li>
+                  <li>Industrial-Grade Adhesive Gaskets & Assembly Shims</li>
+                </ul>
+                <p>
+                  We supply custom OEM rebuild kits globally for professional sound reinforcement woofers, car audio subwoofers, and classic vintage studio monitors.
+                </p>
+              </div>
+
+              <Link href="/contact?rfq=true" className="pt-2">
+                <button className="btn-primary px-8 py-3.5 text-xs font-bold tracking-widest flex items-center gap-2 cursor-pointer uppercase bg-black text-white hover:bg-slate-800 rounded-lg transition-colors border border-black shadow-xs">
+                  <span>Inquire About Recone Kits</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
 
       {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
       <section className="w-full py-5 bg-white">
