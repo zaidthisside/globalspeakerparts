@@ -316,61 +316,61 @@ export default function CategoryPage() {
                   key={product.id}
                   className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                 >
-                  {/* Product Image Gallery (Swipeable) */}
-                  <div className="p-1.5 bg-[#F7F7F8] border-b border-black">
-                    <ProductCardGallery product={product} />
-                  </div>
+                  <Link href={`/${categorySlug}/${product.slug}`} className="flex-1 flex flex-col justify-between cursor-pointer">
+                    {/* Product Image Gallery (Swipeable) */}
+                    <div className="p-1.5 bg-[#F7F7F8] border-b border-black w-full">
+                      <ProductCardGallery product={product} />
+                    </div>
 
-                  {/* Content Body */}
-                  <div className="p-2.5 flex-1 flex flex-col justify-between">
-                    <div className="space-y-1.5">
-                      <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
-                        {product.category_name || category.name}
-                      </span>
-                      <Link href={`/${categorySlug}/${product.slug}`}>
+                    {/* Content Body */}
+                    <div className="p-2.5 flex-1 flex flex-col justify-between">
+                      <div className="space-y-1.5">
+                        <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
+                          {product.category_name || category.name}
+                        </span>
                         <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover:text-accent-cyan transition-colors uppercase tracking-tight">
                           {product.name}
                         </h2>
-                      </Link>
-                      {product.short_desc && (
-                        <p className="hidden sm:block text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
-                          {product.short_desc}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Specs */}
-                    <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
-                      {/* Price */}
-                      <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
-                        <span className="text-slate-500 font-light flex items-center gap-1">
-                          <TagIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
-                          Starting Price:
-                        </span>
-                        <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
-                          {convertPrice(startPrice)} / unit
-                        </span>
+                        {product.short_desc && (
+                          <p className="hidden sm:block text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
+                            {product.short_desc}
+                          </p>
+                        )}
                       </div>
 
-                      {/* MOQ */}
-                      <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
-                        <span className="text-slate-500 font-light flex items-center gap-1">
-                          <BoxIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
-                          MOQ:
-                        </span>
-                        <span className="font-bold text-[#0f0f10] text-[11px] sm:text-xs">
-                          {moqVal}
-                        </span>
-                      </div>
+                      {/* Specs */}
+                      <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
+                        {/* Price */}
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                          <span className="text-slate-500 font-light flex items-center gap-1">
+                            <TagIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
+                            Starting Price:
+                          </span>
+                          <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
+                            {convertPrice(startPrice)} / unit
+                          </span>
+                        </div>
 
-                      {/* Dimensions & Edges Line */}
-                      {specsStr && (
-                        <p className="text-[8.5px] sm:text-[10px] text-slate-500 italic leading-snug pt-1">
-                          {specsStr}
-                        </p>
-                      )}
+                        {/* MOQ */}
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                          <span className="text-slate-500 font-light flex items-center gap-1">
+                            <BoxIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
+                            MOQ:
+                          </span>
+                          <span className="font-bold text-[#0f0f10] text-[11px] sm:text-xs">
+                            {moqVal}
+                          </span>
+                        </div>
+
+                        {/* Dimensions & Edges Line */}
+                        {specsStr && (
+                          <p className="text-[8.5px] sm:text-[10px] text-slate-500 italic leading-snug pt-1">
+                            {specsStr}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Action Buttons - Stacked */}
                   <div className="flex flex-col border-t border-black p-1.5 bg-white gap-1.5">

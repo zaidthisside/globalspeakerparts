@@ -299,10 +299,20 @@ function ProductsCatalog() {
     return allProducts.filter(p => {
       // Search term
       if (search.trim()) {
-        const term = search.toLowerCase();
-        const matchesName = p.name.toLowerCase().includes(term);
-        const matchesDesc = p.short_desc?.toLowerCase().includes(term) ?? false;
-        if (!matchesName && !matchesDesc) return false;
+        const words = search.toLowerCase().split(/\s+/).filter(Boolean);
+        const nameLower = p.name.toLowerCase();
+        const descLower = p.short_desc?.toLowerCase() ?? "";
+        const catLower = p.category_name?.toLowerCase() ?? "";
+        const tagsLower = p.tags?.map(t => t.toLowerCase()).join(" ") ?? "";
+        
+        // Every typed word must match at least one field (name, description, category, or tags)
+        const matchesAll = words.every(word => 
+          nameLower.includes(word) || 
+          descLower.includes(word) || 
+          catLower.includes(word) || 
+          tagsLower.includes(word)
+        );
+        if (!matchesAll) return false;
       }
 
       // Category
@@ -612,6 +622,7 @@ function ProductsCatalog() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
                 {filteredProducts.map((product) => {
                   const catSlug = product.category_slug || "uncategorized";
+                  const productUrl = `/${catSlug}/${product.slug}`;
                   const startPrice = getStartingPrice(product);
                   const moqVal = getMOQ(product);
                   const toleranceVal = getTolerance(product);
@@ -629,66 +640,66 @@ function ProductsCatalog() {
                       key={product.id}
                       className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                     >
-                      {/* Product Image Gallery (Swipeable) */}
-                      <div className="p-1.5 bg-[#F7F7F8] border-b border-black">
-                        <ProductCardGallery product={product} />
-                      </div>
+                      <Link href={productUrl} className="flex-1 flex flex-col justify-between cursor-pointer">
+                        {/* Product Image Gallery (Swipeable) */}
+                        <div className="p-1.5 bg-[#F7F7F8] border-b border-black w-full">
+                          <ProductCardGallery product={product} />
+                        </div>
 
-                      {/* Content Card Body */}
-                      <div className="p-2.5 flex-1 flex flex-col justify-between">
-                        <div className="space-y-1.5">
-                          {/* Upper Category */}
-                          <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
-                            {product.category_name || "Speaker Component"}
-                          </span>
-                          
-                          {/* Product Title */}
-                          <Link href={`/${catSlug}/${product.slug}`}>
+                        {/* Content Card Body */}
+                        <div className="p-2.5 flex-1 flex flex-col justify-between">
+                          <div className="space-y-1.5">
+                            {/* Upper Category */}
+                            <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
+                              {product.category_name || "Speaker Component"}
+                            </span>
+                            
+                            {/* Product Title */}
                             <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover:text-accent-cyan transition-colors uppercase tracking-tight">
                               {product.name}
                             </h2>
-                          </Link>
-                          
-                          {/* Short Description */}
-                          {product.short_desc && (
-                            <p className="hidden sm:block text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
-                              {product.short_desc}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Specs Section */}
-                        <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
-                          {/* Price */}
-                          <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
-                            <span className="text-slate-500 font-light flex items-center gap-1">
-                              <TagIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
-                              Starting Price:
-                            </span>
-                            <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
-                              {convertPrice(startPrice)} / unit
-                            </span>
+                            
+                            {/* Short Description */}
+                            {product.short_desc && (
+                              <p className="hidden sm:block text-xs text-[#4A4A4F] line-clamp-3 font-light leading-relaxed">
+                                {product.short_desc}
+                              </p>
+                            )}
                           </div>
 
-                          {/* MOQ */}
-                          <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
-                            <span className="text-slate-500 font-light flex items-center gap-1">
-                              <BoxIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
-                              MOQ:
-                            </span>
-                            <span className="font-bold text-[#0f0f10] text-[11px] sm:text-xs">
-                              {moqVal}
-                            </span>
-                          </div>
+                          {/* Specs Section */}
+                          <div className="mt-2.5 pt-2 border-t border-[#EAEAEA]/80 space-y-1.5">
+                            {/* Price */}
+                            <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                              <span className="text-slate-500 font-light flex items-center gap-1">
+                                <TagIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
+                                Starting Price:
+                              </span>
+                              <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
+                                {convertPrice(startPrice)} / unit
+                              </span>
+                            </div>
 
-                          {/* Dimensions & Edges Line */}
-                          {specsStr && (
-                            <p className="text-[8.5px] sm:text-[10px] text-slate-500 italic leading-snug pt-1">
-                              {specsStr}
-                            </p>
-                          )}
+                            {/* MOQ */}
+                            <div className="flex items-center justify-between text-[10px] sm:text-xs font-sans">
+                              <span className="text-slate-500 font-light flex items-center gap-1">
+                                <BoxIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 shrink-0" />
+                                MOQ:
+                              </span>
+                              <span className="font-bold text-[#0f0f10] text-[11px] sm:text-xs">
+                                {moqVal}
+                              </span>
+                            </div>
+
+                            {/* Dimensions & Edges Line */}
+                            {specsStr && (
+                              <p className="text-[8.5px] sm:text-[10px] text-slate-500 italic leading-snug pt-1">
+                                {specsStr}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
 
                       {/* Double B2B Actions Panel - Stacked */}
                       <div className="flex flex-col border-t border-black p-1.5 bg-white gap-1.5">
