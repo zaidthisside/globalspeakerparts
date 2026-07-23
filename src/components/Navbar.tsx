@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ShoppingBag, ChevronDown } from "lucide-react";
 import Image from "next/image";
@@ -110,6 +110,62 @@ export default function Navbar() {
   const { currency, setCurrency } = useCurrency();
   
   const pathname = usePathname();
+  const router = useRouter();
+  const [searchVal, setSearchVal] = useState("");
+  const [currentPlaceholder, setCurrentPlaceholder] = useState("");
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      router.push(`/products?q=${encodeURIComponent(searchVal)}`);
+    }
+  };
+
+  useEffect(() => {
+    const placeholders = [
+      "Search for Voice Coils...",
+      "Search for Speaker Cones...",
+      "Search for Speaker Spiders...",
+      "Search by Dimensions (e.g. 150mm)...",
+      "Search for Speaker Surrounds...",
+      "Search for Lead Wires..."
+    ];
+    let isMounted = true;
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timer: NodeJS.Timeout;
+
+    const type = () => {
+      const fullPhrase = placeholders[phraseIdx];
+      if (!isDeleting) {
+        charIdx++;
+        if (isMounted) setCurrentPlaceholder(fullPhrase.slice(0, charIdx));
+        if (charIdx === fullPhrase.length) {
+          isDeleting = true;
+          timer = setTimeout(type, 2000);
+        } else {
+          timer = setTimeout(type, 60);
+        }
+      } else {
+        charIdx--;
+        if (isMounted) setCurrentPlaceholder(fullPhrase.slice(0, charIdx));
+        if (charIdx === 0) {
+          isDeleting = false;
+          phraseIdx = (phraseIdx + 1) % placeholders.length;
+          timer = setTimeout(type, 400);
+        } else {
+          timer = setTimeout(type, 30);
+        }
+      }
+    };
+
+    timer = setTimeout(type, 500);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     const updateCount = () => {
@@ -185,56 +241,81 @@ export default function Navbar() {
           </div>
 
           {/* Center Block: Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 font-sans text-[10px] xl:text-[11.5px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
-            {navigationItems.map((item) => {
-              const isHovered = hoveredMenu === item.name;
-              const isActive = pathname.startsWith(item.href);
+          <div className="hidden lg:flex flex-col items-center justify-center w-full">
+            <nav className="flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 font-sans text-[10px] xl:text-[11.5px] 2xl:text-[13px] font-semibold uppercase tracking-wider">
+              {navigationItems.map((item) => {
+                const isHovered = hoveredMenu === item.name;
+                const isActive = pathname.startsWith(item.href);
 
-              return (
-                <div
-                  key={item.name}
-                  onMouseEnter={() => setHoveredMenu(item.name)}
-                  onMouseLeave={() => setHoveredMenu(null)}
-                  className="relative py-2.5"
-                >
-                  <Link 
-                    href={item.href}
-                    className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan whitespace-nowrap ${
-                      isActive ? "text-[#000000] font-bold" : "text-slate-800"
-                     }`}
+                return (
+                  <div
+                    key={item.name}
+                    onMouseEnter={() => setHoveredMenu(item.name)}
+                    onMouseLeave={() => setHoveredMenu(null)}
+                    className="relative py-2"
                   >
-                    {item.name}
-                  </Link>
+                    <Link 
+                      href={item.href}
+                      className={`px-1 py-1 rounded transition-colors duration-150 hover:text-accent-cyan whitespace-nowrap ${
+                        isActive ? "text-[#000000] font-bold" : "text-slate-800"
+                       }`}
+                    >
+                      {item.name}
+                    </Link>
 
-                  {/* Glassmorphic Sub-Menu Dropdown (Opens on hover) */}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
-                      >
-                        <div className="px-3.5 py-1 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 mb-1">
-                          {item.name} Options
-                        </div>
-                        {item.subItems.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className="block px-4 py-2.5 text-slate-800 hover:bg-slate-50 hover:text-accent-cyan font-medium transition-colors border-b border-slate-100/50 last:border-0"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </nav>
+                    {/* Glassmorphic Sub-Menu Dropdown (Opens on hover) */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{ duration: 0.18, ease: "easeOut" }}
+                          className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-60 bg-white border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-2 text-left z-50 text-[11px] font-sans normal-case tracking-normal"
+                        >
+                          <div className="px-3.5 py-1 text-[9px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 mb-1">
+                            {item.name} Options
+                          </div>
+                          {item.subItems.map((sub) => (
+                            <Link
+                              key={sub.name}
+                              href={sub.href}
+                              className="block px-4 py-2.5 text-slate-800 hover:bg-slate-50 hover:text-accent-cyan font-medium transition-colors border-b border-slate-100/50 last:border-0"
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </nav>
+
+            {/* Desktop Animated Search Bar */}
+            <form onSubmit={handleSearchSubmit} className="relative w-full max-w-md mt-1 mb-1">
+              <div className="relative flex items-center bg-slate-50 hover:bg-slate-100/80 border border-slate-200 hover:border-slate-350 rounded-full py-1.5 px-4 transition-all shadow-2xs">
+                <Search className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+                <input
+                  type="text"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder={currentPlaceholder}
+                  className="w-full bg-transparent text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none border-none py-0.5 pr-8"
+                />
+                {searchVal && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchVal("")}
+                    className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
 
           {/* Right Block: Actions & Mobile Hamburger */}
           <div className="flex items-center justify-end gap-1 xl:gap-2 shrink-0 z-10 pl-4 xl:pl-6">
@@ -300,6 +381,31 @@ export default function Navbar() {
           </div>
 
         </div>
+      </div>
+
+      {/* Mobile Search Row (visible on lg:hidden / mobile layout) */}
+      <div className="block lg:hidden px-4 pb-2.5 pt-1.5 border-t border-slate-100 bg-white">
+        <form onSubmit={handleSearchSubmit} className="relative w-full">
+          <div className="relative flex items-center bg-slate-50 hover:bg-slate-100/85 border border-slate-200 rounded-lg py-2 px-3 shadow-2xs">
+            <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
+            <input
+              type="text"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              placeholder={currentPlaceholder}
+              className="w-full bg-transparent text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none border-none py-0.5 pr-6"
+            />
+            {searchVal && (
+              <button
+                type="button"
+                onClick={() => setSearchVal("")}
+                className="absolute right-2 p-1 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </form>
       </div>
 
       {/* Mobile Sidebar Drawer (With Accordion Submenus) */}

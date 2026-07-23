@@ -129,6 +129,10 @@ function ProductsCatalog() {
     if (catQuery) {
       setSelectedCategorySlug(catQuery);
     }
+    const qQuery = searchParams.get("q") || searchParams.get("search");
+    if (qQuery) {
+      setSearch(qQuery);
+    }
   }, [searchParams]);
 
   // Extract unique Materials & Sizes dynamically from product variants
