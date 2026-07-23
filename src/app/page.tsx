@@ -95,7 +95,7 @@ export default function Home() {
           
           {/* Small rectangular B2B trust box */}
           <div className="self-start">
-            <div className="inline-block border border-black/10 bg-[#F7F7F8] px-3 py-1 sm:py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
+            <div className="inline-block border border-black/10 bg-white px-3 py-1 sm:py-1.5 rounded text-[8.5px] sm:text-[9.5px] font-display font-bold uppercase tracking-widest text-[#0EA5E9] shadow-xs">
               Trusted by Leading Brands
             </div>
           </div>
