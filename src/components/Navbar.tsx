@@ -363,12 +363,13 @@ export default function Navbar() {
               </select>
             </div>
 
-            {/* Quote button (desktop/tablet) */}
-            <Link href="/contact?rfq=true" className="hidden sm:block shrink-0">
-              <button className="bg-black text-white border border-black px-4 py-2.5 rounded-lg font-semibold text-xs tracking-wider hover:bg-slate-800 transition-all uppercase cursor-pointer whitespace-nowrap">
-                Request Quote
+            {/* WhatsApp Contact button (desktop/tablet) */}
+            <a href="https://wa.me/919829062390" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center shrink-0">
+              <button className="bg-[#25D366] text-white border border-[#25D366] px-4 py-2.5 rounded-lg font-bold text-xs tracking-wider hover:bg-[#20ba59] transition-all uppercase cursor-pointer whitespace-nowrap flex items-center gap-2 shadow-xs">
+                <Image src="/whatsapp.png" alt="WhatsApp" width={16} height={16} className="w-4 h-4 object-contain" />
+                Contact Us
               </button>
-            </Link>
+            </a>
 
             {/* Hamburger menu button (mobile/tablet - Triggered below lg screen width) */}
             <button
@@ -491,11 +492,12 @@ export default function Navbar() {
                     <option value="CAD">CAD ($)</option>
                   </select>
                 </div>
-                <Link href="/contact?rfq=true" onClick={() => setIsOpen(false)}>
-                  <button className="w-full bg-[#000000] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#2E2E33] transition-all cursor-pointer">
-                    REQUEST B2B QUOTE
+                <a href="https://wa.me/919829062390" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="w-full block">
+                  <button className="w-full bg-[#25D366] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#20ba59] transition-all cursor-pointer flex items-center justify-center gap-2">
+                    <Image src="/whatsapp.png" alt="WhatsApp" width={16} height={16} className="w-4 h-4 object-contain" />
+                    CONTACT US
                   </button>
-                </Link>
+                </a>
               </div>
             </motion.div>
           </>
