@@ -415,9 +415,6 @@ export default function Home() {
               </h2>
               
               <div className="text-body-slate text-xs sm:text-sm leading-relaxed space-y-4 font-light font-sans">
-                <p>
-                  Restore drivers to original Klippel-verified factory specifications with our custom pre-assembled reconing kits. Each kit is precision-matched for absolute acoustic synergy.
-                </p>
                 <p className="font-bold text-black uppercase tracking-wide text-xs">
                   Kit Components:
                 </p>
