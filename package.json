@@ -11,10 +11,15 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.110.2",
     "framer-motion": "^12.42.2",
+    "jpeg-js": "^0.4.4",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
+    "pdf.js-extract": "^1.0.1",
+    "pdfjs-dist": "^6.1.200",
+    "pngjs": "^7.0.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
