@@ -365,7 +365,7 @@ export default function Navbar() {
 
             {/* WhatsApp Contact button (desktop/tablet) */}
             <a href="https://wa.me/919829062390" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center shrink-0">
-              <button className="bg-[#25D366] text-white border border-[#25D366] px-4 py-2.5 rounded-lg font-bold text-xs tracking-wider hover:bg-[#20ba59] transition-all uppercase cursor-pointer whitespace-nowrap flex items-center gap-2 shadow-xs">
+              <button className="bg-white text-black border border-black px-4 py-2.5 rounded-lg font-bold text-xs tracking-wider hover:bg-slate-50 transition-all uppercase cursor-pointer whitespace-nowrap flex items-center gap-2 shadow-xs">
                 <Image src="/whatsapp.png" alt="WhatsApp" width={16} height={16} className="w-4 h-4 object-contain" />
                 Contact Us
               </button>
@@ -493,7 +493,7 @@ export default function Navbar() {
                   </select>
                 </div>
                 <a href="https://wa.me/919829062390" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="w-full block">
-                  <button className="w-full bg-[#25D366] text-white py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-[#20ba59] transition-all cursor-pointer flex items-center justify-center gap-2">
+                  <button className="w-full bg-white text-black border border-black py-3 rounded-lg font-bold text-xs tracking-widest hover:bg-slate-50 transition-all cursor-pointer flex items-center justify-center gap-2">
                     <Image src="/whatsapp.png" alt="WhatsApp" width={16} height={16} className="w-4 h-4 object-contain" />
                     CONTACT US
                   </button>
