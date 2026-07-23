@@ -365,7 +365,7 @@ export default function Navbar() {
 
             {/* WhatsApp Contact button (desktop/tablet) */}
             <a href="https://wa.me/919829062390" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center shrink-0">
-              <button className="bg-white text-black border border-black px-4 py-2.5 rounded-lg font-bold text-xs tracking-wider hover:bg-slate-50 transition-all uppercase cursor-pointer whitespace-nowrap flex items-center gap-2 shadow-xs">
+              <button className="bg-white text-black border border-black px-4 py-2.5 rounded-lg font-bold text-xs tracking-wider hover:bg-slate-50 transition-all uppercase cursor-pointer whitespace-nowrap flex items-center gap-2 shadow-xs animate-whatsapp-attention">
                 <Image src="/whatsapp.png" alt="WhatsApp" width={16} height={16} className="w-4 h-4 object-contain" />
                 Contact Us
               </button>
