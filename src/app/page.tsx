@@ -445,67 +445,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Four Pillars Grid Section (Kagzi Layout Clone) */}
-      <section className="w-full py-5 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
-            
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
-                <Settings2 className="w-6 h-6 text-[#5C5C63]" />
-              </div>
-              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Acoustics, Reimagined</h3>
-              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
-                We use 100% certified raw materials and carbon fiber matrices, we craft speaker cones and voice coils without compromising on acoustic weight.
-              </p>
-              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
-                100% Certified
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-[#5C5C63]" />
-              </div>
-              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Made for the Stage</h3>
-              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
-                Reliability is not just a trend for us - it is reflected in every coil we wind and the physical tests we make in our labs.
-              </p>
-              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
-                Performance Driven
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
-                <Cpu className="w-6 h-6 text-[#5C5C63]" />
-              </div>
-              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Copper, Reclaimed</h3>
-              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
-                Made from top-tier CCAW and high-purity copper wires, our voice coil winding lines transform metals into thermal acoustic coils.
-              </p>
-              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
-                CCAW / Pure Copper
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F7F7F8] border border-black flex items-center justify-center">
-                <Factory className="w-6 h-6 text-[#5C5C63]" />
-              </div>
-              <h3 className="text-sm font-bold text-[#0F0F10] uppercase">Pressure Tolerant</h3>
-              <p className="text-xs text-[#4A4A4F] leading-relaxed font-light flex-grow max-w-xs font-sans">
-                Crafted through strict high-pressure hot pressing, our speaker surrounds and spiders support linear displacement curves.
-              </p>
-              <div className="bg-[#F7F7F8] border border-black text-[#0F0F10] px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider font-sans">
-                Zero Defect
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
       {/* 3. Corporate Legacy & Statistics (Kagzi Layout Clone) */}
       <section className="w-full py-5 bg-[#F7F7F8]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
