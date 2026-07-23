@@ -85,7 +85,7 @@ export default function Home() {
     <div className="flex flex-col w-full font-sans bg-bg-snow text-body-slate overflow-hidden">
       
       {/* 1. Top Brand Header Section with Low Padding on Mobile */}
-      <section className="w-full bg-white py-2 sm:py-8 lg:py-10">
+      <section className="w-full bg-white pt-14 pb-2 sm:py-8 lg:py-10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 w-full flex flex-col items-start text-left space-y-2 sm:space-y-3">
           
           {/* Heading */}
