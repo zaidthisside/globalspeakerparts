@@ -295,20 +295,20 @@ export default function Navbar() {
 
             {/* Desktop Animated Search Bar */}
             <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[1100px] mt-1 mb-1">
-              <div className="relative flex items-center bg-[#0a0a0a] border border-[#1a1a1a] rounded-full py-1.5 px-4 transition-all shadow-md">
-                <Search className="w-4 h-4 text-slate-400 mr-2.5 shrink-0" />
+              <div className="relative flex items-center bg-white border border-black rounded-full py-1.5 px-4 transition-all shadow-sm">
+                <Search className="w-4 h-4 text-black mr-2.5 shrink-0" />
                 <input
                   type="text"
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   placeholder={currentPlaceholder}
-                  className="w-full bg-transparent text-xs font-semibold text-white placeholder-slate-400 outline-none border-none py-0.5 pr-8"
+                  className="w-full bg-transparent text-xs font-semibold text-black placeholder-black/50 outline-none border-none py-0.5 pr-8"
                 />
                 {searchVal && (
                   <button
                     type="button"
                     onClick={() => setSearchVal("")}
-                    className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-200 transition-colors"
+                    className="absolute right-3 p-1 rounded-full text-black/50 hover:text-black transition-colors"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -386,20 +386,20 @@ export default function Navbar() {
       {/* Mobile Search Row (visible on lg:hidden / mobile layout) */}
       <div className="block lg:hidden px-4 pb-2.5 pt-1.5 bg-white">
         <form onSubmit={handleSearchSubmit} className="relative w-full">
-          <div className="relative flex items-center bg-[#0a0a0a] border border-black rounded-lg py-2 px-3 shadow-md">
-            <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
+          <div className="relative flex items-center bg-white border border-black rounded-lg py-2 px-3 shadow-sm">
+            <Search className="w-4 h-4 text-black mr-2 shrink-0" />
             <input
               type="text"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
               placeholder={currentPlaceholder}
-              className="w-full bg-transparent text-xs font-semibold text-white placeholder-slate-400 outline-none border-none py-0.5 pr-6"
+              className="w-full bg-transparent text-xs font-semibold text-black placeholder-black/50 outline-none border-none py-0.5 pr-6"
             />
             {searchVal && (
               <button
                 type="button"
                 onClick={() => setSearchVal("")}
-                className="absolute right-2 p-1 rounded-full text-slate-400 hover:text-slate-200 transition-colors"
+                className="absolute right-2 p-1 rounded-full text-black/50 hover:text-black transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
