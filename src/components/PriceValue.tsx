@@ -7,7 +7,7 @@ interface PriceValueProps {
   fallback?: string;
 }
 
-export default function PriceValue({ amount, fallback = "Quote on request" }: PriceValueProps) {
+export default function PriceValue({ amount, fallback = "On request" }: PriceValueProps) {
   const { convertPrice } = useCurrency();
   if (amount === null || amount === undefined || amount === "") {
     return <>{fallback}</>;

@@ -64,7 +64,7 @@ type Product = {
   featured_image: string | null;
   is_hidden: boolean;
   is_featured: boolean;
-  seo_meta: Record<string, string> | null;
+  seo_meta: Record<string, any> | null;
   tags: string[] | null;
   applications: string[] | null;
   category: { slug: string; name: string } | null;
@@ -228,11 +228,14 @@ export default async function ProductPage({ params }: Props) {
 
   /* ── Starting Price ────────────────────────────────────────────── */
   const startingPrice = (() => {
+    if (p.seo_meta?.hide_price === true) {
+      return "On request";
+    }
     if (variants.length > 0) {
       const prices = variants.map(v => parseFloat(v.price as any)).filter(pr => !isNaN(pr));
       if (prices.length > 0) return `$${Math.min(...prices).toFixed(2)}`;
     }
-    return "Quote on request";
+    return "On request";
   })();
 
   /* ── WhatsApp URL ──────────────────────────────────────────────── */
@@ -412,12 +415,12 @@ export default async function ProductPage({ params }: Props) {
 
                     {/* Price & Stock */}
                     <div className="flex items-center justify-between pt-2 border-t border-black">
-                      {v.price ? (
+                      {v.price && p.seo_meta?.hide_price !== true ? (
                         <span className="font-numbers font-bold text-[#0F0F10]">
                           <PriceValue amount={v.price} />
                         </span>
                       ) : (
-                        <span className="text-xs text-[#5C5C63]">Quote on request</span>
+                        <span className="text-xs text-[#5C5C63]">On request</span>
                       )}
                       {v.stock !== null && (
                         <span

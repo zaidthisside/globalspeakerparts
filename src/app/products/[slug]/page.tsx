@@ -28,6 +28,7 @@ interface ProductApiRecord {
   images?: Array<{ url: string; alt_text?: string | null }>;
   downloads?: Array<{ title?: string | null; type?: string | null; url: string }>;
   faqs?: Array<{ question: string; answer: string }>;
+  seo_meta?: Record<string, any> | null;
 }
 
 const fallbackFaqs = [
@@ -137,7 +138,7 @@ function ProductDetailsPage() {
         tempLimit: adminProduct.technical_specs?.["Temperature Rating"] || "",
         frequencyRange: adminProduct.technical_specs?.Impedance || "",
         tolerances: adminProduct.technical_specs?.Tolerance || "",
-        startingPrice: adminProduct.price ? `$${adminProduct.price.toFixed(2)}` : "$1.80",
+        startingPrice: adminProduct.seo_meta?.hide_price === true ? "On request" : (adminProduct.price ? `$${adminProduct.price.toFixed(2)}` : "$1.80"),
         moq: adminProduct.moq || adminProduct.technical_specs?.MOQ || "1,000 units",
         variants: adminProduct.variants?.map((item) => item.name).join(", ") || "Standard",
         mediaUrls: adminProduct.media_urls?.join(",") || adminProduct.images?.map((image) => image.url).join(",") || undefined,

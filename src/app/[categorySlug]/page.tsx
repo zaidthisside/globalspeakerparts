@@ -55,6 +55,7 @@ interface Product {
   variants?: Variant[];
   moq?: string | null;
   product_images?: Array<{ url: string }> | null;
+  seo_meta?: Record<string, any> | null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -62,6 +63,9 @@ interface Product {
 /* ------------------------------------------------------------------ */
 
 function getStartingPrice(p: Product): string {
+  if (p.seo_meta?.hide_price === true) {
+    return "On request";
+  }
   if (p.variants && p.variants.length > 0) {
     const prices = p.variants
       .map((v) => parseFloat(v.price as any))
@@ -342,7 +346,7 @@ export default function CategoryPage() {
                             Starting Price:
                           </span>
                           <span className="font-bold text-[#0f0f10] text-[11px] sm:text-[13px]">
-                            {convertPrice(startPrice)} / unit
+                            {startPrice === "On request" ? "On request" : `${convertPrice(startPrice)} / unit`}
                           </span>
                         </div>
 

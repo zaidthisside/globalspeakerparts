@@ -32,7 +32,7 @@ interface Product {
   featured_image: string | null;
   is_hidden: boolean;
   is_featured: boolean;
-  seo_meta: Record<string, string> | null;
+  seo_meta: Record<string, any> | null;
   tags: string[] | null;
   applications: string | null;
   price: number | null;
@@ -763,6 +763,7 @@ export default function AdminPage() {
                               <div className="flex items-center gap-2">
                                 {prod.is_hidden && <span className="text-[8px] font-bold text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded uppercase">Hidden</span>}
                                 {prod.is_featured && <span className="text-[8px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded uppercase">Featured</span>}
+                                {prod.seo_meta?.hide_price && <span className="text-[8px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded uppercase">Price Hidden</span>}
                                 {!prod.is_hidden && !prod.is_featured && <span className="text-[8px] font-bold text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded uppercase">Active</span>}
                               </div>
                             </td>
@@ -1193,6 +1194,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
     seo_meta: {
       title: product?.seo_meta?.title || "",
       description: product?.seo_meta?.description || "",
+      hide_price: product?.seo_meta?.hide_price === true,
     },
     gallery: (product as any)?.product_images?.map((img: any) => img.url) || 
              (product as any)?.images?.map((img: any) => img.url) || []
@@ -1230,7 +1232,11 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
       price: form.price ? parseFloat(form.price) : null,
       technical_specs: Object.keys(technical_specs).length ? technical_specs : null,
       sort_order: form.sort_order,
-      seo_meta: form.seo_meta.title || form.seo_meta.description ? form.seo_meta : null,
+      seo_meta: {
+        title: form.seo_meta.title || "",
+        description: form.seo_meta.description || "",
+        hide_price: form.seo_meta.hide_price,
+      },
       moq: form.moq.trim() || null,
       gallery: form.gallery,
     });
@@ -1492,7 +1498,7 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
           </FormField>
 
           {/* ── Sort / Visibility / Featured ── */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <FormField label="Sort Order">
               <input
                 type="number"
@@ -1519,6 +1525,16 @@ function ProductFormModal({ product, categories, onSave, onClose }: {
               >
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
+              </select>
+            </FormField>
+            <FormField label="Price Display">
+              <select
+                value={form.seo_meta.hide_price ? "hidden" : "visible"}
+                onChange={e => setForm({ ...form, seo_meta: { ...form.seo_meta, hide_price: e.target.value === "hidden" } })}
+                className={`${inputClass} cursor-pointer`}
+              >
+                <option value="visible">Visible</option>
+                <option value="hidden">Hidden</option>
               </select>
             </FormField>
           </div>
