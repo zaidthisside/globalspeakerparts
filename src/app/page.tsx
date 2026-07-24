@@ -19,7 +19,7 @@ const homeCategories = [
   { name: "Speaker Surrounds", href: "/speaker-surrounds", image: "/speaker-surround.jpg" },
   { name: "Speaker Spiders", href: "/speaker-spiders", image: "/speaker-spider.jpg" },
   { name: "Dust Caps", href: "/dust-caps", image: "/dust-cap.jpg" },
-  { name: "Diaphragms", href: "/diaphragms", image: "/diaphragm.jpg" },
+  { name: "Diaphragms", href: "/diaphragms", image: "/category-diaphragms.jpg" },
   { name: "Terminals & Lead Wire", href: "/speaker-terminals", image: "/category-terminals-leadwire.jpg" },
   { name: "Subwoofers", href: "/subwoofers", image: "/subwoofer.jpg" },
   { name: "Speaker Frames", href: "/speaker-frames", image: "/speaker-frame.jpg" },
