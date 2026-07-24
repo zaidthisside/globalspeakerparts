@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
 import ProductCardGallery from "@/components/ProductCardGallery";
+import PageLoader from "@/components/PageLoader";
 
 
 /* ------------------------------------------------------------------ */
@@ -215,13 +216,7 @@ export default function CategoryPage() {
 
   /* ── Loading State ────────────────────────────────────────────── */
   if (loading) {
-    return (
-      <main className="min-h-screen bg-[#F7F7F8]">
-        <div className="py-32 text-center text-xs text-slate-400 font-light">
-          Loading category...
-        </div>
-      </main>
-    );
+    return <PageLoader fullScreen />;
   }
 
   /* ── Not Found State ──────────────────────────────────────────── */

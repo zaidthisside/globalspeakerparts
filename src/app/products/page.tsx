@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, Package, ArrowRight, Tag as TagIcon, Box as BoxIcon, MessageCircle, Info, SlidersHorizontal, Check } from "lucide-react";
 import { useCurrency } from "@/context/CurrencyContext";
 import ProductCardGallery from "@/components/ProductCardGallery";
+import PageLoader from "@/components/PageLoader";
 
 
 // ─── Backward Compatibility Exports ────────────────────────────────
@@ -595,13 +596,11 @@ function ProductsCatalog() {
           <section className="flex-1 space-y-6">
             <div className="flex justify-between items-center text-xs text-slate-500 border-b border-slate-200 pb-2">
               <span>Showing <strong className="text-black font-semibold">{filteredProducts.length}</strong> OEM speaker components</span>
-              {loadingProds && <span>Syncing Supabase database...</span>}
+              {loadingProds && <span className="text-[10px] text-slate-400 font-medium tracking-wide">Syncing catalog...</span>}
             </div>
 
             {loadingProds ? (
-              <div className="py-24 text-center text-xs text-slate-400 font-light">
-                Syncing product database with Supabase...
-              </div>
+              <PageLoader size="md" />
             ) : filteredProducts.length === 0 ? (
               <div className="border border-black bg-white p-20 text-center rounded-lg">
                 <Package className="h-10 w-10 text-slate-300 mx-auto mb-3" />
@@ -747,11 +746,7 @@ function ProductsCatalog() {
 export default function ProductsPage() {
   return (
     <main className="min-h-screen bg-[#F7F7F8]">
-      <Suspense fallback={
-        <div className="py-32 text-center text-xs text-slate-400 font-light">
-          Loading catalog...
-        </div>
-      }>
+      <Suspense fallback={<PageLoader fullScreen />}>
         <ProductsCatalog />
       </Suspense>
     </main>

@@ -8,6 +8,7 @@ import InquiryForm from "@/components/InquiryForm";
 import ProductPageActions from "@/components/ProductPageActions";
 import { useCurrency } from "@/context/CurrencyContext";
 import { productsData, productImages, type ProductItem, getProductSlug } from "@/app/products/page";
+import PageLoader from "@/components/PageLoader";
 
 interface ProductApiRecord {
   id: string;
@@ -257,11 +258,7 @@ function ProductDetailsPage() {
   }
 
   if (!product) {
-    return (
-      <div className="min-h-screen bg-[#F7F7F8] px-4 py-20 text-center text-sm text-slate-400">
-        Loading product details...
-      </div>
-    );
+    return <PageLoader fullScreen />;
   }
 
   return (
