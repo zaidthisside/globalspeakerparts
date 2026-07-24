@@ -219,7 +219,7 @@ export default function Navbar() {
 
               {/* Mobile logo — explicit large size, hidden on desktop */}
               <Image 
-                src="/logo-horizontal.jpg"
+                src="/logo-horizontal-v2.jpg"
                 alt="Global Speaker Parts"
                 width={240}
                 height={78}
@@ -229,7 +229,7 @@ export default function Navbar() {
 
               {/* Desktop logo — CSS-driven smooth scroll transition */}
               <Image 
-                src="/logo-horizontal.jpg"
+                src="/logo-horizontal-v2.jpg"
                 alt="Global Speaker Parts"
                 width={275}
                 height={90}

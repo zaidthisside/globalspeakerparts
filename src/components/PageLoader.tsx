@@ -22,7 +22,7 @@ export default function PageLoader({
       {/* Brand Logo with a smooth subtle breathing pulse */}
       <div className="relative transition-all duration-300 transform hover:scale-105">
         <Image
-          src="/logo-horizontal.jpg"
+          src="/logo-horizontal-v2.jpg"
           alt="Global Speaker Parts"
           width={logoWidth}
           height={logoHeight}
