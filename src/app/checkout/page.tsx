@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, HelpCircle, Package, ArrowRight, Loader2 } from "lucide-react";
 import PageLoader from "@/components/PageLoader";
@@ -75,6 +75,28 @@ function CheckoutForm() {
     razorpayKeyId: "",
     paypalEnvironment: "sandbox",
   });
+
+  const paymentStateRef = useRef({
+    formData,
+    quantity,
+    activeVariant,
+    unitPrice,
+    subtotal,
+    grandTotal,
+    product,
+  });
+
+  useEffect(() => {
+    paymentStateRef.current = {
+      formData,
+      quantity,
+      activeVariant,
+      unitPrice,
+      subtotal,
+      grandTotal,
+      product,
+    };
+  }, [formData, quantity, activeVariant, unitPrice, subtotal, grandTotal, product]);
 
   // Dynamic configuration flags loaded from DB/config settings
   const isRazorpayConfigured = paymentSettings.enableRazorpay && !!paymentSettings.razorpayKeyId;
@@ -288,74 +310,81 @@ function CheckoutForm() {
         const container = document.getElementById("paypal-button-container");
         if (container) {
           container.innerHTML = ""; // Clear
-          (window as any).paypal.Buttons({
-            onClick: (data: any, actions: any) => {
-              const err = validateForm();
-              if (err) {
-                setValidationError(err);
-                alert(err);
-                return actions.reject();
-              }
-              setValidationError(null);
-              return actions.resolve();
-            },
-            createOrder: async () => {
-              const res = await fetch("/api/paypal/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: grandTotal }),
-              });
-              if (!res.ok) {
-                const err = await res.json();
-                alert(err.error || "Failed to create PayPal order.");
-                throw new Error("Failed to create order");
-              }
-              const order = await res.json();
-              return order.id;
-            },
-            onApprove: async (data: any) => {
-              setIsProcessingPayment(true);
-              const orderPayload = {
-                customer_name: formData.name,
-                customer_email: formData.email,
-                customer_phone: formData.phone,
-                shipping_address: formData.address,
-                shipping_city: formData.city,
-                shipping_state: formData.state,
-                shipping_zip: formData.zip,
-                shipping_country: formData.country,
-                product_id: product!.id,
-                product_name: product!.name,
-                variant_name: activeVariant?.name || "Standard",
-                quantity: quantity,
-                unit_price: unitPrice,
-                subtotal: subtotal,
-                shipping_fee: shippingFee,
-                total: grandTotal,
-              };
+          try {
+            (window as any).paypal.Buttons({
+              onClick: (data: any, actions: any) => {
+                const err = validateForm();
+                if (err) {
+                  setValidationError(err);
+                  alert(err);
+                  return actions.reject();
+                }
+                setValidationError(null);
+                return actions.resolve();
+              },
+              createOrder: async () => {
+                const res = await fetch("/api/paypal/create-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ amount: paymentStateRef.current.grandTotal }),
+                });
+                if (!res.ok) {
+                  const err = await res.json();
+                  alert(err.error || "Failed to create PayPal order.");
+                  throw new Error("Failed to create order");
+                }
+                const order = await res.json();
+                return order.id;
+              },
+              onApprove: async (data: any) => {
+                setIsProcessingPayment(true);
+                const currentState = paymentStateRef.current;
+                if (!currentState.product) return;
 
-              const res = await fetch("/api/paypal/capture-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderID: data.orderID, order: orderPayload }),
-              });
-              if (res.ok) {
-                const captureData = await res.json();
-                saveOrderSuccess("PayPal", captureData.transaction_id);
-              } else {
+                const orderPayload = {
+                  customer_name: currentState.formData.name,
+                  customer_email: currentState.formData.email,
+                  customer_phone: currentState.formData.phone,
+                  shipping_address: currentState.formData.address,
+                  shipping_city: currentState.formData.city,
+                  shipping_state: currentState.formData.state,
+                  shipping_zip: currentState.formData.zip,
+                  shipping_country: currentState.formData.country,
+                  product_id: currentState.product.id,
+                  product_name: currentState.product.name,
+                  variant_name: currentState.activeVariant?.name || "Standard",
+                  quantity: currentState.quantity,
+                  unit_price: currentState.unitPrice,
+                  subtotal: currentState.subtotal,
+                  shipping_fee: 15.00,
+                  total: currentState.grandTotal,
+                };
+
+                const res = await fetch("/api/paypal/capture-order", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderID: data.orderID, order: orderPayload }),
+                });
+                if (res.ok) {
+                  const captureData = await res.json();
+                  saveOrderSuccess("PayPal", captureData.transaction_id);
+                } else {
+                  setPaymentError("Payment Failed");
+                  alert("Failed to capture PayPal transaction.");
+                  setIsProcessingPayment(false);
+                }
+              },
+              onCancel: () => {
+                setPaymentError("Payment Cancelled");
+              },
+              onError: (err: any) => {
+                console.error("PayPal Error:", err);
                 setPaymentError("Payment Failed");
-                alert("Failed to capture PayPal transaction.");
-                setIsProcessingPayment(false);
               }
-            },
-            onCancel: () => {
-              setPaymentError("Payment Cancelled");
-            },
-            onError: (err: any) => {
-              console.error("PayPal Error:", err);
-              setPaymentError("Payment Failed");
-            }
-          }).render("#paypal-button-container");
+            }).render("#paypal-button-container");
+          } catch (paypalError) {
+            console.error("PayPal buttons render failed:", paypalError);
+          }
         }
       }
     };
@@ -364,7 +393,7 @@ function CheckoutForm() {
     return () => {
       isMounted = false;
     };
-  }, [paymentGateway, grandTotal, product, formData, paymentSettings, isPaypalConfigured]);
+  }, [paymentGateway, isPaypalConfigured, paymentSettings.paypalClientId]);
 
   // 5. Razorpay Real Checkout Flow
   const handleRazorpayCheckout = async () => {
