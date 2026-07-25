@@ -723,7 +723,7 @@ function ProductsCatalog() {
                         </button>
                         <Link
                           href={`/checkout?slug=${product.slug}`}
-                          className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black bg-white text-black hover:bg-slate-50 transition-all uppercase"
+                          className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black bg-black text-white hover:bg-white hover:text-black transition-all uppercase"
                         >
                           Buy Sample Now
                         </Link>

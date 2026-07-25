@@ -91,7 +91,7 @@ export default function ProductPageActions({ product, whatsappUrl }: ProductPage
         {slug && (
           <Link
             href={`/checkout?slug=${slug}`}
-            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 text-[10px] font-bold tracking-widest text-black bg-white hover:bg-slate-50 border border-black rounded-lg transition-all uppercase"
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 text-[10px] font-bold tracking-widest text-white bg-black hover:bg-white hover:text-black border border-black rounded-lg transition-all uppercase"
           >
             <span>Buy Sample Now</span>
           </Link>
