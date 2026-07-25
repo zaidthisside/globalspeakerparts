@@ -34,6 +34,13 @@ function CheckoutForm() {
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu">("paypal");
+
+  // Pricing calculations
+  const activeVariant = product ? (product.variants[selectedVariantIdx] || null) : null;
+  const unitPrice = activeVariant?.price !== null && activeVariant?.price !== undefined ? Number(activeVariant.price) : 1.80;
+  const subtotal = unitPrice * quantity;
+  const shippingFee = 15.00; // Flat Express Air Shipping
+  const grandTotal = subtotal + shippingFee;
   
   // Billing/Shipping state
   const [formData, setFormData] = useState({
@@ -49,10 +56,85 @@ function CheckoutForm() {
     taxId: "",
   });
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "modal" | "success">("idle");
   const [txnId, setTxnId] = useState("");
+  const [paypalLoaded, setPaypalLoaded] = useState(false);
 
+  // Configuration check flags
+  const isRazorpayConfigured = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const isPaypalConfigured = !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+  const loadScript = (src: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") {
+        resolve(false);
+        return;
+      }
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  // 1. Success confirmation order handler
+  const saveOrderSuccess = (gateway: string, transactionId: string) => {
+    if (!product) return;
+    const orderData = {
+      orderId: `SMP-${Math.floor(100000 + Math.random() * 900000)}`,
+      date: new Date().toISOString().split("T")[0],
+      productId: product.id,
+      productName: product.name,
+      variantName: activeVariant?.name || "Standard",
+      quantity: quantity,
+      unitPrice: unitPrice,
+      subtotal: subtotal,
+      shippingFee: shippingFee,
+      total: grandTotal,
+      customer: {
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        phone: formData.phone,
+        taxId: formData.taxId,
+      },
+      shipping: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: formData.country,
+      },
+      payment: {
+        gateway,
+        transactionId,
+        status: "Paid"
+      },
+      status: "Payment Confirmed"
+    };
+
+    if (typeof window !== "undefined") {
+      const existingStr = localStorage.getItem("gsp_sample_orders");
+      const existing = existingStr ? JSON.parse(existingStr) : [];
+      localStorage.setItem("gsp_sample_orders", JSON.stringify([orderData, ...existing]));
+    }
+
+    setTxnId(transactionId);
+    setPaymentStatus("success");
+  };
+
+  // 2. Fetch product info
   useEffect(() => {
     if (!slug) {
       setLoading(false);
@@ -93,72 +175,276 @@ function CheckoutForm() {
     );
   }
 
-  // Pricing calculations
-  const activeVariant = product.variants[selectedVariantIdx] || null;
-  const unitPrice = activeVariant?.price !== null && activeVariant?.price !== undefined ? Number(activeVariant.price) : 1.80;
-  const subtotal = unitPrice * quantity;
-  const shippingFee = 15.00; // Flat Express Air Shipping
-  const grandTotal = subtotal + shippingFee;
+  // 3. Listen to PayU success/failure redirect params
+  useEffect(() => {
+    const statusParam = searchParams.get("status");
+    if (statusParam === "success") {
+      const txnid = searchParams.get("txnid") || "";
+      const gateway = searchParams.get("gateway") || "PayU";
+      
+      const email = searchParams.get("email") || "";
+      const name = searchParams.get("name") || "";
+      const company = searchParams.get("company") || "";
+      const phone = searchParams.get("phone") || "";
+      const address = searchParams.get("address") || "";
+      const city = searchParams.get("city") || "";
+      const state = searchParams.get("state") || "";
+      const zip = searchParams.get("zip") || "";
+      const country = searchParams.get("country") || "";
+      
+      const productId = searchParams.get("product_id") || "";
+      const productName = searchParams.get("product_name") || "";
+      const variantName = searchParams.get("variant") || "Standard";
+      const qty = Number(searchParams.get("qty") || "1");
+      const price = Number(searchParams.get("price") || "1.80");
+      const calculatedSubtotal = price * qty;
+      const calculatedShipping = 15.00;
+      const calculatedTotal = calculatedSubtotal + calculatedShipping;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+      const orderData = {
+        orderId: `SMP-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toISOString().split("T")[0],
+        productId,
+        productName,
+        variantName,
+        quantity: qty,
+        unitPrice: price,
+        subtotal: calculatedSubtotal,
+        shippingFee: calculatedShipping,
+        total: calculatedTotal,
+        customer: { name, email, company, phone, taxId: "" },
+        shipping: { address, city, state, zip, country },
+        payment: { gateway, transactionId: txnid, status: "Paid" },
+        status: "Payment Confirmed"
+      };
+
+      if (typeof window !== "undefined") {
+        const existingStr = localStorage.getItem("gsp_sample_orders");
+        const existing = existingStr ? JSON.parse(existingStr) : [];
+        const isDuplicate = existing.some((o: any) => o.payment.transactionId === txnid);
+        if (!isDuplicate) {
+          localStorage.setItem("gsp_sample_orders", JSON.stringify([orderData, ...existing]));
+        }
+      }
+
+      setTxnId(txnid);
+      setPaymentStatus("success");
+    } else if (statusParam === "failed") {
+      alert("Transaction failed or was canceled by user.");
+      router.replace("/checkout?slug=" + slug);
+    }
+  }, [searchParams]);
+
+  // 4. Mount PayPal Smart Buttons if live mode is active
+  useEffect(() => {
+    if (paymentGateway !== "paypal" || !isPaypalConfigured) {
+      return;
+    }
+
+    let isMounted = true;
+    const initPaypal = async () => {
+      const src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD`;
+      const loaded = await loadScript(src);
+      if (loaded && isMounted) {
+        setPaypalLoaded(true);
+        const container = document.getElementById("paypal-button-container");
+        if (container) {
+          container.innerHTML = ""; // Clear
+          (window as any).paypal.Buttons({
+            createOrder: async () => {
+              const res = await fetch("/api/paypal/create-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ amount: grandTotal }),
+              });
+              if (!res.ok) {
+                const err = await res.json();
+                alert(err.error || "Failed to create PayPal order.");
+                throw new Error("Failed to create order");
+              }
+              const order = await res.json();
+              return order.id;
+            },
+            onApprove: async (data: any) => {
+              setIsProcessingPayment(true);
+              const res = await fetch("/api/paypal/capture-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderID: data.orderID }),
+              });
+              if (res.ok) {
+                const captureData = await res.json();
+                saveOrderSuccess("PayPal", captureData.id);
+              } else {
+                alert("Failed to capture PayPal transaction.");
+                setIsProcessingPayment(false);
+              }
+            },
+            onError: (err: any) => {
+              console.error("PayPal Error:", err);
+              alert("A PayPal gateway error occurred.");
+            }
+          }).render("#paypal-button-container");
+        }
+      }
+    };
+
+    initPaypal();
+    return () => {
+      isMounted = false;
+    };
+  }, [paymentGateway, grandTotal, product]);
+
+  // 5. Razorpay Real Checkout Flow
+  const handleRazorpayCheckout = async () => {
+    if (!product) return;
+    setIsProcessingPayment(true);
+    try {
+      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay SDK. Please check your internet connection.");
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Convert USD to INR (Razorpay domestic transactions require INR/paise)
+      const amountInINR = grandTotal * 83.5;
+      const res = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amountInINR }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to initiate Razorpay transaction.");
+      }
+
+      const rzpOrder = await res.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: rzpOrder.amount,
+        currency: "INR",
+        name: "Global Speaker Parts",
+        description: `B2B Sample - ${product.name}`,
+        order_id: rzpOrder.id,
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: "#000000"
+        },
+        handler: async function (response: any) {
+          setIsProcessingPayment(true);
+          const verifyRes = await fetch("/api/razorpay/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+
+          if (verifyRes.ok) {
+            saveOrderSuccess("Razorpay", response.razorpay_payment_id);
+          } else {
+            alert("Razorpay payment verification failed.");
+            setIsProcessingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
+          }
+        }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err: any) {
+      alert(err.message || "An error occurred during Razorpay checkout.");
+      setIsProcessingPayment(false);
+    }
   };
 
+  // 6. PayU Real Redirect Flow
+  const handlePayuCheckout = async () => {
+    if (!product) return;
+    setIsProcessingPayment(true);
+    try {
+      const txnid = `TXN-${Math.floor(100000 + Math.random() * 900000)}`;
+      const res = await fetch("/api/payu/hash", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          txnid,
+          amount: grandTotal,
+          productinfo: product.name,
+          firstname: formData.name,
+          email: formData.email,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to generate PayU hash.");
+      }
+
+      const { hash, key } = await res.json();
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "https://test.payu.in/_payment"; // Sandbox URL
+
+      const params: Record<string, string> = {
+        key,
+        txnid,
+        amount: grandTotal.toFixed(2),
+        productinfo: product.name,
+        firstname: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        hash,
+        surl: `${window.location.origin}/checkout?status=success&gateway=PayU&txnid=${txnid}&email=${encodeURIComponent(formData.email)}&name=${encodeURIComponent(formData.name)}&company=${encodeURIComponent(formData.company)}&phone=${encodeURIComponent(formData.phone)}&address=${encodeURIComponent(formData.address)}&city=${encodeURIComponent(formData.city)}&state=${encodeURIComponent(formData.state)}&zip=${encodeURIComponent(formData.zip)}&country=${encodeURIComponent(formData.country)}&product_id=${product.id}&product_name=${encodeURIComponent(product.name)}&variant=${encodeURIComponent(activeVariant?.name || "Standard")}&qty=${quantity}&price=${unitPrice}`,
+        furl: `${window.location.origin}/checkout?status=failed`,
+      };
+
+      Object.entries(params).forEach(([name, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err: any) {
+      alert(err.message || "PayU redirect failed.");
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // 7. General Submit Form router
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    setPaymentStatus("modal");
+
+    if (paymentGateway === "razorpay" && isRazorpayConfigured) {
+      handleRazorpayCheckout();
+    } else if (paymentGateway === "payu") {
+      handlePayuCheckout();
+    } else {
+      // Missing key or Sandbox simulation fallback
+      setPaymentStatus("modal");
+    }
   };
 
   const handleSimulateSuccess = () => {
     setIsProcessingPayment(true);
     setTimeout(() => {
       const generatedTxn = `${paymentGateway.toUpperCase()}-PAY-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-      setTxnId(generatedTxn);
-
-      const orderData = {
-        orderId: `SMP-${Math.floor(100000 + Math.random() * 900000)}`,
-        date: new Date().toISOString().split("T")[0],
-        productId: product.id,
-        productName: product.name,
-        variantName: activeVariant?.name || "Standard",
-        quantity: quantity,
-        unitPrice: unitPrice,
-        subtotal: subtotal,
-        shippingFee: shippingFee,
-        total: grandTotal,
-        customer: {
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          phone: formData.phone,
-          taxId: formData.taxId,
-        },
-        shipping: {
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          country: formData.country,
-        },
-        payment: {
-          gateway: paymentGateway,
-          transactionId: generatedTxn,
-          status: "Paid"
-        },
-        status: "Payment Confirmed"
-      };
-
-      // Save to localStorage
-      if (typeof window !== "undefined") {
-        const existingStr = localStorage.getItem("gsp_sample_orders");
-        const existing = existingStr ? JSON.parse(existingStr) : [];
-        localStorage.setItem("gsp_sample_orders", JSON.stringify([orderData, ...existing]));
-      }
-
-      setIsProcessingPayment(false);
-      setPaymentStatus("success");
-    }, 1500);
+      saveOrderSuccess(paymentGateway.toUpperCase(), generatedTxn);
+    }, 1200);
   };
 
   if (paymentStatus === "success") {
@@ -277,7 +563,12 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "paypal" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "paypal"} onChange={() => setPaymentGateway("paypal")} className="accent-black" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-black">PayPal</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-black font-semibold">PayPal</span>
+                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isPaypalConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
+                      {isPaypalConfigured ? "Live" : "Simulation"}
+                    </span>
+                  </div>
                   <span className="text-[8px] text-slate-400 font-normal">International Cards</span>
                 </div>
               </label>
@@ -286,7 +577,12 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "razorpay" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "razorpay"} onChange={() => setPaymentGateway("razorpay")} className="accent-black" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-black">Razorpay</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-black font-semibold">Razorpay</span>
+                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isRazorpayConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
+                      {isRazorpayConfigured ? "Live" : "Simulation"}
+                    </span>
+                  </div>
                   <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
                 </div>
               </label>
@@ -295,15 +591,44 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "payu" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "payu"} onChange={() => setPaymentGateway("payu")} className="accent-black" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-black">PayU Gateway</span>
-                  <span className="text-[8px] text-slate-400 font-normal">Secure B2B Processing</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-black font-semibold">PayU India</span>
+                    <span className="text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                      Simulation
+                    </span>
+                  </div>
+                  <span className="text-[8px] text-slate-400 font-normal">Secure B2B Redirect</span>
                 </div>
               </label>
             </div>
 
-            <button type="submit" className="w-full inline-flex items-center justify-center gap-1.5 py-4 bg-black border border-black hover:bg-white hover:text-black text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer">
-              Place Order & Pay {convertPrice(`$${grandTotal.toFixed(2)}`)} <ArrowRight size={14} />
-            </button>
+            {/* Sandbox notice banner if gateway is in simulation mode */}
+            {((paymentGateway === "paypal" && !isPaypalConfigured) || 
+              (paymentGateway === "razorpay" && !isRazorpayConfigured) || 
+              (paymentGateway === "payu")) && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2.5 text-amber-800 text-[10px] leading-relaxed">
+                <span className="text-xs shrink-0 mt-0.5">⚠️</span>
+                <div>
+                  <strong className="font-bold block">Gateway running in Sandbox Simulation</strong>
+                  This gateway is operating in simulation mode. To process real money B2B card/UPI payments, add your merchant client keys to your <code className="font-mono bg-white/60 px-1 py-0.5 rounded border border-amber-200/55 text-amber-950 font-semibold">.env.local</code> file.
+                </div>
+              </div>
+            )}
+
+            {/* PayPal dynamic buttons mount point */}
+            {paymentGateway === "paypal" && isPaypalConfigured && (
+              <div className="mt-4 space-y-2">
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Express Checkout with PayPal:</div>
+                <div id="paypal-button-container" className="w-full relative z-10 min-h-[50px]"></div>
+              </div>
+            )}
+
+            {/* Default submit button for simulated gateways & non-paypal live gateways */}
+            {(!isPaypalConfigured || paymentGateway !== "paypal") && (
+              <button type="submit" className="w-full inline-flex items-center justify-center gap-1.5 py-4 bg-black border border-black hover:bg-white hover:text-black text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer">
+                Place Order & Pay {convertPrice(`$${grandTotal.toFixed(2)}`)} <ArrowRight size={14} />
+              </button>
+            )}
           </form>
 
           {/* RIGHT COLUMN: Order Summary */}
