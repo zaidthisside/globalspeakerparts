@@ -287,7 +287,7 @@ export default function CategoryPage() {
             )}
           </div>
           <div className="flex-shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#EAEAEA] bg-[#F7F7F8] text-[10px] uppercase tracking-wider font-bold text-[#5C5C63]">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black bg-white text-[10px] uppercase tracking-wider font-bold text-black">
               <Package size={12} />
               {filteredProducts.length}{" "}
               {filteredProducts.length === 1 ? "Product" : "Products"}

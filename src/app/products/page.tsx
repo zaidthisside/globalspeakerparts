@@ -597,8 +597,12 @@ function ProductsCatalog() {
 
           {/* ─── PRODUCT LIST GRID (100% SUPABASE SYNCED) ─────────── */}
           <section className="flex-1 space-y-6">
-            <div className="flex justify-between items-center text-xs text-slate-500 border-b border-slate-200 pb-2">
-              <span>Showing <strong className="text-black font-semibold">{filteredProducts.length}</strong> OEM speaker components</span>
+            <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black bg-white text-[10px] uppercase tracking-wider font-bold text-black">
+                <Package size={12} />
+                {filteredProducts.length}{" "}
+                {filteredProducts.length === 1 ? "Product" : "Products"}
+              </span>
               {loadingProds && <span className="text-[10px] text-slate-400 font-medium tracking-wide">Syncing catalog...</span>}
             </div>
 
