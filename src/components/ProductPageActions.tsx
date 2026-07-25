@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Package, Tag, ShoppingBag } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 
@@ -18,7 +20,9 @@ interface ProductPageActionsProps {
 
 export default function ProductPageActions({ product, whatsappUrl }: ProductPageActionsProps) {
   const { convertPrice } = useCurrency();
+  const params = useParams();
   const [added, setAdded] = useState(false);
+  const slug = params?.productSlug || params?.slug;
 
   const handleAddToInquiry = () => {
     if (typeof window !== 'undefined') {
@@ -83,6 +87,15 @@ export default function ProductPageActions({ product, whatsappUrl }: ProductPage
           <ShoppingBag className="w-4 h-4 shrink-0" />
           <span>{added ? '✓ Added to Inquiry' : 'Add to Inquiry'}</span>
         </button>
+
+        {slug && (
+          <Link
+            href={`/checkout?slug=${slug}`}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 text-[10px] font-bold tracking-widest text-black bg-white hover:bg-slate-50 border border-black rounded-lg transition-all uppercase"
+          >
+            <span>Buy Sample Now</span>
+          </Link>
+        )}
 
         <a
           href={whatsappUrl}

@@ -721,6 +721,12 @@ function ProductsCatalog() {
                           {isJustAdded ? <Check size={12} /> : null}
                           {isJustAdded ? "Added!" : "Add To Inquiry"}
                         </button>
+                        <Link
+                          href={`/checkout?slug=${product.slug}`}
+                          className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2.5 text-[10px] font-bold tracking-wider rounded-lg border border-black bg-white text-black hover:bg-slate-50 transition-all uppercase"
+                        >
+                          Buy Sample Now
+                        </Link>
 
                         {/* Contact Us WhatsApp */}
                         <a

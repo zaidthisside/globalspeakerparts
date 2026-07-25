@@ -118,7 +118,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
 
   // Navigation
-  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings" | "orders">("overview");
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
@@ -145,6 +145,8 @@ export default function AdminPage() {
   // Inquiries
   const [inquiries, setInquiries] = useState<Record<string, string>[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sampleOrders, setSampleOrders] = useState<any[]>([]);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
 
   // Settings
   const [whatsappNumber, setWhatsappNumber] = useState("+91 9214361550");
@@ -160,6 +162,10 @@ export default function AdminPage() {
       const storedInq = localStorage.getItem("gsp_inquiries");
       if (storedInq) {
         try { setInquiries(JSON.parse(storedInq)); } catch {}
+      }
+      const storedOrders = localStorage.getItem("gsp_sample_orders");
+      if (storedOrders) {
+        try { setSampleOrders(JSON.parse(storedOrders)); } catch {}
       }
     }
   }, []);
@@ -500,6 +506,23 @@ export default function AdminPage() {
     });
   }, [inquiries, searchQuery]);
 
+  const handleUpdateOrderStatus = (orderId: string, newStatus: string) => {
+    setSampleOrders(prev => {
+      const updated = prev.map(order => order.orderId === orderId ? { ...order, status: newStatus } : order);
+      if (typeof window !== "undefined") localStorage.setItem("gsp_sample_orders", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const filteredOrders = useMemo(() => {
+    return sampleOrders.filter(order => {
+      return (order.customer?.company || "").toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        (order.customer?.name || "").toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        (order.productName || "").toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        (order.payment?.transactionId || "").toLowerCase().includes(orderSearchQuery.toLowerCase());
+    });
+  }, [sampleOrders, orderSearchQuery]);
+
   // ═══════════════════════════════════════════════════════════════════
   // LOGIN SCREEN
   // ═══════════════════════════════════════════════════════════════════
@@ -583,6 +606,7 @@ export default function AdminPage() {
             { id: "categories", label: "Categories", icon: Layers },
             { id: "products", label: "Products", icon: Cpu },
             { id: "inquiries", label: "RFQs & Inquiries", icon: FileText },
+            { id: "orders", label: "Sample Orders", icon: Truck },
             { id: "settings", label: "Settings", icon: Settings },
           ].map((tab) => {
             const isSelected = activeTab === tab.id;
@@ -603,6 +627,9 @@ export default function AdminPage() {
                 )}
                 {tab.id === "products" && products.length > 0 && (
                   <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{products.length}</span>
+                )}
+                {tab.id === "orders" && sampleOrders.length > 0 && (
+                  <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{sampleOrders.length}</span>
                 )}
               </button>
             );
@@ -860,6 +887,78 @@ export default function AdminPage() {
                             <option value="Quoted">Quoted</option>
                             <option value="Samples in Transit">In Transit</option>
                             <option value="Samples Approved">Approved</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ─── ORDERS TAB ───────────────────────────────────────────── */}
+          {activeTab === "orders" && (
+            <div className="bg-white border border-border-cool rounded-premium shadow-soft overflow-hidden animate-fade-in space-y-6 p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 border-b border-border-cool pb-5">
+                <div>
+                  <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider">Prepaid Sample Orders</h3>
+                  <p className="text-[10px] text-slate-400 font-light">Monitor and track prepaid customer evaluations (DHL/FedEx).</p>
+                </div>
+                <div className="relative">
+                  <input type="text" placeholder="Search orders..." value={orderSearchQuery} onChange={(e) => setOrderSearchQuery(e.target.value)} className={`${inputClass} pl-8`} />
+                  <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400" />
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse">
+                  <thead className="bg-bg-snow text-primary-midnight font-bold border-b border-border-cool">
+                    <tr>
+                      <th className="px-4 py-3">Order Details</th>
+                      <th className="px-4 py-3">Customer</th>
+                      <th className="px-4 py-3">Paid Total</th>
+                      <th className="px-4 py-3">Gateway</th>
+                      <th className="px-4 py-3">Date</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-cool text-slate-700">
+                    {filteredOrders.length === 0 ? (
+                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">No prepaid sample orders found.</td></tr>
+                    ) : filteredOrders.map((order) => (
+                      <tr key={order.orderId} className="hover:bg-bg-snow/30">
+                        <td className="px-4 py-4">
+                          <strong className="text-primary-midnight font-bold block">{order.orderId}</strong>
+                          <span className="text-[10px] text-slate-500 block truncate max-w-[150px]">{order.productName} ({order.variantName})</span>
+                          <span className="text-[9px] text-slate-400 block font-light">Qty: {order.quantity} units</span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <strong className="text-primary-midnight font-bold block">{order.customer?.company || "Individual"}</strong>
+                          <span className="text-[10px] text-slate-500 block">{order.customer?.name} ({order.customer?.phone})</span>
+                          <span className="text-[9px] text-slate-450 block truncate max-w-[160px] font-mono">{order.customer?.email}</span>
+                          <span className="text-[9px] text-slate-400 block font-light truncate max-w-[160px]">{order.shipping?.address}, {order.shipping?.city}, {order.shipping?.country}</span>
+                        </td>
+                        <td className="px-4 py-4 font-mono font-bold text-black">${order.total?.toFixed(2)}</td>
+                        <td className="px-4 py-4">
+                          <span className="text-[9px] font-bold text-slate-500 uppercase block">{order.payment?.gateway}</span>
+                          <span className="text-[8px] font-mono text-slate-400 block truncate max-w-[100px]">{order.payment?.transactionId}</span>
+                        </td>
+                        <td className="px-4 py-4 text-slate-400">{order.date}</td>
+                        <td className="px-4 py-4">
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
+                            order.status === "Payment Confirmed" ? "text-blue-600 bg-blue-50 border border-blue-200" :
+                            order.status === "Processing" ? "text-amber-600 bg-amber-50 border border-amber-200" :
+                            order.status === "Shipped" ? "text-green-600 bg-green-50 border border-green-250" :
+                            "text-slate-600 bg-slate-50 border border-slate-200"
+                          }`}>{order.status}</span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <select value={order.status} onChange={(e) => handleUpdateOrderStatus(order.orderId, e.target.value)} className="bg-white border border-border-cool rounded px-2 py-1 text-[10px] cursor-pointer">
+                            <option value="Payment Confirmed">Confirmed</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
                           </select>
                         </td>
                       </tr>
