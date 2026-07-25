@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, currency = "USD" } = await req.json();
 
-    const keys = getGatewayKeys();
+    const keys = await getGatewayKeys();
     const clientId = keys.paypalClientId;
     const clientSecret = keys.paypalSecret;
     const environment = keys.paypalEnvironment;

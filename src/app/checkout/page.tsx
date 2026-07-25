@@ -36,7 +36,7 @@ function CheckoutForm() {
   const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu">("paypal");
 
   // Pricing calculations
-  const activeVariant = product ? (product.variants[selectedVariantIdx] || null) : null;
+  const activeVariant = product && Array.isArray(product.variants) ? (product.variants[selectedVariantIdx] || null) : null;
   const unitPrice = activeVariant?.price !== null && activeVariant?.price !== undefined ? Number(activeVariant.price) : 1.80;
   const subtotal = unitPrice * quantity;
   const shippingFee = 15.00; // Flat Express Air Shipping
@@ -200,7 +200,7 @@ function CheckoutForm() {
     return <PageLoader size="lg" />;
   }
 
-  if (!product) {
+  if (!product || !Array.isArray(product.variants)) {
     return (
       <div className="min-h-[70vh] bg-white flex flex-col items-center justify-center p-6 text-center font-sans">
         <Package className="w-16 h-16 text-slate-350 mb-4" />
@@ -271,7 +271,7 @@ function CheckoutForm() {
       alert("Transaction failed or was canceled by user.");
       router.replace("/checkout?slug=" + slug);
     }
-  }, [searchParams]);
+  }, [searchParams, slug, router]);
 
   // 4. Mount PayPal Smart Buttons if live mode is active
   useEffect(() => {

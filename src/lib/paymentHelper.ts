@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { supabase } from "@/lib/supabaseClient";
 
 export interface GatewayKeys {
   razorpayKeyId: string;
@@ -9,7 +10,29 @@ export interface GatewayKeys {
   paypalEnvironment: "sandbox" | "live";
 }
 
-export function getGatewayKeys(): GatewayKeys {
+export async function getGatewayKeys(): Promise<GatewayKeys> {
+  // 1. Try Supabase Database first
+  try {
+    const { data, error } = await supabase
+      .from("payment_settings")
+      .select("*")
+      .eq("id", "default")
+      .single();
+
+    if (data && !error) {
+      return {
+        razorpayKeyId: data.razorpay_key_id || "",
+        razorpaySecret: data.razorpay_secret || "",
+        paypalClientId: data.paypal_client_id || "",
+        paypalSecret: data.paypal_secret || "",
+        paypalEnvironment: (data.environment || "sandbox") as "sandbox" | "live",
+      };
+    }
+  } catch (e) {
+    console.warn("Supabase query error on payment_settings, falling back:", e);
+  }
+
+  // 2. Fallback to Local JSON Settings file
   const settingsPath = path.join(process.cwd(), "scratch", "payment_settings.json");
   if (fs.existsSync(settingsPath)) {
     try {
@@ -22,10 +45,11 @@ export function getGatewayKeys(): GatewayKeys {
         paypalEnvironment: (settings.environment || process.env.PAYPAL_ENVIRONMENT || "sandbox") as "sandbox" | "live",
       };
     } catch (e) {
-      console.error("Failed to read payment settings:", e);
+      console.error("Failed to read payment settings JSON:", e);
     }
   }
 
+  // 3. Fallback to Environment Variables
   return {
     razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
     razorpaySecret: process.env.RAZORPAY_KEY_SECRET || "",

@@ -192,3 +192,28 @@ DROP POLICY IF EXISTS "Allow all" ON payments;
 CREATE POLICY "Allow all" ON orders FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all" ON payments FOR ALL USING (true) WITH CHECK (true);
 
+
+-- ─── 13. Create Payment Settings Table ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS payment_settings (
+  id TEXT PRIMARY KEY DEFAULT 'default',
+  enable_razorpay BOOLEAN DEFAULT FALSE,
+  enable_paypal BOOLEAN DEFAULT FALSE,
+  razorpay_key_id TEXT,
+  razorpay_secret TEXT,
+  paypal_client_id TEXT,
+  paypal_secret TEXT,
+  environment TEXT DEFAULT 'sandbox',
+  default_currency TEXT DEFAULT 'USD',
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE payment_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all" ON payment_settings;
+CREATE POLICY "Allow all" ON payment_settings FOR ALL USING (true) WITH CHECK (true);
+
+-- Insert default row if not exists
+INSERT INTO payment_settings (id, enable_razorpay, enable_paypal, environment, default_currency)
+VALUES ('default', false, false, 'sandbox', 'USD')
+ON CONFLICT (id) DO NOTHING;
+
+

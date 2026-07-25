@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, currency = "INR" } = await req.json();
 
-    const keys = getGatewayKeys();
+    const keys = await getGatewayKeys();
     const keyId = keys.razorpayKeyId;
     const keySecret = keys.razorpaySecret;
 

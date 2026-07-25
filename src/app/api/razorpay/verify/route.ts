@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, order } = await req.json();
 
-    const keys = getGatewayKeys();
+    const keys = await getGatewayKeys();
     const keySecret = keys.razorpaySecret;
     if (!keySecret) {
       return NextResponse.json(

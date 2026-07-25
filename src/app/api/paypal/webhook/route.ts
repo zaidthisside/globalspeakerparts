@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const rawBody = await req.text();
     const body = JSON.parse(rawBody);
 
-    const keys = getGatewayKeys();
+    const keys = await getGatewayKeys();
     const clientId = keys.paypalClientId;
     const clientSecret = keys.paypalSecret;
     const environment = keys.paypalEnvironment;
