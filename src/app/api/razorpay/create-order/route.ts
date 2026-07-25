@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getGatewayKeys } from "@/lib/paymentHelper";
 
 export async function POST(req: NextRequest) {
   try {
     const { amount, currency = "INR" } = await req.json();
 
-    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const keys = getGatewayKeys();
+    const keyId = keys.razorpayKeyId;
+    const keySecret = keys.razorpaySecret;
 
     if (!keyId || !keySecret) {
       return NextResponse.json(

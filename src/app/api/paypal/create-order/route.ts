@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getGatewayKeys } from "@/lib/paymentHelper";
 
-async function getAccessToken(clientId: string, clientSecret: string) {
+async function getAccessToken(clientId: string, clientSecret: string, environment: "sandbox" | "live") {
+  const baseUrl = environment === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-  const res = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
+  const res = await fetch(`${baseUrl}/v1/oauth2/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -23,8 +25,10 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, currency = "USD" } = await req.json();
 
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+    const keys = getGatewayKeys();
+    const clientId = keys.paypalClientId;
+    const clientSecret = keys.paypalSecret;
+    const environment = keys.paypalEnvironment;
 
     if (!clientId || !clientSecret) {
       return NextResponse.json(
@@ -33,8 +37,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const accessToken = await getAccessToken(clientId, clientSecret);
-    const response = await fetch("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
+    const accessToken = await getAccessToken(clientId, clientSecret, environment);
+    const baseUrl = environment === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
+    
+    const response = await fetch(`${baseUrl}/v2/checkout/orders`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,

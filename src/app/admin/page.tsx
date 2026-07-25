@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert, X, Upload,
-  Edit, Trash2, Eye, EyeOff, Star, ChevronDown, ChevronUp, Save, Copy, ArrowLeft, Layers, Tag, Settings, Image as ImageIcon, HelpCircle, Download, GripVertical
+  Edit, Trash2, Eye, EyeOff, Star, ChevronDown, ChevronUp, Save, Copy, ArrowLeft, Layers, Tag, Settings, Image as ImageIcon, HelpCircle, Download, GripVertical, Loader2, CreditCard
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
@@ -118,7 +118,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
 
   // Navigation
-  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings" | "orders">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings" | "orders" | "payments" | "payment-settings">("overview");
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
@@ -147,6 +147,36 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sampleOrders, setSampleOrders] = useState<any[]>([]);
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
+
+  // Payments State
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loadingPayments, setLoadingPayments] = useState(false);
+  const [paymentSearch, setPaymentSearch] = useState("");
+  const [paymentGatewayFilter, setPaymentGatewayFilter] = useState("all");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
+  const [paymentSortKey, setPaymentSortKey] = useState("created_at");
+  const [paymentSortOrder, setPaymentSortOrder] = useState<"asc" | "desc">("desc");
+  const [selectedPayment, setSelectedPayment] = useState<any | null>(null);
+  const [paymentPage, setPaymentPage] = useState(1);
+  // Refund state
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundType, setRefundType] = useState<"full" | "partial">("full");
+  const [processingRefund, setProcessingRefund] = useState(false);
+
+  // Payment settings state
+  const [paymentSettings, setPaymentSettings] = useState({
+    enableRazorpay: false,
+    enablePaypal: false,
+    razorpayKeyId: "",
+    razorpaySecret: "",
+    paypalClientId: "",
+    paypalSecret: "",
+    environment: "sandbox",
+    defaultCurrency: "USD",
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+
 
   // Settings
   const [whatsappNumber, setWhatsappNumber] = useState("+91 9214361550");
@@ -207,12 +237,110 @@ export default function AdminPage() {
     setProdLoading(false);
   }, [prodCategoryFilter, prodSearch]);
 
+  const fetchPayments = useCallback(async () => {
+    setLoadingPayments(true);
+    try {
+      const res = await fetch("/api/payments?t=" + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) setPayments(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch payments:", e);
+    } finally {
+      setLoadingPayments(false);
+    }
+  }, []);
+
+  const fetchPaymentSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/payment-settings?t=" + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        setPaymentSettings(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch payment settings:", e);
+    }
+  }, []);
+
+  const handleSavePaymentSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const res = await fetch("/api/payment-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentSettings),
+      });
+      if (res.ok) {
+        alert("Payment settings saved securely.");
+        fetchPaymentSettings();
+      } else {
+        alert("Failed to save payment settings.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error saving settings.");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleProcessRefund = async () => {
+    if (!selectedPayment) return;
+    setProcessingRefund(true);
+    try {
+      const amountToRefund = refundType === "full" ? selectedPayment.amount : Number(refundAmount);
+      
+      if (isNaN(amountToRefund) || amountToRefund <= 0 || amountToRefund > selectedPayment.amount) {
+        alert("Please enter a valid refund amount.");
+        setProcessingRefund(false);
+        return;
+      }
+
+      const res = await fetch("/api/payments", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: selectedPayment.id,
+          payment_status: refundType === "full" ? "Refunded" : "Partially Refunded",
+          refund_status: refundType === "full" ? "Full Refund" : "Partial Refund",
+          refund_amount: (selectedPayment.refund_amount || 0) + amountToRefund,
+          gateway_response: {
+            refund_processed_at: new Date().toISOString(),
+            refund_type: refundType,
+            refunded_by: "Admin Session",
+          }
+        }),
+      });
+
+      if (res.ok) {
+        alert(`Successfully processed ${refundType} refund for $${amountToRefund.toFixed(2)}.`);
+        setShowRefundModal(false);
+        setRefundAmount("");
+        fetchPayments();
+        setSelectedPayment(null);
+      } else {
+        alert("Refund processing failed on database update.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error processing refund.");
+    } finally {
+      setProcessingRefund(false);
+    }
+  };
+
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchCategories();
       fetchProducts();
+      fetchPayments();
+      fetchPaymentSettings();
     }
-  }, [isAuthenticated, fetchCategories, fetchProducts]);
+  }, [isAuthenticated, fetchCategories, fetchProducts, fetchPayments, fetchPaymentSettings]);
 
   // ─── Category CRUD ───────────────────────────────────────────────
   const saveCat = async (cat: Partial<Category>) => {
@@ -523,6 +651,101 @@ export default function AdminPage() {
     });
   }, [sampleOrders, orderSearchQuery]);
 
+  const paymentStats = useMemo(() => {
+    const paidPayments = payments.filter(p => p.payment_status === "Paid" || p.payment_status === "Partially Refunded");
+    const failedPayments = payments.filter(p => p.payment_status === "Failed" || p.payment_status === "Cancelled");
+    const pendingPayments = payments.filter(p => p.payment_status === "Pending");
+    const refundedPayments = payments.filter(p => p.payment_status === "Refunded" || p.payment_status === "Partially Refunded");
+
+    const totalRevenue = paidPayments.reduce((acc, p) => acc + Number(p.amount), 0);
+    const totalRefunds = payments.reduce((acc, p) => acc + Number(p.refund_amount || 0), 0);
+    const netRevenue = totalRevenue - totalRefunds;
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    const todayRevenue = paidPayments
+      .filter(p => p.created_at?.startsWith(todayStr))
+      .reduce((acc, p) => acc + Number(p.amount), 0);
+
+    const aov = paidPayments.length > 0 ? totalRevenue / paidPayments.length : 0;
+
+    const totalTxns = payments.length;
+    const successRate = totalTxns > 0 ? (paidPayments.length / totalTxns) * 100 : 100;
+
+    // Daily revenue for last 7 days
+    const dailyRev: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split("T")[0];
+      dailyRev[key] = 0;
+    }
+
+    paidPayments.forEach(p => {
+      const dateKey = p.created_at?.split("T")[0];
+      if (dateKey in dailyRev) {
+        dailyRev[dateKey] += Number(p.amount);
+      }
+    });
+
+    // Gateway split
+    const gateways: Record<string, number> = { PayPal: 0, Razorpay: 0, Other: 0 };
+    paidPayments.forEach(p => {
+      const gw = p.payment_gateway || "Other";
+      if (gw in gateways) {
+        gateways[gw] += Number(p.amount);
+      } else {
+        gateways.Other += Number(p.amount);
+      }
+    });
+
+    return {
+      totalRevenue,
+      netRevenue,
+      totalRefunds,
+      todayRevenue,
+      paidCount: paidPayments.length,
+      failedCount: failedPayments.length,
+      pendingCount: pendingPayments.length,
+      refundCount: refundedPayments.length,
+      aov,
+      successRate,
+      dailyRev: Object.entries(dailyRev).map(([date, val]) => ({ date, val })),
+      gateways,
+    };
+  }, [payments]);
+
+  const filteredPayments = useMemo(() => {
+    return payments
+      .filter(p => {
+        const matchSearch =
+          (p.customer_name || "").toLowerCase().includes(paymentSearch.toLowerCase()) ||
+          (p.customer_email || "").toLowerCase().includes(paymentSearch.toLowerCase()) ||
+          (p.transaction_id || "").toLowerCase().includes(paymentSearch.toLowerCase()) ||
+          (p.order_number || "").toLowerCase().includes(paymentSearch.toLowerCase());
+        
+        const matchGateway = paymentGatewayFilter === "all" || p.payment_gateway?.toLowerCase() === paymentGatewayFilter.toLowerCase();
+        const matchStatus = paymentStatusFilter === "all" || p.payment_status?.toLowerCase() === paymentStatusFilter.toLowerCase();
+
+        return matchSearch && matchGateway && matchStatus;
+      })
+      .sort((a, b) => {
+        let valA = a[paymentSortKey];
+        let valB = b[paymentSortKey];
+        
+        if (paymentSortKey === "amount") {
+          valA = Number(valA || 0);
+          valB = Number(valB || 0);
+        } else {
+          valA = String(valA || "").toLowerCase();
+          valB = String(valB || "").toLowerCase();
+        }
+
+        if (valA < valB) return paymentSortOrder === "asc" ? -1 : 1;
+        if (valA > valB) return paymentSortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+  }, [payments, paymentSearch, paymentGatewayFilter, paymentStatusFilter, paymentSortKey, paymentSortOrder]);
+
   // ═══════════════════════════════════════════════════════════════════
   // LOGIN SCREEN
   // ═══════════════════════════════════════════════════════════════════
@@ -607,6 +830,8 @@ export default function AdminPage() {
             { id: "products", label: "Products", icon: Cpu },
             { id: "inquiries", label: "RFQs & Inquiries", icon: FileText },
             { id: "orders", label: "Sample Orders", icon: Truck },
+            { id: "payments", label: "Payments", icon: FileText },
+            { id: "payment-settings", label: "Payment Settings", icon: Settings },
             { id: "settings", label: "Settings", icon: Settings },
           ].map((tab) => {
             const isSelected = activeTab === tab.id;
@@ -630,6 +855,9 @@ export default function AdminPage() {
                 )}
                 {tab.id === "orders" && sampleOrders.length > 0 && (
                   <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{sampleOrders.length}</span>
+                )}
+                {tab.id === "payments" && payments.length > 0 && (
+                  <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{payments.length}</span>
                 )}
               </button>
             );
@@ -917,6 +1145,7 @@ export default function AdminPage() {
                       <th className="px-4 py-3">Order Details</th>
                       <th className="px-4 py-3">Customer</th>
                       <th className="px-4 py-3">Paid Total</th>
+                      <th className="px-4 py-3">Payment Status</th>
                       <th className="px-4 py-3">Gateway</th>
                       <th className="px-4 py-3">Date</th>
                       <th className="px-4 py-3">Status</th>
@@ -925,34 +1154,48 @@ export default function AdminPage() {
                   </thead>
                   <tbody className="divide-y divide-border-cool text-slate-700">
                     {filteredOrders.length === 0 ? (
-                      <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">No prepaid sample orders found.</td></tr>
-                    ) : filteredOrders.map((order) => (
-                      <tr key={order.orderId} className="hover:bg-bg-snow/30">
-                        <td className="px-4 py-4">
-                          <strong className="text-primary-midnight font-bold block">{order.orderId}</strong>
-                          <span className="text-[10px] text-slate-500 block truncate max-w-[150px]">{order.productName} ({order.variantName})</span>
-                          <span className="text-[9px] text-slate-400 block font-light">Qty: {order.quantity} units</span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <strong className="text-primary-midnight font-bold block">{order.customer?.company || "Individual"}</strong>
-                          <span className="text-[10px] text-slate-500 block">{order.customer?.name} ({order.customer?.phone})</span>
-                          <span className="text-[9px] text-slate-450 block truncate max-w-[160px] font-mono">{order.customer?.email}</span>
-                          <span className="text-[9px] text-slate-400 block font-light truncate max-w-[160px]">{order.shipping?.address}, {order.shipping?.city}, {order.shipping?.country}</span>
-                        </td>
-                        <td className="px-4 py-4 font-mono font-bold text-black">${order.total?.toFixed(2)}</td>
-                        <td className="px-4 py-4">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase block">{order.payment?.gateway}</span>
-                          <span className="text-[8px] font-mono text-slate-400 block truncate max-w-[100px]">{order.payment?.transactionId}</span>
-                        </td>
-                        <td className="px-4 py-4 text-slate-400">{order.date}</td>
-                        <td className="px-4 py-4">
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
-                            order.status === "Payment Confirmed" ? "text-blue-600 bg-blue-50 border border-blue-200" :
-                            order.status === "Processing" ? "text-amber-600 bg-amber-50 border border-amber-200" :
-                            order.status === "Shipped" ? "text-green-600 bg-green-50 border border-green-250" :
-                            "text-slate-600 bg-slate-50 border border-slate-200"
-                          }`}>{order.status}</span>
-                        </td>
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400">No prepaid sample orders found.</td></tr>
+                    ) : filteredOrders.map((order) => {
+                      const matchedPayment = payments.find(p => p.order_number === order.orderId || p.order_id === order.id || p.transaction_id === order.payment?.transactionId);
+                      const paymentStatus = matchedPayment?.payment_status || order.payment?.status || "Paid";
+                      return (
+                        <tr key={order.orderId} className="hover:bg-bg-snow/30">
+                          <td className="px-4 py-4">
+                            <strong className="text-primary-midnight font-bold block">{order.orderId}</strong>
+                            <span className="text-[10px] text-slate-500 block truncate max-w-[150px]">{order.productName} ({order.variantName})</span>
+                            <span className="text-[9px] text-slate-400 block font-light">Qty: {order.quantity} units</span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <strong className="text-primary-midnight font-bold block">{order.customer?.company || "Individual"}</strong>
+                            <span className="text-[10px] text-slate-500 block">{order.customer?.name} ({order.customer?.phone})</span>
+                            <span className="text-[9px] text-slate-450 block truncate max-w-[160px] font-mono">{order.customer?.email}</span>
+                            <span className="text-[9px] text-slate-400 block font-light truncate max-w-[160px]">{order.shipping?.address}, {order.shipping?.city}, {order.shipping?.country}</span>
+                          </td>
+                          <td className="px-4 py-4 font-mono font-bold text-black">${order.total?.toFixed(2)}</td>
+                          <td className="px-4 py-4">
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase ${
+                              paymentStatus === "Paid" ? "bg-green-50 text-green-700 border border-green-200" :
+                              paymentStatus === "Refunded" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                              paymentStatus === "Failed" ? "bg-red-50 text-red-700 border border-red-200" :
+                              paymentStatus === "Cancelled" ? "bg-slate-50 text-slate-500 border border-slate-200" :
+                              "bg-yellow-50 text-yellow-750 border border-yellow-200"
+                            }`}>
+                              {paymentStatus}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className="text-[9px] font-bold text-slate-500 uppercase block">{order.payment?.gateway}</span>
+                            <span className="text-[8px] font-mono text-slate-400 block truncate max-w-[100px]">{order.payment?.transactionId}</span>
+                          </td>
+                          <td className="px-4 py-4 text-slate-400">{order.date}</td>
+                          <td className="px-4 py-4">
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
+                              order.status === "Payment Confirmed" ? "text-blue-600 bg-blue-50 border border-blue-200" :
+                              order.status === "Processing" ? "text-amber-600 bg-amber-50 border border-amber-200" :
+                              order.status === "Shipped" ? "text-green-600 bg-green-50 border border-green-250" :
+                              "text-slate-600 bg-slate-50 border border-slate-200"
+                            }`}>{order.status}</span>
+                          </td>
                         <td className="px-4 py-4">
                           <select value={order.status} onChange={(e) => handleUpdateOrderStatus(order.orderId, e.target.value)} className="bg-white border border-border-cool rounded px-2 py-1 text-[10px] cursor-pointer">
                             <option value="Payment Confirmed">Confirmed</option>
@@ -962,7 +1205,8 @@ export default function AdminPage() {
                           </select>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -970,8 +1214,9 @@ export default function AdminPage() {
           )}
 
           {/* ─── SETTINGS TAB ─────────────────────────────────────────── */}
+          {/* ─── SETTINGS TAB ─────────────────────────────────────────── */}
           {activeTab === "settings" && (
-            <div className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-4 animate-fade-in">
+            <div className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-4 animate-fade-in font-sans">
               <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider border-b border-border-cool pb-3">B2B Channel Settings</h3>
               <FormField label="Global WhatsApp Contact Number">
                 <input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} className={inputClass} placeholder="+91 9214361550" />
@@ -979,6 +1224,568 @@ export default function AdminPage() {
               <button onClick={() => { localStorage.setItem("gsp_whatsapp_number", whatsappNumber); alert("Settings saved!"); }} className={btnPrimary}>
                 <Save className="w-3.5 h-3.5" /> SAVE SETTINGS
               </button>
+            </div>
+          )}
+
+          {/* ─── PAYMENTS TAB ─────────────────────────────────────────── */}
+          {activeTab === "payments" && (
+            <div className="space-y-8 animate-fade-in font-sans">
+              {/* Payment Dashboard Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[
+                  { label: "Total Revenue", value: `$${paymentStats.totalRevenue.toFixed(2)}`, change: `Net: $${paymentStats.netRevenue.toFixed(2)}`, icon: FileText },
+                  { label: "Today's Volume", value: `$${paymentStats.todayRevenue.toFixed(2)}`, change: "Real-time volume", icon: Globe },
+                  { label: "Successful Transactions", value: paymentStats.paidCount.toString(), change: `Rate: ${paymentStats.successRate.toFixed(1)}%`, icon: Star },
+                  { label: "Refunds Issued", value: `$${paymentStats.totalRefunds.toFixed(2)}`, change: `${paymentStats.refundCount} transactions`, icon: ShieldAlert },
+                ].map((card, i) => (
+                  <div key={i} className="bg-white border border-border-cool p-5 rounded-premium shadow-soft flex items-center justify-between">
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{card.label}</span>
+                      <span className="font-display text-lg font-extrabold text-[#0f0f10]">{card.value}</span>
+                      <span className="text-[10px] text-slate-400 font-medium block">{card.change}</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-bg-snow border border-border-cool flex items-center justify-center text-primary-midnight shrink-0">
+                      <card.icon className="w-5 h-5 text-[#5c5c63]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Analytics Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Chart 1: Daily Revenue */}
+                <div className="lg:col-span-2 bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-4">
+                  <h4 className="text-xs font-bold text-primary-midnight uppercase tracking-wider">7-Day Daily Revenue</h4>
+                  <div className="h-48 flex items-end justify-between gap-2 pt-4">
+                    {paymentStats.dailyRev.map((day, idx) => {
+                      const maxVal = Math.max(...paymentStats.dailyRev.map(d => d.val), 1);
+                      const heightPercent = (day.val / maxVal) * 80;
+                      return (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+                          <span className="text-[8px] font-bold text-slate-500 font-mono">${day.val.toFixed(0)}</span>
+                          <div 
+                            style={{ height: `${heightPercent}%` }} 
+                            className="w-full bg-[#0F0F10] rounded-t-md hover:bg-slate-700 transition-all cursor-pointer relative group"
+                          >
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity mb-1 whitespace-nowrap z-10 pointer-events-none font-mono">
+                              {day.date}
+                            </div>
+                          </div>
+                          <span className="text-[8px] text-slate-400 font-bold uppercase truncate max-w-full">
+                            {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Chart 2: Gateway Split & Performance */}
+                <div className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-5">
+                  <h4 className="text-xs font-bold text-primary-midnight uppercase tracking-wider">Gateway Metrics</h4>
+                  <div className="space-y-4 pt-2">
+                    {/* Average Order Value */}
+                    <div className="flex justify-between items-center border-b border-border-cool pb-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg Order Value (AOV)</span>
+                      <span className="text-xs font-mono font-extrabold text-black">${paymentStats.aov.toFixed(2)}</span>
+                    </div>
+
+                    {/* Gateway split display */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
+                        <span>Gateway Split</span>
+                      </div>
+                      <div className="h-3 w-full bg-bg-snow rounded-full overflow-hidden flex border border-border-cool">
+                        {(() => {
+                          const total = (paymentStats.gateways.PayPal || 0) + (paymentStats.gateways.Razorpay || 0) + (paymentStats.gateways.Other || 0) || 1;
+                          const paypalPercent = ((paymentStats.gateways.PayPal || 0) / total) * 100;
+                          const razorpayPercent = ((paymentStats.gateways.Razorpay || 0) / total) * 100;
+                          const otherPercent = 100 - paypalPercent - razorpayPercent;
+                          return (
+                            <>
+                              <div style={{ width: `${paypalPercent}%` }} className="bg-blue-600 h-full" title={`PayPal: $${paymentStats.gateways.PayPal.toFixed(2)}`} />
+                              <div style={{ width: `${razorpayPercent}%` }} className="bg-[#118A8E] h-full" title={`Razorpay: $${paymentStats.gateways.Razorpay.toFixed(2)}`} />
+                              <div style={{ width: `${otherPercent}%` }} className="bg-slate-400 h-full" title={`Other: $${paymentStats.gateways.Other.toFixed(2)}`} />
+                            </>
+                          );
+                        })()}
+                      </div>
+                      <div className="flex justify-between text-[8px] font-bold text-slate-400 uppercase">
+                        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-blue-600 rounded-full" /> PayPal (${paymentStats.gateways.PayPal.toFixed(0)})</span>
+                        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-[#118A8E] rounded-full" /> Razorpay (${paymentStats.gateways.Razorpay.toFixed(0)})</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search, Filter, Sort Controls */}
+              <div className="bg-white border border-border-cool p-4 rounded-premium shadow-soft flex flex-wrap gap-4 items-center justify-between">
+                <div className="flex flex-wrap gap-3 items-center flex-1">
+                  <div className="relative min-w-[200px] flex-1 max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input 
+                      type="text" 
+                      value={paymentSearch} 
+                      onChange={(e) => { setPaymentSearch(e.target.value); setPaymentPage(1); }} 
+                      placeholder="Search payment ID, email, order..." 
+                      className="pl-9 pr-4 py-2 border border-border-cool rounded-lg text-xs outline-none focus:border-[#0F0F10] w-full"
+                    />
+                  </div>
+
+                  <select 
+                    value={paymentGatewayFilter} 
+                    onChange={(e) => { setPaymentGatewayFilter(e.target.value); setPaymentPage(1); }}
+                    className="border border-border-cool rounded-lg px-3 py-2 text-xs text-black outline-none bg-slate-50 cursor-pointer"
+                  >
+                    <option value="all">All Gateways</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="razorpay">Razorpay</option>
+                  </select>
+
+                  <select 
+                    value={paymentStatusFilter} 
+                    onChange={(e) => { setPaymentStatusFilter(e.target.value); setPaymentPage(1); }}
+                    className="border border-border-cool rounded-lg px-3 py-2 text-xs text-black outline-none bg-slate-50 cursor-pointer"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="paid">Paid</option>
+                    <option value="failed">Failed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="pending">Pending</option>
+                    <option value="refunded">Refunded</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
+                  <span>Sort by:</span>
+                  <button 
+                    onClick={() => {
+                      if (paymentSortKey === "amount") {
+                        setPaymentSortOrder(o => o === "asc" ? "desc" : "asc");
+                      } else {
+                        setPaymentSortKey("amount");
+                        setPaymentSortOrder("desc");
+                      }
+                      setPaymentPage(1);
+                    }}
+                    className={`px-2 py-1 rounded hover:bg-slate-50 ${paymentSortKey === "amount" ? "text-black bg-slate-100" : ""}`}
+                  >
+                    Amount {paymentSortKey === "amount" && (paymentSortOrder === "asc" ? "↑" : "↓")}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (paymentSortKey === "created_at") {
+                        setPaymentSortOrder(o => o === "asc" ? "desc" : "asc");
+                      } else {
+                        setPaymentSortKey("created_at");
+                        setPaymentSortOrder("desc");
+                      }
+                      setPaymentPage(1);
+                    }}
+                    className={`px-2 py-1 rounded hover:bg-slate-50 ${paymentSortKey === "created_at" ? "text-black bg-slate-100" : ""}`}
+                  >
+                    Date {paymentSortKey === "created_at" && (paymentSortOrder === "asc" ? "↑" : "↓")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Payments List Table */}
+              <div className="bg-white border border-border-cool rounded-premium shadow-soft overflow-hidden">
+                {loadingPayments ? (
+                  <div className="p-12 text-center text-slate-400 text-xs">
+                    <Loader2 className="animate-spin w-6 h-6 mx-auto mb-2 text-black" />
+                    Fetching payment records from Supabase...
+                  </div>
+                ) : filteredPayments.length === 0 ? (
+                  <div className="p-12 text-center text-slate-400 text-xs">
+                    No matching payment records found in transaction log.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-border-cool text-slate-500 font-bold uppercase tracking-wider text-[9px]">
+                          <th className="px-6 py-4">Transaction ID</th>
+                          <th className="px-6 py-4">Order Number</th>
+                          <th className="px-6 py-4">Customer Name</th>
+                          <th className="px-6 py-4">Gateway</th>
+                          <th className="px-6 py-4">Amount</th>
+                          <th className="px-6 py-4">Status</th>
+                          <th className="px-6 py-4">Date</th>
+                          <th className="px-6 py-4 text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(() => {
+                          const itemsPerPage = 10;
+                          const startIndex = (paymentPage - 1) * itemsPerPage;
+                          const paginatedPayments = filteredPayments.slice(startIndex, startIndex + itemsPerPage);
+                          return paginatedPayments.map((p) => (
+                            <tr key={p.id} className="border-b border-border-cool hover:bg-slate-50 transition-colors">
+                              <td className="px-6 py-3.5 font-mono text-[10px] text-slate-600 max-w-[150px] truncate">{p.transaction_id || "N/A"}</td>
+                              <td className="px-6 py-3.5 font-bold text-black">{p.order_number || "N/A"}</td>
+                              <td className="px-6 py-3.5">
+                                <div className="font-semibold text-black">{p.customer_name}</div>
+                                <div className="text-[10px] text-slate-400 font-medium">{p.customer_email}</div>
+                              </td>
+                              <td className="px-6 py-3.5 font-bold uppercase tracking-wider text-[9px]">{p.payment_gateway}</td>
+                              <td className="px-6 py-3.5 font-mono font-bold text-black">
+                                {p.amount ? `$${Number(p.amount).toFixed(2)}` : "$0.00"}
+                              </td>
+                              <td className="px-6 py-3.5">
+                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                                  p.payment_status === "Paid" ? "bg-green-50 text-green-700 border border-green-200" :
+                                  p.payment_status === "Refunded" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                                  p.payment_status === "Failed" ? "bg-red-50 text-red-700 border border-red-200" :
+                                  p.payment_status === "Cancelled" ? "bg-slate-50 text-slate-500 border border-slate-200" :
+                                  "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                }`}>
+                                  {p.payment_status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-3.5 text-slate-400 font-medium">{p.created_at ? new Date(p.created_at).toLocaleDateString() : "N/A"}</td>
+                              <td className="px-6 py-3.5 text-center">
+                                <button 
+                                  onClick={() => setSelectedPayment(p)}
+                                  className="inline-flex items-center justify-center p-1.5 border border-border-cool hover:border-[#0f0f10] text-[#0f0f10] rounded hover:bg-slate-50 transition-colors cursor-pointer"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+
+                    {/* Pagination */}
+                    {Math.ceil(filteredPayments.length / 10) > 1 && (
+                      <div className="flex justify-between items-center px-6 py-4 bg-slate-50 border-t border-border-cool">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                          Page {paymentPage} of {Math.ceil(filteredPayments.length / 10)}
+                        </span>
+                        <div className="flex gap-2">
+                          <button 
+                            disabled={paymentPage === 1}
+                            onClick={() => setPaymentPage(p => Math.max(1, p - 1))}
+                            className="px-3 py-1.5 border border-border-cool text-xs rounded hover:bg-slate-100 transition-colors disabled:opacity-40 font-bold uppercase tracking-wider"
+                          >
+                            Previous
+                          </button>
+                          <button 
+                            disabled={paymentPage >= Math.ceil(filteredPayments.length / 10)}
+                            onClick={() => setPaymentPage(p => p + 1)}
+                            className="px-3 py-1.5 border border-border-cool text-xs rounded hover:bg-slate-100 transition-colors disabled:opacity-40 font-bold uppercase tracking-wider"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ─── PAYMENT SETTINGS TAB ──────────────────────────────────── */}
+          {activeTab === "payment-settings" && (
+            <form onSubmit={handleSavePaymentSettings} className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-6 animate-fade-in font-sans">
+              <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider border-b border-border-cool pb-3">Payment Settings Configuration</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-border-cool pb-6">
+                {/* Razorpay Config */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-slate-400" /> Razorpay Gateway
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={paymentSettings.enableRazorpay} 
+                        onChange={(e) => setPaymentSettings(p => ({ ...p, enableRazorpay: e.target.checked }))} 
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-black"></div>
+                    </label>
+                  </div>
+                  
+                  <FormField label="Razorpay Key ID">
+                    <input 
+                      type="text" 
+                      value={paymentSettings.razorpayKeyId} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, razorpayKeyId: e.target.value }))}
+                      disabled={!paymentSettings.enableRazorpay}
+                      className={inputClass} 
+                      placeholder="rzp_test_..."
+                    />
+                  </FormField>
+
+                  <FormField label="Razorpay Secret Key">
+                    <input 
+                      type="password" 
+                      value={paymentSettings.razorpaySecret} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, razorpaySecret: e.target.value }))}
+                      disabled={!paymentSettings.enableRazorpay}
+                      className={inputClass} 
+                      placeholder={paymentSettings.razorpaySecret ? "••••••••••••••••" : "Enter secret key"}
+                    />
+                  </FormField>
+                </div>
+
+                {/* PayPal Config */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-slate-400" /> PayPal checkout
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={paymentSettings.enablePaypal} 
+                        onChange={(e) => setPaymentSettings(p => ({ ...p, enablePaypal: e.target.checked }))} 
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-black"></div>
+                    </label>
+                  </div>
+
+                  <FormField label="PayPal Client ID">
+                    <input 
+                      type="text" 
+                      value={paymentSettings.paypalClientId} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, paypalClientId: e.target.value }))}
+                      disabled={!paymentSettings.enablePaypal}
+                      className={inputClass} 
+                      placeholder="client_id_..."
+                    />
+                  </FormField>
+
+                  <FormField label="PayPal Client Secret">
+                    <input 
+                      type="password" 
+                      value={paymentSettings.paypalSecret} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, paypalSecret: e.target.value }))}
+                      disabled={!paymentSettings.enablePaypal}
+                      className={inputClass} 
+                      placeholder={paymentSettings.paypalSecret ? "••••••••••••••••" : "Enter client secret"}
+                    />
+                  </FormField>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
+                <FormField label="Gateway environment">
+                  <select 
+                    value={paymentSettings.environment} 
+                    onChange={(e) => setPaymentSettings(p => ({ ...p, environment: e.target.value }))}
+                    className="border border-border-cool rounded-lg px-3 py-2.5 text-xs text-black outline-none bg-slate-50 cursor-pointer focus:bg-white transition-all"
+                  >
+                    <option value="sandbox">Sandbox (Testing)</option>
+                    <option value="live">Live (Production)</option>
+                  </select>
+                </FormField>
+
+                <FormField label="Default Currency">
+                  <select 
+                    value={paymentSettings.defaultCurrency} 
+                    onChange={(e) => setPaymentSettings(p => ({ ...p, defaultCurrency: e.target.value }))}
+                    className="border border-border-cool rounded-lg px-3 py-2.5 text-xs text-black outline-none bg-slate-50 cursor-pointer focus:bg-white transition-all"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="INR">INR (₹)</option>
+                  </select>
+                </FormField>
+              </div>
+
+              <button type="submit" disabled={savingSettings} className={btnPrimary}>
+                {savingSettings ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> SAVING...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" /> SAVE PAYMENT SETTINGS
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Payment Detail Modal Drawer */}
+          {selectedPayment && (
+            <div className="fixed inset-0 bg-black/40 z-50 flex justify-end font-sans transition-opacity animate-fade-in">
+              <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col p-6 overflow-y-auto animate-slide-in relative border-l border-border-cool">
+                <button 
+                  onClick={() => setSelectedPayment(null)}
+                  className="absolute right-4 top-4 p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-black cursor-pointer transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                
+                <h3 className="font-display text-sm font-extrabold text-[#0f0f10] uppercase tracking-wider border-b border-border-cool pb-3.5 mb-5 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-slate-400" /> Transaction Detail
+                </h3>
+
+                <div className="space-y-6">
+                  {/* Status Indicator */}
+                  <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-border-cool">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Transaction Status:</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                      selectedPayment.payment_status === "Paid" ? "bg-green-50 text-green-700 border border-green-200" :
+                      selectedPayment.payment_status === "Refunded" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                      selectedPayment.payment_status === "Failed" ? "bg-red-50 text-red-700 border border-red-200" :
+                      "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                    }`}>
+                      {selectedPayment.payment_status}
+                    </span>
+                  </div>
+
+                  {/* Customer details */}
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider border-l-2 border-black pl-2">Customer Profile</h4>
+                    <div className="text-xs space-y-1.5 pl-2 font-medium">
+                      <div className="flex justify-between"><span className="text-slate-400">Name:</span><span className="text-black font-semibold">{selectedPayment.customer_name}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Email:</span><span className="text-black font-semibold">{selectedPayment.customer_email}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Phone:</span><span className="text-black font-semibold">{selectedPayment.customer_phone || "N/A"}</span></div>
+                    </div>
+                  </div>
+
+                  {/* Order Specifications */}
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider border-l-2 border-black pl-2">Specification Purchased</h4>
+                    <div className="text-xs space-y-1.5 pl-2 font-medium">
+                      <div className="flex justify-between"><span className="text-slate-400">Product Name:</span><span className="text-black font-semibold text-right max-w-[200px] truncate">{selectedPayment.product_name || "N/A"}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Variant:</span><span className="text-black font-semibold">{selectedPayment.variant_name || "Standard"}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Transaction ID:</span><span className="font-mono font-bold text-black">{selectedPayment.transaction_id}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Order Number Reference:</span><span className="text-black font-semibold">#{selectedPayment.order_number || "N/A"}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Amount Transacted:</span><span className="text-black font-extrabold font-mono">${Number(selectedPayment.amount).toFixed(2)}</span></div>
+                      {selectedPayment.refund_amount > 0 && (
+                        <div className="flex justify-between text-red-600"><span className="font-semibold">Refunded Amount:</span><span className="font-extrabold font-mono">-${Number(selectedPayment.refund_amount).toFixed(2)}</span></div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Gateway details */}
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider border-l-2 border-black pl-2">Gateway details</h4>
+                    <div className="text-xs space-y-1.5 pl-2 font-medium">
+                      <div className="flex justify-between"><span className="text-slate-400">Payment Gateway:</span><span className="text-black font-bold uppercase text-[9px]">{selectedPayment.payment_gateway}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Gateway Order ID:</span><span className="font-mono text-black">{selectedPayment.gateway_order_id || "N/A"}</span></div>
+                      <div className="flex justify-between"><span className="text-slate-400">Gateway Payment ID:</span><span className="font-mono text-black">{selectedPayment.gateway_payment_id || "N/A"}</span></div>
+                    </div>
+                  </div>
+
+                  {/* Scrollable Gateway JSON raw response */}
+                  {selectedPayment.gateway_response && (
+                    <div className="space-y-2">
+                      <h4 className="text-[10px] font-bold text-[#0F0F10] uppercase tracking-wider border-l-2 border-black pl-2">Gateway Raw Payload</h4>
+                      <pre className="p-3 bg-slate-50 border border-border-cool text-[9px] font-mono text-slate-500 overflow-auto max-h-36 rounded-lg leading-relaxed whitespace-pre-wrap">
+                        {JSON.stringify(selectedPayment.gateway_response, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+
+                  {/* Actions (Refund & invoice) */}
+                  <div className="flex gap-3 pt-3 border-t border-border-cool">
+                    {(selectedPayment.payment_status === "Paid" || selectedPayment.payment_status === "Partially Refunded") && (
+                      <button 
+                        onClick={() => {
+                          setRefundAmount((selectedPayment.amount - (selectedPayment.refund_amount || 0)).toFixed(2));
+                          setShowRefundModal(true);
+                        }}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 border border-red-500 text-red-500 font-bold rounded-lg text-[10px] uppercase hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        Refund Payment
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => {
+                        window.print();
+                      }}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 border border-[#0f0f10] text-[#0f0f10] font-bold rounded-lg text-[10px] uppercase hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Download Invoice
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Refund Modal Popup */}
+          {showRefundModal && selectedPayment && (
+            <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center font-sans p-4 animate-fade-in">
+              <div className="w-full max-w-sm bg-white border-2 border-black rounded-premium p-6 shadow-2xl relative space-y-4">
+                <button 
+                  onClick={() => setShowRefundModal(false)}
+                  className="absolute right-4 top-4 text-slate-400 hover:text-black cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider flex items-center gap-1.5">
+                  🛡️ Issue Transaction Refund
+                </h4>
+                <p className="text-[10px] text-slate-500 leading-relaxed font-semibold">
+                  You are issuing a refund for order ref <code className="font-mono bg-slate-50 px-1 py-0.5 border border-border-cool rounded">#{selectedPayment.order_number}</code>. This transaction was processed using {selectedPayment.payment_gateway}.
+                </p>
+
+                <div className="space-y-3">
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-1.5 text-xs text-black cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="refund_type" 
+                        checked={refundType === "full"} 
+                        onChange={() => {
+                          setRefundType("full");
+                          setRefundAmount((selectedPayment.amount - (selectedPayment.refund_amount || 0)).toFixed(2));
+                        }} 
+                      /> Full Refund
+                    </label>
+                    <label className="flex items-center gap-1.5 text-xs text-black cursor-pointer font-bold">
+                      <input 
+                        type="radio" 
+                        name="refund_type" 
+                        checked={refundType === "partial"} 
+                        onChange={() => setRefundType("partial")} 
+                      /> Partial Refund
+                    </label>
+                  </div>
+
+                  {refundType === "partial" && (
+                    <FormField label={`Partial amount (Max $${(selectedPayment.amount - (selectedPayment.refund_amount || 0)).toFixed(2)})`}>
+                      <input 
+                        type="number" 
+                        step="0.01"
+                        value={refundAmount} 
+                        onChange={(e) => setRefundAmount(e.target.value)} 
+                        className={inputClass}
+                        placeholder="0.00"
+                      />
+                    </FormField>
+                  )}
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button 
+                    onClick={() => setShowRefundModal(false)}
+                    className="flex-1 py-2.5 border border-border-cool text-[9px] font-bold uppercase rounded hover:bg-slate-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleProcessRefund}
+                    disabled={processingRefund}
+                    className="flex-1 py-2.5 bg-red-600 text-white text-[9px] font-bold uppercase rounded hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+                  >
+                    {processingRefund ? "Processing..." : "Process Refund"}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 

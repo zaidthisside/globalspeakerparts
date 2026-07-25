@@ -133,3 +133,62 @@ CREATE POLICY "Allow all" ON product_images FOR ALL USING (true) WITH CHECK (tru
 CREATE POLICY "Allow all" ON downloads FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all" ON faqs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all" ON related_products FOR ALL USING (true) WITH CHECK (true);
+
+-- ─── 10. Create Orders Table ───────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_number TEXT UNIQUE NOT NULL,
+  customer_name TEXT NOT NULL,
+  customer_email TEXT NOT NULL,
+  customer_phone TEXT,
+  shipping_address TEXT NOT NULL,
+  shipping_city TEXT NOT NULL,
+  shipping_state TEXT NOT NULL,
+  shipping_zip TEXT NOT NULL,
+  shipping_country TEXT NOT NULL,
+  product_id UUID NOT NULL,
+  product_name TEXT NOT NULL,
+  variant_name TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  unit_price NUMERIC NOT NULL,
+  subtotal NUMERIC NOT NULL,
+  shipping_fee NUMERIC NOT NULL,
+  total NUMERIC NOT NULL,
+  status TEXT DEFAULT 'Payment Confirmed',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- ─── 11. Create Payments Table ───────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS payments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
+  order_number TEXT,
+  customer_name TEXT,
+  customer_email TEXT,
+  customer_phone TEXT,
+  payment_gateway TEXT NOT NULL,
+  gateway_payment_id TEXT,
+  gateway_order_id TEXT,
+  transaction_id TEXT,
+  currency TEXT NOT NULL DEFAULT 'USD',
+  amount NUMERIC NOT NULL,
+  payment_status TEXT NOT NULL,
+  payment_date TIMESTAMPTZ DEFAULT now(),
+  refund_status TEXT,
+  refund_amount NUMERIC,
+  gateway_response JSONB,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- ─── 12. Enable RLS and Add Policies for Orders and Payments ───────────────────
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all" ON orders;
+DROP POLICY IF EXISTS "Allow all" ON payments;
+
+CREATE POLICY "Allow all" ON orders FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all" ON payments FOR ALL USING (true) WITH CHECK (true);
+

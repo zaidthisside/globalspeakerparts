@@ -65,10 +65,46 @@ function CheckoutForm() {
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "modal" | "success">("idle");
   const [txnId, setTxnId] = useState("");
   const [paypalLoaded, setPaypalLoaded] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Configuration check flags
-  const isRazorpayConfigured = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-  const isPaypalConfigured = !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+  const [paymentSettings, setPaymentSettings] = useState<any>({
+    enableRazorpay: false,
+    enablePaypal: false,
+    paypalClientId: "",
+    razorpayKeyId: "",
+    paypalEnvironment: "sandbox",
+  });
+
+  // Dynamic configuration flags loaded from DB/config settings
+  const isRazorpayConfigured = paymentSettings.enableRazorpay && !!paymentSettings.razorpayKeyId;
+  const isPaypalConfigured = paymentSettings.enablePaypal && !!paymentSettings.paypalClientId;
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("/api/payment-settings");
+        if (res.ok) {
+          const data = await res.json();
+          setPaymentSettings(data);
+        }
+      } catch (err) {
+        console.error("Failed to load checkout settings:", err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const validateForm = () => {
+    if (!formData.name.trim()) return "Contact Name is required";
+    if (!formData.email.trim()) return "Business Email is required";
+    if (!formData.phone.trim()) return "Phone Number is required";
+    if (!formData.address.trim()) return "Shipping Address is required";
+    if (!formData.city.trim()) return "City is required";
+    if (!formData.state.trim()) return "State/Province is required";
+    if (!formData.zip.trim()) return "ZIP/Postal Code is required";
+    return null;
+  };
 
   const loadScript = (src: string): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -132,6 +168,8 @@ function CheckoutForm() {
 
     setTxnId(transactionId);
     setPaymentStatus("success");
+    setPaymentError(null);
+    setValidationError(null);
   };
 
   // 2. Fetch product info
@@ -243,7 +281,7 @@ function CheckoutForm() {
 
     let isMounted = true;
     const initPaypal = async () => {
-      const src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD`;
+      const src = `https://www.paypal.com/sdk/js?client-id=${paymentSettings.paypalClientId}&currency=USD`;
       const loaded = await loadScript(src);
       if (loaded && isMounted) {
         setPaypalLoaded(true);
@@ -251,6 +289,16 @@ function CheckoutForm() {
         if (container) {
           container.innerHTML = ""; // Clear
           (window as any).paypal.Buttons({
+            onClick: (data: any, actions: any) => {
+              const err = validateForm();
+              if (err) {
+                setValidationError(err);
+                alert(err);
+                return actions.reject();
+              }
+              setValidationError(null);
+              return actions.resolve();
+            },
             createOrder: async () => {
               const res = await fetch("/api/paypal/create-order", {
                 method: "POST",
@@ -267,22 +315,45 @@ function CheckoutForm() {
             },
             onApprove: async (data: any) => {
               setIsProcessingPayment(true);
+              const orderPayload = {
+                customer_name: formData.name,
+                customer_email: formData.email,
+                customer_phone: formData.phone,
+                shipping_address: formData.address,
+                shipping_city: formData.city,
+                shipping_state: formData.state,
+                shipping_zip: formData.zip,
+                shipping_country: formData.country,
+                product_id: product!.id,
+                product_name: product!.name,
+                variant_name: activeVariant?.name || "Standard",
+                quantity: quantity,
+                unit_price: unitPrice,
+                subtotal: subtotal,
+                shipping_fee: shippingFee,
+                total: grandTotal,
+              };
+
               const res = await fetch("/api/paypal/capture-order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderID: data.orderID }),
+                body: JSON.stringify({ orderID: data.orderID, order: orderPayload }),
               });
               if (res.ok) {
                 const captureData = await res.json();
-                saveOrderSuccess("PayPal", captureData.id);
+                saveOrderSuccess("PayPal", captureData.transaction_id);
               } else {
+                setPaymentError("Payment Failed");
                 alert("Failed to capture PayPal transaction.");
                 setIsProcessingPayment(false);
               }
             },
+            onCancel: () => {
+              setPaymentError("Payment Cancelled");
+            },
             onError: (err: any) => {
               console.error("PayPal Error:", err);
-              alert("A PayPal gateway error occurred.");
+              setPaymentError("Payment Failed");
             }
           }).render("#paypal-button-container");
         }
@@ -293,10 +364,18 @@ function CheckoutForm() {
     return () => {
       isMounted = false;
     };
-  }, [paymentGateway, grandTotal, product]);
+  }, [paymentGateway, grandTotal, product, formData, paymentSettings, isPaypalConfigured]);
 
   // 5. Razorpay Real Checkout Flow
   const handleRazorpayCheckout = async () => {
+    const err = validateForm();
+    if (err) {
+      setValidationError(err);
+      alert(err);
+      return;
+    }
+    setValidationError(null);
+
     if (!product) return;
     setIsProcessingPayment(true);
     try {
@@ -322,8 +401,27 @@ function CheckoutForm() {
 
       const rzpOrder = await res.json();
 
+      const orderPayload = {
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        shipping_address: formData.address,
+        shipping_city: formData.city,
+        shipping_state: formData.state,
+        shipping_zip: formData.zip,
+        shipping_country: formData.country,
+        product_id: product.id,
+        product_name: product.name,
+        variant_name: activeVariant?.name || "Standard",
+        quantity: quantity,
+        unit_price: unitPrice,
+        subtotal: subtotal,
+        shipping_fee: shippingFee,
+        total: grandTotal,
+      };
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: paymentSettings.razorpayKeyId,
         amount: rzpOrder.amount,
         currency: "INR",
         name: "Global Speaker Parts",
@@ -342,18 +440,24 @@ function CheckoutForm() {
           const verifyRes = await fetch("/api/razorpay/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
+            body: JSON.stringify({
+              ...response,
+              order: orderPayload,
+            }),
           });
 
           if (verifyRes.ok) {
-            saveOrderSuccess("Razorpay", response.razorpay_payment_id);
+            const verifyData = await verifyRes.json();
+            saveOrderSuccess("Razorpay", verifyData.transaction_id);
           } else {
+            setPaymentError("Payment Failed");
             alert("Razorpay payment verification failed.");
             setIsProcessingPayment(false);
           }
         },
         modal: {
           ondismiss: function () {
+            setPaymentError("Payment Cancelled");
             setIsProcessingPayment(false);
           }
         }
@@ -369,6 +473,14 @@ function CheckoutForm() {
 
   // 6. PayU Real Redirect Flow
   const handlePayuCheckout = async () => {
+    const err = validateForm();
+    if (err) {
+      setValidationError(err);
+      alert(err);
+      return;
+    }
+    setValidationError(null);
+
     if (!product) return;
     setIsProcessingPayment(true);
     try {
@@ -428,13 +540,21 @@ function CheckoutForm() {
   // 7. General Submit Form router
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const err = validateForm();
+    if (err) {
+      setValidationError(err);
+      alert(err);
+      return;
+    }
+    setValidationError(null);
 
     if (paymentGateway === "razorpay" && isRazorpayConfigured) {
       handleRazorpayCheckout();
     } else if (paymentGateway === "payu") {
       handlePayuCheckout();
     } else {
-      // Missing key or Sandbox simulation fallback
+      // Show local mock gateway selection modal
       setPaymentStatus("modal");
     }
   };
@@ -491,6 +611,26 @@ function CheckoutForm() {
           
           {/* LEFT COLUMN: Shipping & Billing Form */}
           <form onSubmit={handlePlaceOrder} className="bg-white border-2 border-black rounded-xl p-5 sm:p-8 space-y-6 shadow-sm">
+            {paymentError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2.5 text-red-800 text-xs font-semibold mb-6">
+                <span className="text-sm shrink-0">❌</span>
+                <div>
+                  <strong className="font-bold block uppercase tracking-wider">{paymentError}</strong>
+                  Your payment transaction was not completed. Please try again or choose another payment method.
+                </div>
+              </div>
+            )}
+
+            {validationError && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2.5 text-amber-800 text-xs font-semibold mb-6">
+                <span className="text-sm shrink-0">⚠️</span>
+                <div>
+                  <strong className="font-bold block uppercase tracking-wider">Validation Error</strong>
+                  {validationError}
+                </div>
+              </div>
+            )}
+
             <h2 className="font-display text-sm font-extrabold uppercase text-black border-b border-black pb-3">1. Business Shipping Information</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -626,7 +766,7 @@ function CheckoutForm() {
             {/* Default submit button for simulated gateways & non-paypal live gateways */}
             {(!isPaypalConfigured || paymentGateway !== "paypal") && (
               <button type="submit" className="w-full inline-flex items-center justify-center gap-1.5 py-4 bg-black border border-black hover:bg-white hover:text-black text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer">
-                Place Order & Pay {convertPrice(`$${grandTotal.toFixed(2)}`)} <ArrowRight size={14} />
+                {paymentError ? "Retry Payment" : "Place Order & Pay"} {convertPrice(`$${grandTotal.toFixed(2)}`)} <ArrowRight size={14} />
               </button>
             )}
           </form>
