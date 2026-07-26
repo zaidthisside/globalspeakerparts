@@ -68,7 +68,7 @@ export default function Footer() {
     { name: "Speaker Cones", href: "/products?cat=cones" },
     { name: "Voice Coils", href: "/products?cat=coils" },
     { name: "Spiders (Dampers)", href: "/products?cat=spiders" },
-    { name: "Magnets & Spares", href: "/products?cat=magnets" },
+    { name: "Speaker Edge & Ports", href: "/products?cat=speaker-edge-ports" },
     { name: "Speaker Frames & Yokes", href: "/products?cat=frames" },
     { name: "Tweeter & Complete Parts", href: "/products?cat=tweeters" },
   ];

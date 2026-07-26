@@ -88,7 +88,7 @@ export default function InquiryForm({
     "Spiders (Dampers)",
     "Dust Caps",
     "Speaker Surrounds",
-    "Magnets",
+    "Speaker Edge & Ports",
     "Pole Pieces",
     "Top Plates",
     "Bottom Plates",

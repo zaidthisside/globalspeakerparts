@@ -23,7 +23,7 @@ const homeCategories = [
   { name: "Terminals & Lead Wire", href: "/speaker-terminals", image: "/category-terminals-leadwire.jpg" },
   { name: "Subwoofers", href: "/subwoofers", image: "/subwoofer.jpg" },
   { name: "Speaker Frames", href: "/speaker-frames", image: "/speaker-frame.jpg" },
-  { name: "Magnets", href: "/magnets", image: "/magnet.jpg" }
+  { name: "Speaker Edge & Ports", href: "/speaker-edge-ports", image: "/speaker-edge-ports.jpg" }
 ];
 
 
@@ -201,10 +201,10 @@ export default function Home() {
             ))}
           </div>
 
-          {/* MOBILE LAYOUT: 3 columns, 3 rows (excludes Magnets, border very thin) */}
+          {/* MOBILE LAYOUT: 3 columns, 3 rows (excludes Speaker Edge & Ports, border very thin) */}
           <div className="grid sm:hidden grid-cols-3 gap-y-4 gap-x-2.5 max-w-[480px] mx-auto font-sans">
             {homeCategories
-              .filter((cat) => cat.name !== "Magnets")
+              .filter((cat) => cat.name !== "Speaker Edge & Ports")
               .map((cat) => (
                 <Link 
                   key={cat.name}
