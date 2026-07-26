@@ -21,7 +21,7 @@ const navigationItems = [
       { name: "Dust Caps", href: "/dust-caps" },
       { name: "Diaphragms", href: "/diaphragms" },
       { name: "Terminals & Lead Wire", href: "/speaker-terminals" },
-      { name: "Subwoofers", href: "/subwoofers" },
+      { name: "Speaker Edges & Ports", href: "/speaker-edge-ports" },
     ]
   },
   {
