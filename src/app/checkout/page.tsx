@@ -218,22 +218,6 @@ function CheckoutForm() {
     fetchProduct();
   }, [slug]);
 
-  if (loading) {
-    return <PageLoader size="lg" />;
-  }
-
-  if (!product || !Array.isArray(product.variants)) {
-    return (
-      <div className="min-h-[70vh] bg-white flex flex-col items-center justify-center p-6 text-center font-sans">
-        <Package className="w-16 h-16 text-slate-350 mb-4" />
-        <h2 className="text-xl font-bold text-black uppercase tracking-wider">No Product Selected</h2>
-        <p className="text-slate-500 text-xs mt-2 max-w-sm">Please select a product from the catalog to order sample evaluations.</p>
-        <Link href="/products" className="mt-6 inline-flex items-center justify-center px-5 py-2.5 bg-black text-white border border-black hover:bg-white hover:text-black rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
-          Browse Products
-        </Link>
-      </div>
-    );
-  }
 
   // 3. Listen to PayU success/failure redirect params
   useEffect(() => {
@@ -595,6 +579,23 @@ function CheckoutForm() {
       saveOrderSuccess(paymentGateway.toUpperCase(), generatedTxn);
     }, 1200);
   };
+
+  if (loading) {
+    return <PageLoader size="lg" />;
+  }
+
+  if (!product || !Array.isArray(product.variants)) {
+    return (
+      <div className="min-h-[70vh] bg-white flex flex-col items-center justify-center p-6 text-center font-sans">
+        <Package className="w-16 h-16 text-slate-350 mb-4" />
+        <h2 className="text-xl font-bold text-black uppercase tracking-wider">No Product Selected</h2>
+        <p className="text-slate-500 text-xs mt-2 max-w-sm">Please select a product from the catalog to order sample evaluations.</p>
+        <Link href="/products" className="mt-6 inline-flex items-center justify-center px-5 py-2.5 bg-black text-white border border-black hover:bg-white hover:text-black rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
+          Browse Products
+        </Link>
+      </div>
+    );
+  }
 
   if (paymentStatus === "success") {
     return (
