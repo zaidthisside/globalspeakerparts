@@ -217,3 +217,16 @@ VALUES ('default', false, false, 'sandbox', 'USD')
 ON CONFLICT (id) DO NOTHING;
 
 
+-- ─── 14. Create Newsletter Subscribers Table ─────────────────────────────────
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all" ON newsletter_subscribers;
+CREATE POLICY "Allow all" ON newsletter_subscribers FOR ALL USING (true) WITH CHECK (true);
+
+
+

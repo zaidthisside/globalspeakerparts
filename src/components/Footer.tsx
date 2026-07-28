@@ -56,6 +56,8 @@ const DEFAULT_SOCIALS: SocialLinks = {
 
 export default function Footer() {
   const [socials, setSocials] = useState<SocialLinks>(DEFAULT_SOCIALS);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
   useEffect(() => {
     fetch("/api/social-links")
@@ -63,6 +65,33 @@ export default function Footer() {
       .then((data) => setSocials({ ...DEFAULT_SOCIALS, ...data }))
       .catch(() => {});
   }, []);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail || !newsletterEmail.trim()) return;
+
+    setNewsletterStatus("submitting");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+      if (res.ok) {
+        setNewsletterStatus("success");
+        setNewsletterEmail("");
+        // Reset status to idle after 3 seconds
+        setTimeout(() => setNewsletterStatus("idle"), 3000);
+      } else {
+        setNewsletterStatus("error");
+        setTimeout(() => setNewsletterStatus("idle"), 3000);
+      }
+    } catch (err) {
+      console.error("Newsletter subscription error:", err);
+      setNewsletterStatus("error");
+      setTimeout(() => setNewsletterStatus("idle"), 3000);
+    }
+  };
 
   const productLinks = [
     { name: "Speaker Cones", href: "/products?cat=cones" },
@@ -230,20 +259,34 @@ export default function Footer() {
             <div className="pt-1">
               <span className="text-[10px] font-bold text-slate-400 block mb-2 uppercase tracking-wide font-sans">OEM CATALOG UPDATES</span>
               <form 
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleNewsletterSubmit}
                 className="flex rounded-lg overflow-hidden border border-[#2E2E33] bg-[#1E1E20]"
               >
                 <input
                   type="email"
-                  placeholder="Enter business email"
+                  placeholder={
+                    newsletterStatus === "success" 
+                      ? "✓ Subscribed successfully!" 
+                      : newsletterStatus === "error"
+                      ? "Error subscribing. Try again."
+                      : "Enter business email"
+                  }
                   required
-                  className="bg-transparent text-xs text-white px-3.5 py-2 outline-none w-full placeholder:text-slate-500 font-sans"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  disabled={newsletterStatus === "submitting" || newsletterStatus === "success"}
+                  className="bg-transparent text-xs text-white px-3.5 py-2 outline-none w-full placeholder:text-slate-500 font-sans disabled:opacity-75"
                 />
                 <button
                   type="submit"
-                  className="bg-white hover:bg-[#E8E8EA] text-[#000000] font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider font-sans cursor-pointer"
+                  disabled={newsletterStatus === "submitting" || newsletterStatus === "success"}
+                  className="bg-white hover:bg-[#E8E8EA] text-[#000000] font-bold px-4 py-2 text-xs transition-colors shrink-0 uppercase tracking-wider font-sans cursor-pointer disabled:bg-slate-400 disabled:text-slate-200 disabled:cursor-not-allowed"
                 >
-                  SUBSCRIBE
+                  {newsletterStatus === "submitting" 
+                    ? "WAIT..." 
+                    : newsletterStatus === "success"
+                    ? "DONE" 
+                    : "SUBSCRIBE"}
                 </button>
               </form>
             </div>
