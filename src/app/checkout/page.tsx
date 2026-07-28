@@ -810,8 +810,7 @@ function CheckoutForm() {
           <ArrowLeft size={14} /> Back to Products
         </Link>
 
-        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-black tracking-tight uppercase mb-2">B2B Sample Order Checkout</h1>
-        <p className="text-slate-500 text-xs sm:text-sm font-light mb-8 max-w-xl">Evaluate our precise speaker components before placing a high-volume contract run. Samples are dispatched via DHL/FedEx B2B Express air cargo.</p>
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-black tracking-tight uppercase mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8">
           
