@@ -909,14 +909,7 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "paypal" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "paypal"} onChange={() => setPaymentGateway("paypal")} className="accent-black" />
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-black font-semibold">PayPal</span>
-                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isPaypalConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isPaypalConfigured 
-                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
-                        : "Simulation"}
-                    </span>
-                  </div>
+                  <span className="text-xs text-black font-semibold">PayPal</span>
                   <span className="text-[8px] text-slate-400 font-normal">International Cards</span>
                 </div>
               </label>
@@ -925,14 +918,7 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "razorpay" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "razorpay"} onChange={() => setPaymentGateway("razorpay")} className="accent-black" />
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-black font-semibold">Razorpay</span>
-                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isRazorpayConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isRazorpayConfigured 
-                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
-                        : "Simulation"}
-                    </span>
-                  </div>
+                  <span className="text-xs text-black font-semibold">Razorpay</span>
                   <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
                 </div>
               </label>
@@ -941,12 +927,7 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "payu" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "payu"} onChange={() => setPaymentGateway("payu")} className="accent-black" />
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-black font-semibold">PayU India</span>
-                    <span className="text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
-                      Simulation
-                    </span>
-                  </div>
+                  <span className="text-xs text-black font-semibold">PayU India</span>
                   <span className="text-[8px] text-slate-400 font-normal">Secure B2B Redirect</span>
                 </div>
               </label>
@@ -955,32 +936,11 @@ function CheckoutForm() {
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "cashfree" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "cashfree"} onChange={() => setPaymentGateway("cashfree")} className="accent-black" />
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-black font-semibold">Cashfree</span>
-                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isCashfreeConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isCashfreeConfigured 
-                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
-                        : "Simulation"}
-                    </span>
-                  </div>
+                  <span className="text-xs text-black font-semibold">Cashfree</span>
                   <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
                 </div>
               </label>
             </div>
-
-            {/* Sandbox notice banner if gateway is in simulation mode */}
-            {((paymentGateway === "paypal" && !isPaypalConfigured) || 
-              (paymentGateway === "razorpay" && !isRazorpayConfigured) || 
-              (paymentGateway === "cashfree" && !isCashfreeConfigured) ||
-              (paymentGateway === "payu")) && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2.5 text-amber-800 text-[10px] leading-relaxed">
-                <span className="text-xs shrink-0 mt-0.5">⚠️</span>
-                <div>
-                  <strong className="font-bold block">Gateway running in Sandbox Simulation</strong>
-                  This gateway is operating in simulation mode. To process real money B2B card/UPI payments, add your merchant client keys to your <code className="font-mono bg-white/60 px-1 py-0.5 rounded border border-amber-200/55 text-amber-950 font-semibold">.env.local</code> file.
-                </div>
-              </div>
-            )}
 
             {/* PayPal dynamic buttons mount point */}
             {paymentGateway === "paypal" && isPaypalConfigured && (
