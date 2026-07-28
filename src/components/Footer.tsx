@@ -258,7 +258,7 @@ export default function Footer() {
           </p>
           <div className="flex gap-5 font-sans">
             <Link href="/privacy" className="hover:text-accent-cyan transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-accent-cyan transition-colors">Terms of Supply</Link>
+            <Link href="/terms-of-supply" className="hover:text-accent-cyan transition-colors">Terms of Supply</Link>
             <Link href="/sitemap" className="hover:text-accent-cyan transition-colors">Sitemap</Link>
           </div>
         </div>
