@@ -77,7 +77,7 @@ export default function Footer() {
     { name: "Corporate Profile", href: "/about" },
     { name: "Manufacturing Process", href: "/process" },
     { name: "Export & Logistics", href: "/export" },
-    { name: "Product Gallery", href: "/gallery" },
+    { name: "Product Gallery", href: "/products" },
     { name: "B2B Inquiry Desk", href: "/contact" },
     { name: "Terms & Conditions", href: "/terms" },
   ];
