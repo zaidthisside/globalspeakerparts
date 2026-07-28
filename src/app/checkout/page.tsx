@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, Suspense, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, HelpCircle, Package, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, HelpCircle, Package, ArrowRight, Loader2, Clock, Mail } from "lucide-react";
 import PageLoader from "@/components/PageLoader";
 import { useCurrency } from "@/context/CurrencyContext";
 
@@ -33,7 +33,7 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(true);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu">("paypal");
+  const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu" | "bank_transfer">("paypal");
 
   // Pricing calculations
   const activeVariant = product && Array.isArray(product.variants) ? (product.variants[selectedVariantIdx] || null) : null;
@@ -562,13 +562,109 @@ function CheckoutForm() {
     }
     setValidationError(null);
 
-    if (paymentGateway === "razorpay" && isRazorpayConfigured) {
+    if (paymentGateway === "bank_transfer") {
+      handleBankTransferCheckout();
+    } else if (paymentGateway === "razorpay" && isRazorpayConfigured) {
       handleRazorpayCheckout();
     } else if (paymentGateway === "payu") {
       handlePayuCheckout();
     } else {
       // Show local mock gateway selection modal
       setPaymentStatus("modal");
+    }
+  };
+
+  const handleBankTransferCheckout = async () => {
+    if (!product) return;
+
+    // Validate form fields first
+    const validationErr = validateForm();
+    if (validationErr) {
+      setValidationError(validationErr);
+      alert(validationErr);
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    setValidationError(null);
+
+    const orderNumber = `GSP-SMP-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderId = crypto.randomUUID();
+
+    const orderData = {
+      id: orderId,
+      order_number: orderNumber,
+      customer_name: formData.name,
+      customer_email: formData.email,
+      customer_phone: formData.phone || "",
+      shipping_address: formData.address,
+      shipping_city: formData.city,
+      shipping_state: formData.state || "",
+      shipping_zip: formData.zip || "",
+      shipping_country: formData.country,
+      product_id: product.id,
+      product_name: product.name,
+      variant_name: activeVariant?.name || "Standard",
+      quantity: quantity,
+      unit_price: unitPrice,
+      subtotal: subtotal,
+      shipping_fee: shippingFee,
+      total: grandTotal,
+      status: "Awaiting Bank Wire",
+    };
+
+    const paymentData = {
+      id: crypto.randomUUID(),
+      order_id: orderId,
+      order_number: orderNumber,
+      customer_name: formData.name,
+      customer_email: formData.email,
+      customer_phone: formData.phone || "",
+      payment_gateway: "Bank Wire (T/T)",
+      gateway_payment_id: `WIRE-PENDING-${orderNumber}`,
+      gateway_order_id: `WIRE-ORDER-${orderNumber}`,
+      transaction_id: `WIRE-${orderNumber}`,
+      currency: "USD",
+      amount: grandTotal,
+      payment_status: "Pending",
+      payment_date: new Date().toISOString(),
+      refund_status: null,
+      refund_amount: 0,
+      gateway_response: { note: "B2B manual wire transfer payment initiated." },
+    };
+
+    try {
+      // 1. Save order to database
+      const orderRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!orderRes.ok) {
+        throw new Error("Failed to register order in database");
+      }
+
+      // 2. Save payment record to database
+      const paymentRes = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentData),
+      });
+
+      if (!paymentRes.ok) {
+        throw new Error("Failed to register payment record in database");
+      }
+
+      // 3. Save local confirmation state
+      saveOrderSuccess("Bank Wire (T/T)", `WIRE-${orderNumber}`);
+      setPaymentStatus("success");
+    } catch (err) {
+      console.error("[Bank Wire Checkout Error]:", err);
+      setPaymentError(err instanceof Error ? err.message : "Failed to place order. Please try again.");
+      alert("Error placing bank wire order. Please try again.");
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -598,14 +694,50 @@ function CheckoutForm() {
   }
 
   if (paymentStatus === "success") {
+    const isWire = txnId.startsWith("WIRE-");
     return (
       <div className="min-h-screen bg-bg-snow py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
         <div className="max-w-md w-full bg-white border-2 border-black rounded-xl p-8 shadow-sm text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 border border-green-500 text-green-500 mb-5">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
-          <h2 className="text-xl font-extrabold text-black uppercase tracking-wider">Sample Order Placed!</h2>
-          <p className="text-slate-500 text-xs mt-2">Thank you for your sample order. Your payment of {convertPrice(`$${grandTotal.toFixed(2)}`)} was completed successfully.</p>
+          {isWire ? (
+            <>
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 border border-amber-500 text-amber-500 mb-5">
+                <Clock className="w-10 h-10 animate-pulse" />
+              </div>
+              <h2 className="text-xl font-extrabold text-black uppercase tracking-wider">Awaiting Wire Transfer</h2>
+              <p className="text-slate-500 text-xs mt-2 leading-relaxed">
+                Thank you for placing your sample order. To complete the transaction, please transfer the total of <span className="font-bold text-black">{convertPrice(`$${grandTotal.toFixed(2)}`)}</span> using the corporate bank credentials below.
+              </p>
+
+              {/* B2B Bank Details Card */}
+              <div className="mt-6 border-2 border-black rounded-lg bg-slate-50 p-4 text-left space-y-2 text-xs">
+                <div className="font-black text-black border-b border-black/10 pb-2 mb-2 uppercase tracking-wider text-[10px] text-center">
+                  Corporate Bank Details
+                </div>
+                <div className="flex justify-between"><span className="text-slate-400">Bank Name:</span><span className="font-bold text-black">HDFC Bank Ltd</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Account Name:</span><span className="font-bold text-black">GLOBAL SPEAKER PARTS PVT. LTD.</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">Account Number:</span><span className="font-mono font-bold text-black">50200084362194</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">IFSC Code:</span><span className="font-mono text-black font-semibold">HDFC0001429</span></div>
+                <div className="flex justify-between"><span className="text-slate-400">SWIFT Code:</span><span className="font-mono text-black font-semibold">HDFCCINB</span></div>
+                <div className="flex justify-between items-center border-t border-black/10 pt-2 mt-2">
+                  <span className="text-slate-400 font-bold">Transfer Ref:</span>
+                  <span className="font-mono font-black text-white px-2 py-0.5 bg-black rounded text-[9px] uppercase tracking-wide select-all">
+                    {txnId.replace("WIRE-", "")}
+                  </span>
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-400 font-light mt-3 leading-relaxed">
+                * Please include the Transfer Ref in the payment description. We will process and ship your components as soon as the bank wire clears.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 border border-green-500 text-green-500 mb-5">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+              <h2 className="text-xl font-extrabold text-black uppercase tracking-wider">Sample Order Placed!</h2>
+              <p className="text-slate-500 text-xs mt-2">Thank you for your sample order. Your payment of {convertPrice(`$${grandTotal.toFixed(2)}`)} was completed successfully.</p>
+            </>
+          )}
           
           <div className="mt-6 border-t border-b border-black/10 py-4 text-left space-y-2 text-xs">
             <div className="flex justify-between"><span className="text-slate-400">Order ID:</span><span className="font-bold text-black">#{txnId.split("-")[2] || "1028"}</span></div>
@@ -728,7 +860,7 @@ function CheckoutForm() {
 
             <h2 className="font-display text-sm font-extrabold uppercase text-black border-b border-black pb-3 pt-4">2. Select Payment Gateway</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* PayPal */}
               <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "paypal" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
                 <input type="radio" name="gateway" checked={paymentGateway === "paypal"} onChange={() => setPaymentGateway("paypal")} className="accent-black" />
@@ -770,6 +902,20 @@ function CheckoutForm() {
                   <span className="text-[8px] text-slate-400 font-normal">Secure B2B Redirect</span>
                 </div>
               </label>
+
+              {/* Bank Transfer */}
+              <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "bank_transfer" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
+                <input type="radio" name="gateway" checked={paymentGateway === "bank_transfer"} onChange={() => setPaymentGateway("bank_transfer")} className="accent-black" />
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-black font-semibold">Bank Wire (T/T)</span>
+                    <span className="text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase bg-green-50 text-green-700 border border-green-200">
+                      Direct B2B
+                    </span>
+                  </div>
+                  <span className="text-[8px] text-slate-400 font-normal">0% Gateway Fee • Swift Billing</span>
+                </div>
+              </label>
             </div>
 
             {/* Sandbox notice banner if gateway is in simulation mode */}
@@ -795,8 +941,28 @@ function CheckoutForm() {
 
             {/* Default submit button for simulated gateways & non-paypal live gateways */}
             {(!isPaypalConfigured || paymentGateway !== "paypal") && (
-              <button type="submit" className="w-full inline-flex items-center justify-center gap-1.5 py-4 bg-black border border-black hover:bg-white hover:text-black text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer">
-                {paymentError ? "Retry Payment" : "Place Order & Pay"} {convertPrice(`$${grandTotal.toFixed(2)}`)} <ArrowRight size={14} />
+              <button 
+                type="submit" 
+                disabled={isProcessingPayment}
+                className="w-full inline-flex items-center justify-center gap-1.5 py-4 bg-black border border-black hover:bg-white hover:text-black text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer disabled:bg-slate-400 disabled:border-slate-400 disabled:text-slate-200"
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Processing Order...
+                  </>
+                ) : (
+                  <>
+                    {paymentGateway === "bank_transfer" 
+                      ? "Place Order & Get Bank Details" 
+                      : paymentError 
+                      ? "Retry Payment" 
+                      : "Place Order & Pay"
+                    }
+                    {" "}
+                    {convertPrice(`$${grandTotal.toFixed(2)}`)}
+                    <ArrowRight size={14} />
+                  </>
+                )}
               </button>
             )}
           </form>
