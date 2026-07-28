@@ -34,12 +34,16 @@ function CheckoutForm() {
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu" | "cashfree">("paypal");
+  const [shippingFee, setShippingFee] = useState(15.00);
+  const [shippingCarrier, setShippingCarrier] = useState("DHL Express Air");
+  const [shippingDays, setShippingDays] = useState("3-5 Business Days");
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
 
   // Pricing calculations
   const activeVariant = product && Array.isArray(product.variants) ? (product.variants[selectedVariantIdx] || null) : null;
   const unitPrice = activeVariant?.price !== null && activeVariant?.price !== undefined ? Number(activeVariant.price) : 1.80;
   const subtotal = unitPrice * quantity;
-  const shippingFee = 15.00; // Flat Express Air Shipping
   const grandTotal = subtotal + shippingFee;
   
   // Billing/Shipping state
@@ -219,6 +223,57 @@ function CheckoutForm() {
     fetchProduct();
   }, [slug]);
 
+  // 2b. Dynamic Real-time Shipping Calculator
+  useEffect(() => {
+    if (!product || !formData.zip) {
+      setShippingError("Please enter postal code");
+      return;
+    }
+
+    const cleanZip = formData.zip.trim();
+    if (cleanZip.length < 3) {
+      setShippingError("Postal code too short");
+      return;
+    }
+
+    const calculateShipping = async () => {
+      setIsCalculatingShipping(true);
+      setShippingError(null);
+      try {
+        const queryParams = new URLSearchParams({
+          country: formData.country,
+          zip: cleanZip,
+          productId: product.id,
+          quantity: String(quantity),
+        });
+
+        const res = await fetch(`/api/shipping/calculate?${queryParams.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setShippingFee(data.shippingFee);
+            setShippingCarrier(data.carrier);
+            setShippingDays(data.estimatedDays);
+          }
+        } else {
+          const errData = await res.json();
+          setShippingError(errData.error || "Rates unavailable");
+        }
+      } catch (err) {
+        console.error("Failed to calculate real-time B2B shipping rates:", err);
+      } finally {
+        setIsCalculatingShipping(false);
+      }
+    };
+
+    // Debounce shipping calculations by 500ms to avoid overloading API as user types
+    const timer = setTimeout(() => {
+      calculateShipping();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formData.country, formData.zip, product, quantity]);
+
 
   // 3. Listen to PayU success/failure redirect params
   useEffect(() => {
@@ -243,7 +298,7 @@ function CheckoutForm() {
       const qty = Number(searchParams.get("qty") || "1");
       const price = Number(searchParams.get("price") || "1.80");
       const calculatedSubtotal = price * qty;
-      const calculatedShipping = 15.00;
+      const calculatedShipping = Number(searchParams.get("shipping") || "15.00");
       const calculatedTotal = calculatedSubtotal + calculatedShipping;
 
       const orderData = {
@@ -581,7 +636,7 @@ function CheckoutForm() {
         email: formData.email,
         phone: formData.phone,
         hash,
-        surl: `${window.location.origin}/checkout?status=success&gateway=PayU&txnid=${txnid}&email=${encodeURIComponent(formData.email)}&name=${encodeURIComponent(formData.name)}&company=${encodeURIComponent(formData.company)}&phone=${encodeURIComponent(formData.phone)}&address=${encodeURIComponent(formData.address)}&city=${encodeURIComponent(formData.city)}&state=${encodeURIComponent(formData.state)}&zip=${encodeURIComponent(formData.zip)}&country=${encodeURIComponent(formData.country)}&product_id=${product.id}&product_name=${encodeURIComponent(product.name)}&variant=${encodeURIComponent(activeVariant?.name || "Standard")}&qty=${quantity}&price=${unitPrice}`,
+        surl: `${window.location.origin}/checkout?status=success&gateway=PayU&txnid=${txnid}&email=${encodeURIComponent(formData.email)}&name=${encodeURIComponent(formData.name)}&company=${encodeURIComponent(formData.company)}&phone=${encodeURIComponent(formData.phone)}&address=${encodeURIComponent(formData.address)}&city=${encodeURIComponent(formData.city)}&state=${encodeURIComponent(formData.state)}&zip=${encodeURIComponent(formData.zip)}&country=${encodeURIComponent(formData.country)}&product_id=${product.id}&product_name=${encodeURIComponent(product.name)}&variant=${encodeURIComponent(activeVariant?.name || "Standard")}&qty=${quantity}&price=${unitPrice}&shipping=${shippingFee}`,
         furl: `${window.location.origin}/checkout?status=failed`,
       };
 
@@ -1038,9 +1093,26 @@ function CheckoutForm() {
                   <span>Sample Subtotal:</span>
                   <span className="font-mono text-black font-medium">{convertPrice(`$${subtotal.toFixed(2)}`)}</span>
                 </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>DHL Express Shipping:</span>
-                  <span className="font-mono text-black font-medium">{convertPrice(`$${shippingFee.toFixed(2)}`)}</span>
+                <div className="flex flex-col gap-1 text-slate-500">
+                  <div className="flex justify-between">
+                    <span>
+                      {isCalculatingShipping ? (
+                        <span className="flex items-center gap-1.5 text-slate-400 font-light">
+                          <Loader2 className="w-3 h-3 animate-spin" /> Calculating shipping...
+                        </span>
+                      ) : (
+                        <span>{shippingCarrier} ({shippingDays}):</span>
+                      )}
+                    </span>
+                    <span className="font-mono text-black font-medium">
+                      {isCalculatingShipping ? "..." : convertPrice(`$${shippingFee.toFixed(2)}`)}
+                    </span>
+                  </div>
+                  {shippingError && !isCalculatingShipping && (
+                    <span className="text-[9px] text-amber-600 font-light block mt-0.5">
+                      {shippingError}
+                    </span>
+                  )}
                 </div>
                 <div className="flex justify-between text-black font-extrabold text-sm border-t border-black/10 pt-3">
                   <span className="uppercase tracking-wider">Total Amount:</span>
