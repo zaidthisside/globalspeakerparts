@@ -1,22 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { supabase } from "@/lib/supabaseClient";
 import fs from "fs";
 import path from "path";
-import { supabase } from "@/lib/supabaseClient";
 
-const SETTINGS_FILE_PATH = path.join(
-  process.cwd(),
-  "scratch",
-  "payment_settings.json"
-);
+const SETTINGS_FILE_PATH = path.join(process.cwd(), "scratch", "payment_settings.json");
 
 function ensureDirectoryExists(filePath: string) {
   const dirname = path.dirname(filePath);
   if (!fs.existsSync(dirname)) {
-    try {
-      fs.mkdirSync(dirname, { recursive: true });
-    } catch (e) {
-      console.warn("Failed to create directory locally (filesystem might be read-only):", e);
-    }
+    fs.mkdirSync(dirname, { recursive: true });
   }
 }
 
@@ -34,10 +26,13 @@ function loadSettingsFromFile() {
   return {
     enableRazorpay: !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || false,
     enablePaypal: !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || false,
+    enableCashfree: !!process.env.NEXT_PUBLIC_CASHFREE_APP_ID || false,
     razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
     razorpaySecret: process.env.RAZORPAY_KEY_SECRET || "",
     paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
     paypalSecret: process.env.PAYPAL_CLIENT_SECRET || "",
+    cashfreeAppId: process.env.NEXT_PUBLIC_CASHFREE_APP_ID || "",
+    cashfreeSecretKey: process.env.CASHFREE_SECRET_KEY || "",
     environment: process.env.PAYPAL_ENVIRONMENT || "sandbox",
     defaultCurrency: "USD",
   };
@@ -59,12 +54,15 @@ export async function GET() {
         settings = {
           enableRazorpay: data.enable_razorpay,
           enablePaypal: data.enable_paypal,
-          razorpayKeyId: data.razorpay_key_id,
-          razorpaySecret: data.razorpay_secret,
-          paypalClientId: data.paypal_client_id,
-          paypalSecret: data.paypal_secret,
-          environment: data.environment,
-          defaultCurrency: data.default_currency,
+          enableCashfree: data.enable_cashfree || false,
+          razorpayKeyId: data.razorpay_key_id || "",
+          razorpaySecret: data.razorpay_secret || "",
+          paypalClientId: data.paypal_client_id || "",
+          paypalSecret: data.paypal_secret || "",
+          cashfreeAppId: data.cashfree_app_id || "",
+          cashfreeSecretKey: data.cashfree_secret_key || "",
+          environment: data.environment || "sandbox",
+          defaultCurrency: data.default_currency || "USD",
         };
       }
     } catch (dbError) {
@@ -81,6 +79,7 @@ export async function GET() {
       ...settings,
       razorpaySecret: settings.razorpaySecret ? "••••••••••••••••" : "",
       paypalSecret: settings.paypalSecret ? "••••••••••••••••" : "",
+      cashfreeSecretKey: settings.cashfreeSecretKey ? "••••••••••••••••" : "",
     };
 
     return NextResponse.json(sanitized);
@@ -107,12 +106,15 @@ export async function POST(req: NextRequest) {
         existing = {
           enableRazorpay: data.enable_razorpay,
           enablePaypal: data.enable_paypal,
-          razorpayKeyId: data.razorpay_key_id,
-          razorpaySecret: data.razorpay_secret,
-          paypalClientId: data.paypal_client_id,
-          paypalSecret: data.paypal_secret,
-          environment: data.environment,
-          defaultCurrency: data.default_currency,
+          enableCashfree: data.enable_cashfree || false,
+          razorpayKeyId: data.razorpay_key_id || "",
+          razorpaySecret: data.razorpay_secret || "",
+          paypalClientId: data.paypal_client_id || "",
+          paypalSecret: data.paypal_secret || "",
+          cashfreeAppId: data.cashfree_app_id || "",
+          cashfreeSecretKey: data.cashfree_secret_key || "",
+          environment: data.environment || "sandbox",
+          defaultCurrency: data.default_currency || "USD",
         };
       }
     } catch (e) {
@@ -132,14 +134,21 @@ export async function POST(req: NextRequest) {
       body.paypalSecret === "••••••••••••••••"
         ? existing.paypalSecret
         : body.paypalSecret;
+    const cashfreeSecretKey =
+      body.cashfreeSecretKey === "••••••••••••••••"
+        ? existing.cashfreeSecretKey
+        : body.cashfreeSecretKey;
 
     const newSettings = {
       enableRazorpay: body.enableRazorpay ?? existing.enableRazorpay,
       enablePaypal: body.enablePaypal ?? existing.enablePaypal,
+      enableCashfree: body.enableCashfree ?? existing.enableCashfree,
       razorpayKeyId: body.razorpayKeyId ?? existing.razorpayKeyId,
       razorpaySecret: razorpaySecret ?? existing.razorpaySecret,
       paypalClientId: body.paypalClientId ?? existing.paypalClientId,
       paypalSecret: paypalSecret ?? existing.paypalSecret,
+      cashfreeAppId: body.cashfreeAppId ?? existing.cashfreeAppId,
+      cashfreeSecretKey: cashfreeSecretKey ?? existing.cashfreeSecretKey,
       environment: body.environment ?? existing.environment,
       defaultCurrency: body.defaultCurrency ?? existing.defaultCurrency,
     };
@@ -154,10 +163,13 @@ export async function POST(req: NextRequest) {
           id: "default",
           enable_razorpay: newSettings.enableRazorpay,
           enable_paypal: newSettings.enablePaypal,
+          enable_cashfree: newSettings.enableCashfree,
           razorpay_key_id: newSettings.razorpayKeyId,
           razorpay_secret: newSettings.razorpaySecret,
           paypal_client_id: newSettings.paypalClientId,
           paypal_secret: newSettings.paypalSecret,
+          cashfree_app_id: newSettings.cashfreeAppId,
+          cashfree_secret_key: newSettings.cashfreeSecretKey,
           environment: newSettings.environment,
           default_currency: newSettings.defaultCurrency,
           updated_at: new Date().toISOString(),
@@ -189,6 +201,7 @@ export async function POST(req: NextRequest) {
         ...newSettings,
         razorpaySecret: newSettings.razorpaySecret ? "••••••••••••••••" : "",
         paypalSecret: newSettings.paypalSecret ? "••••••••••••••••" : "",
+        cashfreeSecretKey: newSettings.cashfreeSecretKey ? "••••••••••••••••" : "",
       }
     });
   } catch (err) {

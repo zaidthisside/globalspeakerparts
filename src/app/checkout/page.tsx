@@ -33,7 +33,7 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(true);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu" | "bank_transfer">("paypal");
+  const [paymentGateway, setPaymentGateway] = useState<"paypal" | "razorpay" | "payu" | "cashfree">("paypal");
 
   // Pricing calculations
   const activeVariant = product && Array.isArray(product.variants) ? (product.variants[selectedVariantIdx] || null) : null;
@@ -101,6 +101,7 @@ function CheckoutForm() {
   // Dynamic configuration flags loaded from DB/config settings
   const isRazorpayConfigured = paymentSettings.enableRazorpay && !!paymentSettings.razorpayKeyId;
   const isPaypalConfigured = paymentSettings.enablePaypal && !!paymentSettings.paypalClientId;
+  const isCashfreeConfigured = paymentSettings.enableCashfree && !!paymentSettings.cashfreeAppId;
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -276,6 +277,56 @@ function CheckoutForm() {
     } else if (statusParam === "failed") {
       alert("Transaction failed or was canceled by user.");
       router.replace("/checkout?slug=" + slug);
+    }
+  }, [searchParams, slug, router]);
+
+  // 3b. Listen to Cashfree callback params
+  useEffect(() => {
+    const gateway = searchParams.get("gateway");
+    const cfOrderId = searchParams.get("cf_order_id");
+
+    if (gateway === "cashfree" && cfOrderId) {
+      const verifyCashfree = async () => {
+        setLoading(true);
+        try {
+          const pendingPayloadStr = localStorage.getItem("cf_pending_order_payload");
+          if (!pendingPayloadStr) {
+            throw new Error("No pending order payload found in local storage.");
+          }
+          const pendingPayload = JSON.parse(pendingPayloadStr);
+
+          // Call backend verification
+          const res = await fetch("/api/cashfree/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              cf_order_id: cfOrderId,
+              order: pendingPayload,
+            }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            // Clear temporary local storage
+            localStorage.removeItem("cf_pending_order_payload");
+            localStorage.removeItem("cf_pending_order_id");
+
+            saveOrderSuccess("Cashfree", data.transaction_id);
+          } else {
+            const errData = await res.json();
+            alert(errData.error || "Payment verification failed.");
+            router.replace("/checkout?slug=" + slug);
+          }
+        } catch (err) {
+          console.error("Cashfree verification error:", err);
+          alert("Error verifying payment with Cashfree. Please contact support.");
+          router.replace("/checkout?slug=" + slug);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      verifyCashfree();
     }
   }, [searchParams, slug, router]);
 
@@ -562,8 +613,8 @@ function CheckoutForm() {
     }
     setValidationError(null);
 
-    if (paymentGateway === "bank_transfer") {
-      handleBankTransferCheckout();
+    if (paymentGateway === "cashfree") {
+      handleCashfreeCheckout();
     } else if (paymentGateway === "razorpay" && isRazorpayConfigured) {
       handleRazorpayCheckout();
     } else if (paymentGateway === "payu") {
@@ -574,7 +625,7 @@ function CheckoutForm() {
     }
   };
 
-  const handleBankTransferCheckout = async () => {
+  const handleCashfreeCheckout = async () => {
     if (!product) return;
 
     // Validate form fields first
@@ -588,81 +639,74 @@ function CheckoutForm() {
     setIsProcessingPayment(true);
     setValidationError(null);
 
-    const orderNumber = `GSP-SMP-${Math.floor(100000 + Math.random() * 900000)}`;
-    const orderId = crypto.randomUUID();
-
-    const orderData = {
-      id: orderId,
-      order_number: orderNumber,
-      customer_name: formData.name,
-      customer_email: formData.email,
-      customer_phone: formData.phone || "",
-      shipping_address: formData.address,
-      shipping_city: formData.city,
-      shipping_state: formData.state || "",
-      shipping_zip: formData.zip || "",
-      shipping_country: formData.country,
-      product_id: product.id,
-      product_name: product.name,
-      variant_name: activeVariant?.name || "Standard",
-      quantity: quantity,
-      unit_price: unitPrice,
-      subtotal: subtotal,
-      shipping_fee: shippingFee,
-      total: grandTotal,
-      status: "Awaiting Bank Wire",
-    };
-
-    const paymentData = {
-      id: crypto.randomUUID(),
-      order_id: orderId,
-      order_number: orderNumber,
-      customer_name: formData.name,
-      customer_email: formData.email,
-      customer_phone: formData.phone || "",
-      payment_gateway: "Bank Wire (T/T)",
-      gateway_payment_id: `WIRE-PENDING-${orderNumber}`,
-      gateway_order_id: `WIRE-ORDER-${orderNumber}`,
-      transaction_id: `WIRE-${orderNumber}`,
-      currency: "USD",
-      amount: grandTotal,
-      payment_status: "Pending",
-      payment_date: new Date().toISOString(),
-      refund_status: null,
-      refund_amount: 0,
-      gateway_response: { note: "B2B manual wire transfer payment initiated." },
-    };
-
     try {
-      // 1. Save order to database
-      const orderRes = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!orderRes.ok) {
-        throw new Error("Failed to register order in database");
+      const scriptLoaded = await loadScript("https://sdk.cashfree.com/js/v3/cashfree.js");
+      if (!scriptLoaded) {
+        alert("Failed to load Cashfree checkout SDK. Please check your internet connection.");
+        setIsProcessingPayment(false);
+        return;
       }
 
-      // 2. Save payment record to database
-      const paymentRes = await fetch("/api/payments", {
+      // Convert USD to INR (Cashfree domestic transactions require INR)
+      const amountInINR = grandTotal * 83.5;
+      const res = await fetch("/api/cashfree/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(paymentData),
+        body: JSON.stringify({
+          amount: amountInINR,
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+        }),
       });
 
-      if (!paymentRes.ok) {
-        throw new Error("Failed to register payment record in database");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to initiate Cashfree transaction.");
       }
 
-      // 3. Save local confirmation state
-      saveOrderSuccess("Bank Wire (T/T)", `WIRE-${orderNumber}`);
-      setPaymentStatus("success");
+      const cfOrder = await res.json();
+
+      // Store order payload in localStorage to insert upon success callback verification
+      const orderPayload = {
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone || "",
+        shipping_address: formData.address,
+        shipping_city: formData.city,
+        shipping_state: formData.state || "",
+        shipping_zip: formData.zip || "",
+        shipping_country: formData.country,
+        product_id: product.id,
+        product_name: product.name,
+        variant_name: activeVariant?.name || "Standard",
+        quantity: quantity,
+        unit_price: unitPrice,
+        subtotal: subtotal,
+        shipping_fee: shippingFee,
+        total: grandTotal,
+      };
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cf_pending_order_payload", JSON.stringify(orderPayload));
+        localStorage.setItem("cf_pending_order_id", cfOrder.order_id);
+      }
+
+      // Initialize Cashfree
+      const cashfree = (window as any).Cashfree({
+        mode: paymentSettings.environment === "production" ? "production" : "sandbox",
+      });
+
+      // Redirect checkout
+      await cashfree.checkout({
+        paymentSessionId: cfOrder.payment_session_id,
+        returnUrl: `${window.location.origin}/checkout?gateway=cashfree&cf_order_id=${cfOrder.order_id}&slug=${slug}`,
+      });
+
     } catch (err) {
-      console.error("[Bank Wire Checkout Error]:", err);
-      setPaymentError(err instanceof Error ? err.message : "Failed to place order. Please try again.");
-      alert("Error placing bank wire order. Please try again.");
+      console.error("[Cashfree Checkout Error]:", err);
+      setPaymentError(err instanceof Error ? err.message : "Failed to place order.");
+      alert(err instanceof Error ? err.message : "Error placing Cashfree order. Please try again.");
     } finally {
       setIsProcessingPayment(false);
     }
@@ -903,17 +947,17 @@ function CheckoutForm() {
                 </div>
               </label>
 
-              {/* Bank Transfer */}
-              <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "bank_transfer" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
-                <input type="radio" name="gateway" checked={paymentGateway === "bank_transfer"} onChange={() => setPaymentGateway("bank_transfer")} className="accent-black" />
+              {/* Cashfree */}
+              <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentGateway === "cashfree" ? "border-black bg-slate-50 font-bold" : "border-black/10 hover:border-black/30"}`}>
+                <input type="radio" name="gateway" checked={paymentGateway === "cashfree"} onChange={() => setPaymentGateway("cashfree")} className="accent-black" />
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-black font-semibold">Bank Wire (T/T)</span>
-                    <span className="text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase bg-green-50 text-green-700 border border-green-200">
-                      Direct B2B
+                    <span className="text-xs text-black font-semibold">Cashfree</span>
+                    <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isCashfreeConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
+                      {isCashfreeConfigured ? "Live" : "Simulation"}
                     </span>
                   </div>
-                  <span className="text-[8px] text-slate-400 font-normal">0% Gateway Fee • Swift Billing</span>
+                  <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
                 </div>
               </label>
             </div>
@@ -921,6 +965,7 @@ function CheckoutForm() {
             {/* Sandbox notice banner if gateway is in simulation mode */}
             {((paymentGateway === "paypal" && !isPaypalConfigured) || 
               (paymentGateway === "razorpay" && !isRazorpayConfigured) || 
+              (paymentGateway === "cashfree" && !isCashfreeConfigured) ||
               (paymentGateway === "payu")) && (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2.5 text-amber-800 text-[10px] leading-relaxed">
                 <span className="text-xs shrink-0 mt-0.5">⚠️</span>
@@ -952,8 +997,8 @@ function CheckoutForm() {
                   </>
                 ) : (
                   <>
-                    {paymentGateway === "bank_transfer" 
-                      ? "Place Order & Get Bank Details" 
+                    {paymentGateway === "cashfree" 
+                      ? "Pay via Cashfree" 
                       : paymentError 
                       ? "Retry Payment" 
                       : "Place Order & Pay"

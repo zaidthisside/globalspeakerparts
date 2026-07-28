@@ -164,14 +164,16 @@ export default function AdminPage() {
   const [refundType, setRefundType] = useState<"full" | "partial">("full");
   const [processingRefund, setProcessingRefund] = useState(false);
 
-  // Payment settings state
   const [paymentSettings, setPaymentSettings] = useState({
     enableRazorpay: false,
     enablePaypal: false,
+    enableCashfree: false,
     razorpayKeyId: "",
     razorpaySecret: "",
     paypalClientId: "",
     paypalSecret: "",
+    cashfreeAppId: "",
+    cashfreeSecretKey: "",
     environment: "sandbox",
     defaultCurrency: "USD",
   });
@@ -1610,7 +1612,7 @@ export default function AdminPage() {
             <form onSubmit={handleSavePaymentSettings} className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-6 animate-fade-in font-sans">
               <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider border-b border-border-cool pb-3">Payment Settings Configuration</h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-border-cool pb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-border-cool pb-6">
                 {/* Razorpay Config */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
@@ -1687,6 +1689,46 @@ export default function AdminPage() {
                       disabled={!paymentSettings.enablePaypal}
                       className={inputClass} 
                       placeholder={paymentSettings.paypalSecret ? "••••••••••••••••" : "Enter client secret"}
+                    />
+                  </FormField>
+                </div>
+
+                {/* Cashfree Config */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-xs font-bold text-[#0F0F10] uppercase tracking-wider flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-slate-400" /> Cashfree Gateway
+                    </h4>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={paymentSettings.enableCashfree} 
+                        onChange={(e) => setPaymentSettings(p => ({ ...p, enableCashfree: e.target.checked }))} 
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-black"></div>
+                    </label>
+                  </div>
+
+                  <FormField label="Cashfree App ID">
+                    <input 
+                      type="text" 
+                      value={paymentSettings.cashfreeAppId} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, cashfreeAppId: e.target.value }))}
+                      disabled={!paymentSettings.enableCashfree}
+                      className={inputClass} 
+                      placeholder="Enter App ID"
+                    />
+                  </FormField>
+
+                  <FormField label="Cashfree Secret Key">
+                    <input 
+                      type="password" 
+                      value={paymentSettings.cashfreeSecretKey} 
+                      onChange={(e) => setPaymentSettings(p => ({ ...p, cashfreeSecretKey: e.target.value }))}
+                      disabled={!paymentSettings.enableCashfree}
+                      className={inputClass} 
+                      placeholder={paymentSettings.cashfreeSecretKey ? "••••••••••••••••" : "Enter secret key"}
                     />
                   </FormField>
                 </div>

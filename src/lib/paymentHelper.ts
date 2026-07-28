@@ -8,6 +8,8 @@ export interface GatewayKeys {
   paypalClientId: string;
   paypalSecret: string;
   paypalEnvironment: "sandbox" | "live";
+  cashfreeAppId: string;
+  cashfreeSecretKey: string;
 }
 
 export async function getGatewayKeys(): Promise<GatewayKeys> {
@@ -26,6 +28,8 @@ export async function getGatewayKeys(): Promise<GatewayKeys> {
         paypalClientId: data.paypal_client_id || "",
         paypalSecret: data.paypal_secret || "",
         paypalEnvironment: (data.environment || "sandbox") as "sandbox" | "live",
+        cashfreeAppId: data.cashfree_app_id || "",
+        cashfreeSecretKey: data.cashfree_secret_key || "",
       };
     }
   } catch (e) {
@@ -43,6 +47,8 @@ export async function getGatewayKeys(): Promise<GatewayKeys> {
         paypalClientId: settings.paypalClientId || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
         paypalSecret: settings.paypalSecret || process.env.PAYPAL_CLIENT_SECRET || "",
         paypalEnvironment: (settings.environment || process.env.PAYPAL_ENVIRONMENT || "sandbox") as "sandbox" | "live",
+        cashfreeAppId: settings.cashfreeAppId || process.env.NEXT_PUBLIC_CASHFREE_APP_ID || "",
+        cashfreeSecretKey: settings.cashfreeSecretKey || process.env.CASHFREE_SECRET_KEY || "",
       };
     } catch (e) {
       console.error("Failed to read payment settings JSON:", e);
@@ -56,5 +62,7 @@ export async function getGatewayKeys(): Promise<GatewayKeys> {
     paypalClientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
     paypalSecret: process.env.PAYPAL_CLIENT_SECRET || "",
     paypalEnvironment: (process.env.PAYPAL_ENVIRONMENT || "sandbox") as "sandbox" | "live",
+    cashfreeAppId: process.env.NEXT_PUBLIC_CASHFREE_APP_ID || "",
+    cashfreeSecretKey: process.env.CASHFREE_SECRET_KEY || "",
   };
 }

@@ -229,4 +229,11 @@ DROP POLICY IF EXISTS "Allow all" ON newsletter_subscribers;
 CREATE POLICY "Allow all" ON newsletter_subscribers FOR ALL USING (true) WITH CHECK (true);
 
 
+-- ─── 15. Add Cashfree columns to payment_settings ─────────────────────────────
+ALTER TABLE payment_settings ADD COLUMN IF NOT EXISTS enable_cashfree BOOLEAN DEFAULT false;
+ALTER TABLE payment_settings ADD COLUMN IF NOT EXISTS cashfree_app_id TEXT;
+ALTER TABLE payment_settings ADD COLUMN IF NOT EXISTS cashfree_secret_key TEXT;
+
+
+
 
