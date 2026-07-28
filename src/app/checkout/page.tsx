@@ -694,7 +694,7 @@ function CheckoutForm() {
 
       // Initialize Cashfree
       const cashfree = (window as any).Cashfree({
-        mode: paymentSettings.environment === "production" ? "production" : "sandbox",
+        mode: (paymentSettings.environment === "production" || paymentSettings.environment === "live") ? "production" : "sandbox",
       });
 
       // Redirect checkout

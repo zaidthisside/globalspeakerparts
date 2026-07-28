@@ -55,7 +55,13 @@ export async function POST(req: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("[Cashfree Order Creation Error]:", errorText);
-      return NextResponse.json({ error: "Failed to create Cashfree order" }, { status: 500 });
+      let errorJson;
+      try {
+        errorJson = JSON.parse(errorText);
+      } catch {
+        errorJson = { message: errorText };
+      }
+      return NextResponse.json({ error: errorJson.message || "Failed to create Cashfree order", detail: errorJson }, { status: 400 });
     }
 
     const data = await response.json();
