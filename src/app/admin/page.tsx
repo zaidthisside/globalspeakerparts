@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   BarChart3, FileText, Cpu, Globe, Search, Truck, Box, Plus, Lock, ShieldAlert, X, Upload,
-  Edit, Trash2, Eye, EyeOff, Star, ChevronDown, ChevronUp, Save, Copy, ArrowLeft, Layers, Tag, Settings, Image as ImageIcon, HelpCircle, Download, GripVertical, Loader2, CreditCard
+  Edit, Trash2, Eye, EyeOff, Star, ChevronDown, ChevronUp, Save, Copy, ArrowLeft, Layers, Tag, Settings, Image as ImageIcon, HelpCircle, Download, GripVertical, Loader2, CreditCard, Mail
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
@@ -118,7 +118,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
 
   // Navigation
-  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings" | "orders" | "payments" | "payment-settings">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "products" | "inquiries" | "settings" | "orders" | "payments" | "payment-settings" | "newsletter">("overview");
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
@@ -180,6 +180,15 @@ export default function AdminPage() {
 
   // Settings
   const [whatsappNumber, setWhatsappNumber] = useState("+91 9214361550");
+
+  // Newsletter subscribers state
+  interface Subscriber {
+    id: string;
+    email: string;
+    created_at: string;
+  }
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [subscribersLoading, setSubscribersLoading] = useState(false);
 
   // ─── Auth ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -333,14 +342,34 @@ export default function AdminPage() {
   };
 
 
+  const fetchSubscribers = useCallback(async () => {
+    setSubscribersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("newsletter_subscribers")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("Failed to fetch subscribers:", error);
+      } else {
+        setSubscribers(data || []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubscribersLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchCategories();
       fetchProducts();
       fetchPayments();
       fetchPaymentSettings();
+      fetchSubscribers();
     }
-  }, [isAuthenticated, fetchCategories, fetchProducts, fetchPayments, fetchPaymentSettings]);
+  }, [isAuthenticated, fetchCategories, fetchProducts, fetchPayments, fetchPaymentSettings, fetchSubscribers]);
 
   // ─── Category CRUD ───────────────────────────────────────────────
   const saveCat = async (cat: Partial<Category>) => {
@@ -832,6 +861,7 @@ export default function AdminPage() {
             { id: "orders", label: "Sample Orders", icon: Truck },
             { id: "payments", label: "Payments", icon: FileText },
             { id: "payment-settings", label: "Payment Settings", icon: Settings },
+            { id: "newsletter", label: "Subscribers", icon: Mail },
             { id: "settings", label: "Settings", icon: Settings },
           ].map((tab) => {
             const isSelected = activeTab === tab.id;
@@ -858,6 +888,9 @@ export default function AdminPage() {
                 )}
                 {tab.id === "payments" && payments.length > 0 && (
                   <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{payments.length}</span>
+                )}
+                {tab.id === "newsletter" && subscribers.length > 0 && (
+                  <span className="ml-auto text-[9px] bg-[#F7F7F8] border border-[#EAEAEA] rounded px-1.5 py-0.5 font-mono">{subscribers.length}</span>
                 )}
               </button>
             );
@@ -1486,6 +1519,89 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* ─── NEWSLETTER TAB ───────────────────────────────────────── */}
+          {activeTab === "newsletter" && (
+            <div className="bg-white border border-border-cool p-6 rounded-premium shadow-soft space-y-6 animate-fade-in font-sans">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-cool pb-4">
+                <div>
+                  <h3 className="font-display text-sm font-bold text-primary-midnight uppercase tracking-wider">Newsletter Subscribers</h3>
+                  <p className="text-slate-400 text-xs mt-1 font-light">Manage and export B2B newsletter subscriptions for catalog updates.</p>
+                </div>
+                <div className="flex gap-2.5">
+                  <button 
+                    onClick={() => {
+                      const emails = subscribers.map(s => s.email).join(", ");
+                      navigator.clipboard.writeText(emails);
+                      alert("All emails copied to clipboard!");
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-black hover:bg-black hover:text-white text-black text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Copy List
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const csvContent = "data:text/csv;charset=utf-8,Email,Subscription Date\n" 
+                        + subscribers.map(s => `"${s.email}","${new Date(s.created_at).toLocaleString()}"`).join("\n");
+                      const encodedUri = encodeURI(csvContent);
+                      const link = document.createElement("a");
+                      link.setAttribute("href", encodedUri);
+                      link.setAttribute("download", `newsletter_subscribers_${new Date().toISOString().split("T")[0]}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black hover:bg-white border border-black text-white hover:text-black text-xs font-bold uppercase tracking-wider rounded-lg transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Export CSV
+                  </button>
+                </div>
+              </div>
+
+              {subscribersLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 text-slate-400 gap-3">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                  <span className="text-xs">Loading subscribers list...</span>
+                </div>
+              ) : subscribers.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-slate-400 text-center gap-3">
+                  <Mail className="w-12 h-12 text-slate-300" />
+                  <span className="text-xs font-semibold">No Subscribers Found</span>
+                  <p className="text-[10px] text-slate-400 max-w-xs font-light">
+                    Ensure the database table is configured. Subscribers who sign up in the footer will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-border-cool rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-border-cool text-xs text-left">
+                    <thead className="bg-bg-snow font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                      <tr>
+                        <th className="px-6 py-3.5">Email Address</th>
+                        <th className="px-6 py-3.5">Subscription Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-cool bg-white font-medium text-slate-700">
+                      {subscribers.map((sub) => (
+                        <tr key={sub.id} className="hover:bg-bg-snow/40 transition-colors">
+                          <td className="px-6 py-4 font-mono select-all text-[#0f0f10]">{sub.email}</td>
+                          <td className="px-6 py-4 text-slate-400 font-light">
+                            {new Date(sub.created_at).toLocaleString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit"
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
