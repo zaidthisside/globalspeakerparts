@@ -912,7 +912,9 @@ function CheckoutForm() {
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-black font-semibold">PayPal</span>
                     <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isPaypalConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isPaypalConfigured ? "Live" : "Simulation"}
+                      {isPaypalConfigured 
+                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
+                        : "Simulation"}
                     </span>
                   </div>
                   <span className="text-[8px] text-slate-400 font-normal">International Cards</span>
@@ -926,7 +928,9 @@ function CheckoutForm() {
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-black font-semibold">Razorpay</span>
                     <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isRazorpayConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isRazorpayConfigured ? "Live" : "Simulation"}
+                      {isRazorpayConfigured 
+                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
+                        : "Simulation"}
                     </span>
                   </div>
                   <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
@@ -954,7 +958,9 @@ function CheckoutForm() {
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-black font-semibold">Cashfree</span>
                     <span className={`text-[7px] px-1 py-0.5 rounded font-mono font-bold uppercase ${isCashfreeConfigured ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                      {isCashfreeConfigured ? "Live" : "Simulation"}
+                      {isCashfreeConfigured 
+                        ? ((paymentSettings.environment === "live" || paymentSettings.environment === "production") ? "Live" : "Sandbox") 
+                        : "Simulation"}
                     </span>
                   </div>
                   <span className="text-[8px] text-slate-400 font-normal">UPI, Cards, NetBanking</span>
