@@ -71,25 +71,31 @@ export default function Footer() {
     if (!newsletterEmail || !newsletterEmail.trim()) return;
 
     setNewsletterStatus("submitting");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
     try {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: newsletterEmail }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
+      
       if (res.ok) {
         setNewsletterStatus("success");
         setNewsletterEmail("");
-        // Reset status to idle after 3 seconds
         setTimeout(() => setNewsletterStatus("idle"), 3000);
       } else {
         setNewsletterStatus("error");
-        setTimeout(() => setNewsletterStatus("idle"), 3000);
+        setTimeout(() => setNewsletterStatus("idle"), 4000);
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error("Newsletter subscription error:", err);
       setNewsletterStatus("error");
-      setTimeout(() => setNewsletterStatus("idle"), 3000);
+      setTimeout(() => setNewsletterStatus("idle"), 4000);
     }
   };
 
