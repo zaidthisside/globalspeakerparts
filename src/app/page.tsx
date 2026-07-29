@@ -575,12 +575,12 @@ export default function Home() {
       </section>
 
       {/* 5.5. Manufacturing Spotlight Section */}
-      <section className="w-full py-8 sm:py-12 bg-white">
+      <section className="w-full py-6 sm:py-12 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
             
             {/* Left Column: Headers & Info */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-5">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-[1px] bg-[#0F0F10]" />
                 <span className="text-[#0F0F10] text-xs font-bold uppercase tracking-widest">FACTORY FLOOR</span>
@@ -595,7 +595,7 @@ export default function Home() {
                 Our workshop utilizes heavy-duty precision CNC machinery and custom lathe setups. We machine all voice coil assemblies, magnetic plates, and custom component housings in-house to secure absolute acoustic consistency across volume production.
               </p>
 
-              <div className="pt-4">
+              <div className="pt-2">
                 <Link href="/contact?rfq=true">
                   <button className="btn-primary px-8 py-3.5 text-xs font-bold tracking-widest flex items-center gap-2 cursor-pointer uppercase">
                     <span>TOUR THE FACTORY</span>
@@ -605,10 +605,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Premium Asymmetrical Image Grid */}
-            <div className="lg:col-span-7 grid grid-cols-2 gap-4 sm:gap-6 pb-8 lg:pb-12">
-              {/* Image 1: Detailed Hand Work */}
-              <div className="relative group overflow-hidden border-2 border-black rounded-xl bg-white aspect-[3/4] shadow-sm transform hover:-translate-y-1 transition-all duration-300">
+            {/* Right Column: Images — stacked on mobile, asymmetric side-by-side on desktop */}
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:pb-12">
+              {/* Image 1 */}
+              <div className="relative group overflow-hidden border-2 border-black rounded-xl bg-white w-full aspect-[4/3] sm:aspect-[3/4] shadow-sm hover:-translate-y-1 transition-all duration-300">
                 <img 
                   src="/manufacturing-1.jpg" 
                   alt="Precision component machining" 
@@ -616,8 +616,8 @@ export default function Home() {
                 />
               </div>
 
-              {/* Image 2: Lathe Machine (Offset downward for attention-grabbing asymmetry) */}
-              <div className="relative group overflow-hidden border-2 border-black rounded-xl bg-white aspect-[3/4] shadow-sm transform lg:translate-y-12 hover:lg:translate-y-11 hover:-translate-y-2 transition-all duration-300">
+              {/* Image 2 */}
+              <div className="relative group overflow-hidden border-2 border-black rounded-xl bg-white w-full aspect-[4/3] sm:aspect-[3/4] shadow-sm sm:lg:translate-y-12 hover:-translate-y-1 transition-all duration-300">
                 <img 
                   src="/manufacturing-2.jpg" 
                   alt="Heavy industrial lathe machinery" 
