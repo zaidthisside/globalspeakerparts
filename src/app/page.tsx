@@ -619,7 +619,7 @@ export default function Home() {
         </div>
       </section>
       {/* 5.5. Manufacturing Spotlight Section */}
-      <section className="w-full py-16 sm:py-24 bg-[#F7F7F8] border-y border-black/10">
+      <section className="w-full py-8 sm:py-12 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
@@ -658,9 +658,6 @@ export default function Home() {
                   alt="Precision component machining" 
                   className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500" 
                 />
-                <div className="absolute bottom-4 left-4 bg-white border border-black px-2.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider font-mono shadow-sm z-10">
-                  Precision Lathe Finish
-                </div>
               </div>
 
               {/* Image 2: Lathe Machine (Offset downward for attention-grabbing asymmetry) */}
@@ -670,9 +667,6 @@ export default function Home() {
                   alt="Heavy industrial lathe machinery" 
                   className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500" 
                 />
-                <div className="absolute bottom-4 left-4 bg-white border border-black px-2.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider font-mono shadow-sm z-10">
-                  Heavy CNC Machinery
-                </div>
               </div>
             </div>
 
