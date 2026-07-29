@@ -574,50 +574,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Materials Pillars Grid */}
-      <section className="w-full py-5 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
-            
-            <div className="flex flex-col items-center text-center space-y-3 font-sans">
-              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
-              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Carbon Fiber</span>
-              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
-                The primary cone structural fiber — strong, low-mass, high-stiffness. Carbon fiber pulp sheets outlive traditional paper by decades.
-              </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Cone Material</span>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-3 font-sans">
-              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
-              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Kapton Formers</span>
-              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
-                High structural integrity formers give our voice coils their unique thermal limits — stable continuous power load up to 280°C.
-              </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Thermal Stability</span>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-3 font-sans">
-              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
-              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Strontium Magnets</span>
-              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
-                High magnetic energy Y35 Ferrite and NdFeB rings create maximum gap flux density, translating electrical power into clean movement.
-              </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">High Flux Density</span>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-3 font-sans">
-              <Logo className="w-8 h-8 text-[#0F0F10]" variant="icon" />
-              <span className="text-sm font-bold text-[#0F0F10] uppercase font-display">Pure Testing</span>
-              <p className="text-xs text-slate-500 leading-relaxed font-light max-w-xs">
-                The silent step. Every batch is evaluated in isolated anechoic chambers to record frequency sweep plots.
-              </p>
-              <span className="text-[9px] bg-[#F7F7F8] border border-black text-[#0F0F10] px-2 py-0.5 rounded font-bold uppercase">Acoustic Check</span>
-            </div>
-
-          </div>
-        </div>
-      </section>
       {/* 5.5. Manufacturing Spotlight Section */}
       <section className="w-full py-8 sm:py-12 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-16">
