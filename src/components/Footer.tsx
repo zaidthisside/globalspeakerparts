@@ -48,8 +48,8 @@ interface SocialLinks {
 }
 
 const DEFAULT_SOCIALS: SocialLinks = {
-  instagram: "https://instagram.com",
-  facebook: "https://facebook.com",
+  instagram: "https://www.instagram.com/globalspeakerparts/?utm_source=ig_web_button_share_sheet",
+  facebook: "https://www.facebook.com/share/181asRzd14/?mibextid=wwXIfr",
   whatsapp: "https://wa.me/919829062390",
   linkedin: "https://linkedin.com",
 };
