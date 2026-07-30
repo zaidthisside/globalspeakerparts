@@ -646,14 +646,14 @@ function ProductsCatalog() {
                       key={product.id}
                       className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                     >
-                      <Link href={productUrl} className="flex-1 flex flex-col justify-between cursor-pointer">
+                      <div className="flex-1 flex flex-col justify-between">
                         {/* Product Image Gallery (Swipeable) */}
                         <div className="p-1.5 bg-[#F7F7F8] border-b border-black w-full">
-                          <ProductCardGallery product={product} />
+                          <ProductCardGallery product={product} href={productUrl} />
                         </div>
 
                         {/* Content Card Body */}
-                        <div className="p-2.5 flex-1 flex flex-col justify-between">
+                        <Link href={productUrl} className="p-2.5 flex-1 flex flex-col justify-between cursor-pointer group/content block">
                           <div className="space-y-1.5">
                             {/* Upper Category */}
                             <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
@@ -661,7 +661,7 @@ function ProductsCatalog() {
                             </span>
                             
                             {/* Product Title */}
-                            <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover:text-accent-cyan transition-colors uppercase tracking-tight">
+                            <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover/content:text-accent-cyan transition-colors uppercase tracking-tight">
                               {product.name}
                             </h2>
                             
@@ -704,8 +704,8 @@ function ProductsCatalog() {
                               </p>
                             )}
                           </div>
-                        </div>
-                      </Link>
+                        </Link>
+                      </div>
 
                       {/* Double B2B Actions Panel - Stacked */}
                       <div className="flex flex-col border-t border-black p-1.5 bg-white gap-1.5">

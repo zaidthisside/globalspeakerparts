@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Package } from 'lucide-react';
+import Link from 'next/link';
 
 interface ProductCardGalleryProps {
   product: {
@@ -9,9 +10,10 @@ interface ProductCardGalleryProps {
     featured_image?: string | null;
     product_images?: Array<{ url: string }> | null;
   };
+  href?: string;
 }
 
-export default function ProductCardGallery({ product }: ProductCardGalleryProps) {
+export default function ProductCardGallery({ product, href }: ProductCardGalleryProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -39,16 +41,25 @@ export default function ProductCardGallery({ product }: ProductCardGalleryProps)
   };
 
   if (mediaUrls.length === 0) {
-    return (
+    const fallbackContent = (
       <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
         <Package className="h-12 w-12 text-[#EAEAEA]" />
       </div>
     );
+
+    if (href) {
+      return (
+        <Link href={href} className="block cursor-pointer">
+          {fallbackContent}
+        </Link>
+      );
+    }
+    return fallbackContent;
   }
 
   if (mediaUrls.length === 1) {
     const item = mediaUrls[0];
-    return (
+    const content = (
       <div className="relative w-full aspect-square rounded-lg border border-black bg-white flex items-center justify-center overflow-hidden p-2">
         {isVideoUrl(item.url) ? (
           <video
@@ -69,6 +80,16 @@ export default function ProductCardGallery({ product }: ProductCardGalleryProps)
         )}
       </div>
     );
+
+    if (href) {
+      return (
+        <Link href={href} className="block cursor-pointer">
+          {content}
+        </Link>
+      );
+    }
+
+    return content;
   }
 
   return (
@@ -79,30 +100,46 @@ export default function ProductCardGallery({ product }: ProductCardGalleryProps)
         onScroll={handleScroll}
         className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none"
       >
-        {mediaUrls.map((item, idx) => (
-          <div
-            key={idx}
-            className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-2 bg-white"
-          >
-            {isVideoUrl(item.url) ? (
-              <video
-                src={item.url}
-                className="max-h-full max-w-full object-contain"
-                muted
-                loop
-                playsInline
-                autoPlay
-              />
-            ) : (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={item.url}
-                alt={`${product.name} - media ${idx + 1}`}
-                className="max-h-full max-w-full object-contain"
-              />
-            )}
-          </div>
-        ))}
+        {mediaUrls.map((item, idx) => {
+          const slideContent = isVideoUrl(item.url) ? (
+            <video
+              src={item.url}
+              className="max-h-full max-w-full object-contain"
+              muted
+              loop
+              playsInline
+              autoPlay
+            />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={item.url}
+              alt={`${product.name} - media ${idx + 1}`}
+              className="max-h-full max-w-full object-contain"
+            />
+          );
+
+          if (href) {
+            return (
+              <Link
+                key={idx}
+                href={href}
+                className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-2 bg-white cursor-pointer block"
+              >
+                {slideContent}
+              </Link>
+            );
+          }
+
+          return (
+            <div
+              key={idx}
+              className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center p-2 bg-white"
+            >
+              {slideContent}
+            </div>
+          );
+        })}
       </div>
 
       {/* Navigation Arrows (visible on hover) */}

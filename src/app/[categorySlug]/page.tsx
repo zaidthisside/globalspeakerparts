@@ -310,24 +310,26 @@ export default function CategoryPage() {
               );
               const whatsappUrl = `https://wa.me/919829062390?text=${whatsappMsg}`;
 
+              const productUrl = `/${categorySlug}/${product.slug}`;
+
               return (
                 <div
                   key={product.id}
                   className="group bg-white border border-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full"
                 >
-                  <Link href={`/${categorySlug}/${product.slug}`} className="flex-1 flex flex-col justify-between cursor-pointer">
+                  <div className="flex-1 flex flex-col justify-between">
                     {/* Product Image Gallery (Swipeable) */}
                     <div className="p-1.5 bg-[#F7F7F8] border-b border-black w-full">
-                      <ProductCardGallery product={product} />
+                      <ProductCardGallery product={product} href={productUrl} />
                     </div>
 
                     {/* Content Body */}
-                    <div className="p-2.5 flex-1 flex flex-col justify-between">
+                    <Link href={productUrl} className="p-2.5 flex-1 flex flex-col justify-between cursor-pointer group/content block">
                       <div className="space-y-1.5">
                         <span className="text-[9px] font-bold text-[#5C5C63] tracking-widest uppercase block">
                           {product.category_name || category.name}
                         </span>
-                        <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover:text-accent-cyan transition-colors uppercase tracking-tight">
+                        <h2 className="font-display font-black text-base text-[#0F0F10] leading-snug group-hover/content:text-accent-cyan transition-colors uppercase tracking-tight">
                           {product.name}
                         </h2>
                         {product.short_desc && (
@@ -368,8 +370,8 @@ export default function CategoryPage() {
                           </p>
                         )}
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
 
                   {/* Action Buttons - Stacked */}
                   <div className="flex flex-col border-t border-black p-1.5 bg-white gap-1.5">
