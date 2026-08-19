@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Package } from 'lucide-react';
 import Link from 'next/link';
+import { getProxiedImageUrl, isVideoUrl } from '@/lib/imageHelper';
 
 interface ProductCardGalleryProps {
   product: {
@@ -18,17 +19,10 @@ export default function ProductCardGallery({ product, href }: ProductCardGallery
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const mediaUrls = [
-    ...(product.featured_image ? [{ url: product.featured_image }] : []),
-    ...(product.product_images || []).map((img) => ({ url: img.url })),
+    ...(product.featured_image ? [{ url: getProxiedImageUrl(product.featured_image) }] : []),
+    ...(product.product_images || []).map((img) => ({ url: getProxiedImageUrl(img.url) })),
   ].filter((item, index, self) => self.findIndex((t) => t.url === item.url) === index);
 
-  const isVideoUrl = (url: string) =>
-    url.startsWith('data:video/') ||
-    url.endsWith('.mp4') ||
-    url.endsWith('.webm') ||
-    url.endsWith('.ogg') ||
-    url.includes('youtube.com') ||
-    url.includes('vimeo.com');
 
   const handleScroll = () => {
     if (!scrollRef.current) return;

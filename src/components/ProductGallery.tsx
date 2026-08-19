@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { getProxiedImageUrl, isVideoUrl } from '@/lib/imageHelper';
 
 type GalleryImage = {
   id: string;
@@ -18,13 +19,6 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const isVideoUrl = (url: string) =>
-    url.startsWith('data:video/') ||
-    url.endsWith('.mp4') ||
-    url.endsWith('.webm') ||
-    url.endsWith('.ogg') ||
-    url.includes('youtube.com') ||
-    url.includes('vimeo.com');
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -64,7 +58,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
             >
               {isVideoUrl(img.url) ? (
                 <video
-                  src={img.url}
+                  src={getProxiedImageUrl(img.url)}
                   className="h-full w-full object-contain rounded-premium"
                   controls
                   muted
@@ -74,7 +68,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
                 />
               ) : (
                 <img
-                  src={img.url}
+                  src={getProxiedImageUrl(img.url)}
                   alt={img.alt_text ?? `${productName} - ${idx + 1}`}
                   className="h-full w-full object-contain rounded-premium"
                 />
@@ -115,7 +109,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
             >
               {isVideoUrl(img.url) ? (
                 <div className="h-full w-full relative flex items-center justify-center bg-[#F7F7F8]">
-                  <video src={img.url} className="h-full w-full object-cover" muted playsInline />
+                  <video src={getProxiedImageUrl(img.url)} className="h-full w-full object-cover" muted playsInline />
                   <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
                     <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
@@ -124,7 +118,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
                 </div>
               ) : (
                 <img
-                  src={img.url}
+                  src={getProxiedImageUrl(img.url)}
                   alt={img.alt_text ?? `${productName} - ${idx + 1}`}
                   className="h-full w-full object-cover"
                 />

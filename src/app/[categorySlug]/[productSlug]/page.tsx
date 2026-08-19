@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 import ProductGallery from '@/components/ProductGallery';
 import PriceValue from '@/components/PriceValue';
 import ProductPageActions from '@/components/ProductPageActions';
+import { getProxiedImageUrl } from '@/lib/imageHelper';
 
 import {
   ArrowRight,
@@ -588,7 +589,7 @@ export default async function ProductPage({ params }: Props) {
                     <div className="aspect-square overflow-hidden bg-[#F7F7F8] border-b border-black">
                       {rp.featured_image ? (
                         <img
-                          src={rp.featured_image}
+                          src={getProxiedImageUrl(rp.featured_image)}
                           alt={rp.name}
                           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />

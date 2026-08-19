@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, HelpCircle, Package, ArrowRight, Loader2, Clock, Mail } from "lucide-react";
 import PageLoader from "@/components/PageLoader";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getProxiedImageUrl } from "@/lib/imageHelper";
 
 interface Variant {
   id: string;
@@ -1041,7 +1042,7 @@ function CheckoutForm() {
                 <div className="w-20 h-20 border border-black/10 rounded-lg overflow-hidden bg-slate-50 flex-shrink-0">
                   {product.featured_image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={product.featured_image} alt={product.name} className="w-full h-full object-cover" />
+                    <img src={getProxiedImageUrl(product.featured_image)} alt={product.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Package className="text-slate-300 w-8 h-8" /></div>
                   )}
