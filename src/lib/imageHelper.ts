@@ -10,19 +10,6 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
     return url;
   }
 
-  // If pointing to the old restricted Supabase instance, extract filename and serve locally
-  if (url.includes("qvjcheciijcwafiqaigx.supabase.co")) {
-    try {
-      const parts = url.split("/media/");
-      if (parts.length > 1) {
-        const filename = decodeURIComponent(parts[1].split("?")[0]);
-        return `/uploads/${filename}`;
-      }
-    } catch {
-      return "/voice-coil.jpg";
-    }
-  }
-
   // If the image is hosted on Supabase Storage or external allowed domains
   if (url.includes(".supabase.co") || url.includes("supabase.in") || url.includes("images.unsplash.com")) {
     return `/api/media-proxy?url=${encodeURIComponent(url)}`;
